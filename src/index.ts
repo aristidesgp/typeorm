@@ -1,5 +1,6 @@
 /*!
  */
+import "zen-observable-ts";
 import "reflect-metadata";
 import {ConnectionManager} from "./connection/ConnectionManager";
 import {Connection} from "./connection/Connection";
