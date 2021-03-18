@@ -100,13 +100,13 @@ export type EntityRelationSchema<
             EntityRelationSchema<Entities, Entities[Entity["relations"][P]["reference"]]> | boolean
         : never
 } & {
-    [P in keyof Entity["embeds"]]:
+    [P in keyof Entity["embeds"]]?:
     // Relations extends EntityRelationSchema<Source["options"]["entities"], Entity> ?
     EntityRelationSchema<Entities, Entity["embeds"][P]> | boolean
     // : never
 }
 
-export type FindReturnTypeRelations<
+/*export type FindReturnTypeRelations<
     Source extends AnyDataSource,
     Entity extends AnyEntity,
     Selection extends EntitySelectionSchema<Source["options"]["entities"], Entity> | undefined,
@@ -130,20 +130,93 @@ export type FindReturnTypeRelations<
             FindReturnType<Source, Source["options"]["entities"][Entity["relations"][P]["reference"]], Selection[P], Relations[P]>
             : never
         : Entity["model"]["type"][P]
-}): {  })
+}): {  })*/
+
+export type Props<
+    Entity extends AnyEntity
+> = {
+    [P in keyof Entity["columns"]]: {
+        type: "column",
+        property: P
+    }
+} & {
+    [P in keyof Entity["relations"]]: {
+        type: "relation",
+        property: P
+    }
+} & {
+    [P in keyof Entity["embeds"]]: {
+        type: "embed",
+        property: P
+    }
+}
+
+type UserEntitySelection = FindReturnType<typeof myDataSource, typeof UserEntity, {}, {}>
+
+export type FindReturnTypeItem<
+    Source extends AnyDataSource,
+    Entity extends AnyEntity,
+    Selection extends EntitySelectionSchema<Source["options"]["entities"], Entity>, // | undefined,
+    Relations extends EntityRelationSchema<Source["options"]["entities"], Entity>, // | undefined,
+    P extends keyof Props<Entity>,
+    Property extends Props<Entity>[P]["property"]
+> = P extends keyof Entity["columns"] ?
+    Entity["model"]["type"][P]
+    : P extends keyof Entity["embeds"] ?
+        Selection[Property] extends object ?
+            Relations extends EntityRelationSchema<Source["options"]["entities"], Entity>
+                ? FindReturnType<Source, Entity["embeds"][Property], Selection[Property], Relations[Property]>
+                : FindReturnType<Source, Entity["embeds"][Property], Selection[Property], Relations[Property]>
+            :
+            Relations extends EntityRelationSchema<Source["options"]["entities"], Entity>
+                ? FindReturnType<Source, Entity["embeds"][Property], {}, Relations[Property]>
+                : FindReturnType<Source, Entity["embeds"][Property], {}, {}>
+        : P extends keyof Entity["relations"] ?
+            // (Relations extends EntityRelationSchema<Source["options"]["entities"], Entity> ?
+            Relations[Property] extends object ?
+                Entity["relations"][Property]["type"] extends "many-to-many" | "one-to-many" ? // Entity["model"]["type"][P] extends Array<infer U> ?
+                    Selection[Property] extends object ?
+                        FindReturnType<Source, Source["options"]["entities"][Entity["relations"][Property]["reference"]], Selection[Property], Relations[Property]>[]
+                        :
+                        FindReturnType<Source, Source["options"]["entities"][Entity["relations"][Property]["reference"]], {}, Relations[Property]>[]
+                    :
+                    FindReturnType<Source, Source["options"]["entities"][Entity["relations"][Property]["reference"]], Selection[Property], Relations[Property]>
+                : Relations[Property] extends true ?
+                Entity["relations"][P]["type"] extends "many-to-many" | "one-to-many" ? // Entity["model"]["type"][P] extends Array<infer U> ?
+                    Selection[Property] extends object ?
+                        FindReturnType<Source, Source["options"]["entities"][Entity["relations"][Property]["reference"]], Selection[Property], {}>[]
+                        :
+                        FindReturnType<Source, Source["options"]["entities"][Entity["relations"][Property]["reference"]], {}, {}>[]
+                    :
+                    FindReturnType<Source, Source["options"]["entities"][Entity["relations"][Property]["reference"]], Selection[Property], {}>
+                : never
+            // : Entity["model"]["type"][P]
+            /* : Relations extends true ? ({
+                [P in keyof EntitySelectionPickRelations<Entity, Relations>]:
+                Entity["relations"][P] extends EntityRelationItem<Entity["model"]> ?
+                    Entity["model"]["type"][P] extends Array<infer U> ?
+                        FindReturnType<Source, Source["options"]["entities"][Entity["relations"][P]["reference"]], Selection[P], Relations[P]>[]
+                        : Entity["model"]["type"][P] extends object ?
+                        FindReturnType<Source, Source["options"]["entities"][Entity["relations"][P]["reference"]], Selection[P], Relations[P]>
+                        : never
+                    : Entity["model"]["type"][P]
+            })*///: never)
+
+            : never
 
 export type FindReturnType<
     Source extends AnyDataSource,
     Entity extends AnyEntity,
-    Selection extends EntitySelectionSchema<Source["options"]["entities"], Entity> | undefined,
-    Relations extends EntityRelationSchema<Source["options"]["entities"], Entity> | undefined,
-> = Selection extends EntitySelectionSchema<Source["options"]["entities"], Entity>
-    ? {
-        [P in keyof Entity["columns"] as P extends EntitySelectionTruthyKeys<Selection> ? P : never]:
-            Entity["model"]["type"][P]
-    }
-    & FindReturnTypeRelations<Source, Entity, Selection, Relations>
-    & {
+    Selection extends EntitySelectionSchema<Source["options"]["entities"], Entity>, // | undefined,
+    Relations extends EntityRelationSchema<Source["options"]["entities"], Entity> // | undefined,
+> = keyof Selection extends never ? {
+    [P in keyof Props<Entity>]:
+    FindReturnTypeItem<Source, Entity, Selection, Relations, P, Props<Entity>[P]["property"]>
+} : {
+    [P in keyof Props<Entity> as P extends EntitySelectionTruthyKeys<Selection, Relations> ? P : never]:
+        FindReturnTypeItem<Source, Entity, Selection, Relations, P, Props<Entity>[P]["property"]>
+}
+    /*& {
         [P in keyof Entity["embeds"] as P extends EntitySelectionTruthyKeys<Selection, Relations> ? P : never]:
             Selection[P] extends object ?
                 Relations extends EntityRelationSchema<Source["options"]["entities"], Entity>
@@ -153,17 +226,35 @@ export type FindReturnType<
                 Relations extends EntityRelationSchema<Source["options"]["entities"], Entity>
                     ? FindReturnType<Source, Entity["embeds"][P], {}, Relations[P]>
                     : FindReturnType<Source, Entity["embeds"][P], { }, undefined>
-    }
-    : {
-        [P in keyof Entity["columns"]]: Entity["model"]["type"][P]
-    }
-    & FindReturnTypeRelations<Source, Entity, undefined, Relations>
-    & {
-        [P in keyof Entity["embeds"]]:
-            Relations extends EntityRelationSchema<Source["options"]["entities"], Entity>
-                ? FindReturnType<Source, Entity["embeds"][P], undefined, Relations[P]>
-                : FindReturnType<Source, Entity["embeds"][P], undefined, undefined>
-    }
+    }*/
+    /*: {
+        [P in keyof Props<Entity>]:
+            P extends keyof Entity["columns"] ?
+                Entity["model"]["type"][P]
+            : P extends keyof Entity["embeds"] ?
+                Relations extends EntityRelationSchema<Source["options"]["entities"], Entity>
+                    ? FindReturnType<Source, Entity["embeds"][P], {}, Relations[Props<Entity>[P]["property"]]>
+                    : FindReturnType<Source, Entity["embeds"][P], {}, undefined>
+            : P extends keyof Entity["relations"] ?
+                    (Relations extends EntityRelationSchema<Source["options"]["entities"], Entity> ?
+                        Entity["relations"][P]["type"] extends "many-to-many" | "one-to-many" ? // Entity["model"]["type"][P] extends Array<infer U> ?
+                            FindReturnType<Source, Source["options"]["entities"][Entity["relations"][P]["reference"]], Selection[Props<Entity>[P]["property"]], Relations[Props<Entity>[P]["property"]]>[]
+                            :
+                            FindReturnType<Source, Source["options"]["entities"][Entity["relations"][P]["reference"]], Selection[Props<Entity>[P]["property"]], Relations[Props<Entity>[P]["property"]]>
+                        // : Entity["model"]["type"][P]
+                        /!* : Relations extends true ? ({
+                            [P in keyof EntitySelectionPickRelations<Entity, Relations>]:
+                            Entity["relations"][P] extends EntityRelationItem<Entity["model"]> ?
+                                Entity["model"]["type"][P] extends Array<infer U> ?
+                                    FindReturnType<Source, Source["options"]["entities"][Entity["relations"][P]["reference"]], Selection[P], Relations[P]>[]
+                                    : Entity["model"]["type"][P] extends object ?
+                                    FindReturnType<Source, Source["options"]["entities"][Entity["relations"][P]["reference"]], Selection[P], Relations[P]>
+                                    : never
+                                : Entity["model"]["type"][P]
+                        })*!/: never)
+
+                    : never
+    }*/
 
 export type DataSourceDatabaseType = "mysql" | "postgres" | "sqlite"
 export type EntityMap = { [name: string]: AnyEntity }
@@ -202,11 +293,21 @@ export type FindOptions<
 // export type DataSourceEntity<Source extends AnyDataSource, EntityName extends DataSourceEntityName<Source>> =
 //     Source["options"]["entities"][EntityName] extends Function ? Source["options"]["entities"][EntityName]["prototype"] : Source["options"]["entities"][EntityName]
 
+export type ForceEmptyType<T> = T extends undefined ? {} : T
+
+// export type FindOptionsReturnType<Options extends FindOptions<any, any>> =
+//     FindReturnType<Source, Entity, ForceEmptyType<Options["select"]>, ForceEmptyType<Options["relations"]>>
+
 export type Repository<
     Source extends AnyDataSource,
     Entity extends AnyEntity
 > = {
-    find<Options extends FindOptions<Source, Entity>>(options: Options): FindReturnType<Source, Entity, Options["select"], Options["relations"]>
+    find<Options extends FindOptions<Source, Entity>>(options: Options): FindReturnType<
+        Source,
+        Entity,
+        ForceEmptyType<Options["select"]>,
+        ForceEmptyType<Options["relations"]
+    >>
         // FindReturnType<DataSourceEntity<Source, EntityName>, Options>
 }
 
@@ -495,34 +596,27 @@ const loadedUserx = myDataSource
         select: {
             id: true,
             name: true,
-            // photos: {
-            //     id: true,
-            //     album: {
-            //         id: true,
-            //     }
-            //     // filename: true,
-            // },
+            photos: {
+                id: true,
+                filename: true,
+                album: {
+                    id: true
+                }
+            },
             profile: {
                 bio: true,
-                maritalStatus: true,
-                adult: true,
                 educationPhotos: {
                     id: true,
-                    // filename: true,
                     album: {
-                        id: true
+                        name: true
                     }
                 }
             }
-            //     album: {
-            //         id: true
-            //     }
-            // }
         },
         relations: {
-            // photos: {
-            //     album: true
-            // },
+            photos: {
+                album: true
+            },
             profile: {
                 educationPhotos: {
                     album: true
