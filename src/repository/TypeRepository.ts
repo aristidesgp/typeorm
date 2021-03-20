@@ -1,3 +1,7 @@
+export type ForceEmptyType<T> = T extends undefined ? {} : T
+
+export type ValueOf<T> = T[keyof T];
+
 /**
  * Schema for a EntitySelection, used to specify what properties of a Entity must be selected.
  */
@@ -12,7 +16,7 @@ export type EntitySelectionSchema<
     [P in keyof Entity["embeds"]]?: EntitySelectionSchema<Source, Entity["embeds"][P]>
 }
 
-export type Props<
+export type EntityProps<
     Entity extends AnyEntity
 > = {
     [P in keyof Entity["columns"]]: {
@@ -35,8 +39,8 @@ export type FindReturnTypeProperty<
     Source extends AnyDataSource,
     Entity extends ValueOf<Source["options"]["entities"]>,
     Selection extends EntitySelectionSchema<Source, Entity>, // | undefined,
-    P extends keyof Props<Entity>,
-    Property extends Props<Entity>[P]["property"],
+    P extends keyof EntityProps<Entity>,
+    Property extends EntityProps<Entity>[P]["property"],
     ParentPartiallySelected extends boolean
 > =
     // if property is a column, just return it's type inferred from a driver column types defined in the entity
@@ -117,22 +121,22 @@ export type FindReturnType<
     // we need to tell to child (embed) to select only what was selected, to prevent selection of every column
     ParentPartiallySelected extends true ?
     {
-        [P in keyof Props<Entity> as P extends EntitySelectionTruthyKeys<Selection> ? P : never]:
-            FindReturnTypeProperty<Source, Entity, Selection, P, Props<Entity>[P]["property"], true>
+        [P in keyof EntityProps<Entity> as P extends EntitySelectionTruthyKeys<Selection> ? P : never]:
+            FindReturnTypeProperty<Source, Entity, Selection, P, EntityProps<Entity>[P]["property"], true>
     }
 
     // if no columns were specified in selection, it means we need to select every column
     : OnlyColumnKeys<Selection, Entity> extends never ?
     {
-        [P in keyof Props<Entity> as P extends EntitySelectionAllColumns<Source, Entity, Selection> ? P : never]:
-            FindReturnTypeProperty<Source, Entity, Selection, P, Props<Entity>[P]["property"], false>
+        [P in keyof EntityProps<Entity> as P extends EntitySelectionAllColumns<Source, Entity, Selection> ? P : never]:
+            FindReturnTypeProperty<Source, Entity, Selection, P, EntityProps<Entity>[P]["property"], false>
     }
 
     // otherwise it means only set of columns were selected, and we should only select them
     :
     {
-        [P in keyof Props<Entity> as P extends EntitySelectionTruthyKeys<Selection> ? P : never]:
-            FindReturnTypeProperty<Source, Entity, Selection, P, Props<Entity>[P]["property"], true>
+        [P in keyof EntityProps<Entity> as P extends EntitySelectionTruthyKeys<Selection> ? P : never]:
+            FindReturnTypeProperty<Source, Entity, Selection, P, EntityProps<Entity>[P]["property"], true>
     }
 
 export type DataSourceDatabaseType = "mysql" | "postgres" | "sqlite"
@@ -148,8 +152,6 @@ export type DataSource<Options extends DataSourceOptions<DataSourceDatabaseType,
     options: Options
     manager: Manager<DataSource<Options>>
 }
-
-export type ValueOf<T> = T[keyof T];
 
 export type Manager<Source extends AnyDataSource> = {
     "@type": "Manager"
@@ -172,24 +174,17 @@ export type FindOptions<
 // export type DataSourceEntity<Source extends AnyDataSource, EntityName extends DataSourceEntityName<Source>> =
 //     Source["options"]["entities"][EntityName] extends Function ? Source["options"]["entities"][EntityName]["prototype"] : Source["options"]["entities"][EntityName]
 
-export type ForceEmptyType<T> = T extends undefined ? {} : T
-
-// export type FindOptionsReturnType<Options extends FindOptions<any, any>> =
-//     FindReturnType<Source, Entity, ForceEmptyType<Options["select"]>, ForceEmptyType<Options["relations"]>>
 
 export type Repository<
     Source extends AnyDataSource,
     Entity extends ValueOf<Source["options"]["entities"]>
 > = {
-    // x(a: keyof Entity["columns"]): keyof Entity["columns"]
-    // x<T extends keyof Entity["columns"]>(a: T): T
     find<SomeEntity extends Entity, Options extends FindOptions<Source, SomeEntity>>(options: Options): FindReturnType<
         Source,
         SomeEntity,
         ForceEmptyType<Options["select"]>,
         false
     >
-        // FindReturnType<DataSourceEntity<Source, EntityName>, Options>
 }
 
 export const DataSource = {
@@ -241,9 +236,6 @@ export type DriverColumnTypeOptions<Type> = {
     type: Type
 }
 
-// export type PostgresColumnTypes =
-//     "int" | "varchar" | "boolean"
-
 export type PostgresTypes = DriverTypes<{
     int: { type: number },
     varchar: { type: string },
@@ -285,50 +277,23 @@ export type EntityEmbeds<DriverTypes extends AnyDriverTypes> = {
 
 export const Postgres = {
     entity<
-        Columns extends EntityColumns<PostgresTypes>,
-        Relations extends EntityRelations,
-        Embeds extends EntityEmbeds<PostgresTypes>,
+        Columns extends EntityColumns<PostgresTypes> | undefined,
+        Relations extends EntityRelations | undefined,
+        Embeds extends EntityEmbeds<PostgresTypes> | undefined,
     >(options: {
-        columns: Columns
-        relations: Relations
-        embeds: Embeds
-    }): Entity<PostgresTypes, Columns, Relations, Embeds> {
+        columns?: Columns
+        relations?: Relations
+        embeds?: Embeds
+    }): Entity<
+        PostgresTypes,
+        ForceEmptyType<Columns>,
+        ForceEmptyType<Relations>,
+        ForceEmptyType<Embeds>
+    > {
         return undefined as any
     }
 }
 
-export type Photo = {
-    id: number
-    filename: string
-    album: Album
-}
-
-export type Album = {
-    id: number
-    name: string
-    photos: Photo[]
-}
-
-export class User {
-    id: number
-    name: string
-    age: number
-    online: boolean
-    avatar: Photo
-    photos: Photo[]
-    profile: Profile
-}
-
-export class Profile {
-    bio: string
-    maritalStatus: string
-    adult: boolean
-    kids: number
-    educationPhotos: Photo[]
-}
-
-// const UserEntity: UserEntityType = undefined as any
-// todo: there wasn't error when this wasn't connected in data source
 export const AlbumEntity = Postgres.entity({
     columns: {
         id: {
@@ -342,17 +307,9 @@ export const AlbumEntity = Postgres.entity({
         photos: {
             type: "one-to-many",
             inverse: "album",
-            reference: "PhotoEntity"
+            reference: "PhotoEntity" as const
         }
     },
-    embeds: {},
-    // uniques: [{
-    //     name: "UQ_1234",
-    //     columns: {
-    //         id: true
-    //         name: true
-    //     },
-    // }]
 })
 
 export const PhotoEntity = Postgres.entity({
@@ -371,10 +328,9 @@ export const PhotoEntity = Postgres.entity({
             reference: "AlbumEntity" as const
         }
     },
-    embeds: {},
 })
 
-export const ProfileEntity = Postgres.entity({
+export const ProfileEmbed = Postgres.entity({
     columns: {
         bio: {
             type: "varchar"
@@ -389,7 +345,6 @@ export const ProfileEntity = Postgres.entity({
             type: "int"
         },
     },
-    embeds: {},
     relations: {
         educationPhotos: {
             type: "one-to-many",
@@ -400,7 +355,6 @@ export const ProfileEntity = Postgres.entity({
 })
 
 export const UserEntity = Postgres.entity({
-    // model: model<User>(),
     columns: {
         id: {
             type: "int"
@@ -420,7 +374,7 @@ export const UserEntity = Postgres.entity({
         }
     },
     embeds: {
-        profile: ProfileEntity
+        profile: ProfileEmbed
     }
 })
 
@@ -432,16 +386,6 @@ const myDataSource = DataSource.create({
         AlbumEntity
     }
 })
-
-// const a = User
-// type keys = keyof typeof a.prototype
-
-// const a = { age: 1, name: "Umed", id: 2 }
-// const selection = { age: true, name: true }
-// type A = keyof typeof a
-// type B = keyof typeof selection
-// // type Checker<T1, T2> = { [P in T1 as T1[P]]: true }
-// type C = B extends A ? true : false
 
 const loadedUsers = myDataSource
     .manager
@@ -465,81 +409,6 @@ const loadedUsers = myDataSource
         }
     })
 console.log(loadedUsers);
-//
-// const loadedUserx = myDataSource
-//     .manager
-//     .repository("UserEntity")
-//     .find({
-//         select: {
-//             id: true,
-//             name: true,
-//             // photos: {
-//             //     id: true,
-//             //     filename: true,
-//             //     // album: {
-//             //     //     id: true
-//             //     // }
-//             // },
-//             profile: {
-//                 bio: true,
-//                 // educationPhotos: {
-//                 //     id: true,
-//                 //     // album: {
-//                 //     //     name: true
-//                 //     // }
-//                 // }
-//             }
-//         },
-//         // relations: {
-//         //     photos: true,
-//         //     // profile: {
-//         //     //     educationPhotos: true
-//         //     // }
-//         // }
-//         // relations: {
-//         //     photos: {
-//         //         album: {
-//         //             photos: {
-//         //                 album: true
-//         //             }
-//         //         }
-//         //     },
-//         //     avatar: {
-//         //         album: {
-//         //             photos: {
-//         //                 album: true
-//         //             }
-//         //         }
-//         //     }
-//         // }
-//     })
-// console.log(loadedUserx);
-//
-// const selection: EntityRelationSchema<
-//     typeof myDataSource["options"]["entities"],
-//     typeof UserEntity
-//     > = {
-//     photos: {
-//         album: {
-//             photos: {
-//                 album: {
-//                     photos: {
-//                         album: {
-//                             photos: {
-//                                 album: {
-//                                     photos: true
-//                                 }
-//                             }
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
-// console.log(selection);
-
-// console.log(loadedUser.photos[0].id)
 
 /**
  * Value of order by in find options.
@@ -558,48 +427,6 @@ export type FindOptionsOrder<E> = {
         E[P] extends Promise<infer R> ? FindOptionsOrder<R> :
         E[P] extends object ? FindOptionsOrder<E[P]> :
         FindOptionsOrderByValue;
-};
-
-/**
- * Filters and lefts only object-type properties from the object.
- * Used in relations find options.
- */
-export type FindOptionsRelationKeyName<E> = {
-    [K in keyof E]:
-    E[K] extends object ? K :
-        E[K] extends object|null ? K :
-            E[K] extends object|undefined ? K :
-                never
-}[keyof E];
-
-/**
- * Flattens array type in the object.
- * Used in relations find options.
- */
-export type FindOptionsRelationKey<E> = {
-    [P in keyof E]?:
-    E[P] extends (infer R)[] ? FindOptionsRelation<R> | boolean :
-        E[P] extends Promise<infer R> ? FindOptionsRelation<R> | boolean :
-            FindOptionsRelation<E[P]> | boolean;
-};
-
-/**
- * Relations find options.
- */
-export type FindOptionsRelation<E> = FindOptionsRelationKeyName<E>[]|FindOptionsRelationKey<Pick<E, FindOptionsRelationKeyName<E>>>;
-
-export type KeyOf<T> = T extends Function ? keyof T["prototype"] : keyof T
-
-/**
- * Select find options.
- */
-export type FindOptionsSelect<E> =
-    KeyOf<E>[]|{
-    [P in KeyOf<E>]?:
-    E[P] extends (infer R)[] ? FindOptionsSelect<R> | boolean :
-        E[P] extends Promise<infer R> ? FindOptionsSelect<R> | boolean :
-            E[P] extends object ? FindOptionsSelect<E[P]> | boolean :
-                boolean;
 };
 
 /**
