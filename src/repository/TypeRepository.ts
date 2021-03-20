@@ -4,23 +4,6 @@
  */
 import { AnyModel, model } from "./model";
 
-// export type ForcedType<T, Desired> = T extends Desired ? T : any
-
-/**
- * Helper type to mark non-selected properties as "never".
- */
-export type EntitySelectionTruthyKeysXXX<Selection, Relations = { }> = {
-    [P in keyof Selection]: Selection[P] extends false ? never : P
-} & {
-    [P in keyof Relations]: Relations[P] extends false ? never : P
-}
-
-/**
- * Helper type to mark non-selected properties as "never".
- */
-export type EntitySelectionTruthyKeys<Selection, Relations = { }> =
-    EntitySelectionTruthyKeysXXX<Selection, Relations>[keyof (Selection & Relations)]
-
 /**
  * Helper type to pick non-never properties of the selection.
  */
@@ -59,17 +42,17 @@ export type EntitySelectionPickRelations<Entity extends AnyEntity, Selection> = 
  * Schema for a EntitySelection, used to specify what properties of a Entity must be selected.
  */
 export type EntitySelectionSchema<
-    Entities extends EntityMap,
-    Entity extends AnyEntity
-> = {
+    Source extends AnyDataSource,
+    Entity extends ValueOf<Source["options"]["entities"]>
+> = /*{ "*"?: boolean } &*/ {
     [P in keyof Entity["columns"]]?: P extends keyof Entity["columns"] ? boolean : never
 } & {
     [P in keyof Entity["relations"]]?:
         Entity["relations"][P] extends EntityRelationItem<Entity["model"]> ?
-            EntitySelectionSchema<Entities, Entities[Entity["relations"][P]["reference"]]>
+            EntitySelectionSchema<Source, Source["options"]["entities"][Entity["relations"][P]["reference"]]>
         : never
 } & {
-    [P in keyof Entity["embeds"]]?: EntitySelectionSchema<Entities, Entity["embeds"][P]>
+    [P in keyof Entity["embeds"]]?: EntitySelectionSchema<Source, Entity["embeds"][P]>
 } /*{
     [P in keyof (Entity["columns"] & Entity["relations"] & Entity["embeds"])]?:
         P extends keyof Entity["columns"] ? boolean
@@ -151,71 +134,128 @@ export type Props<
     }
 }
 
-type UserEntitySelection = FindReturnType<typeof myDataSource, typeof UserEntity, {}, {}>
+// type UserEntitySelection = FindReturnType<typeof myDataSource, typeof UserEntity, {}, {}>
 
 export type FindReturnTypeItem<
     Source extends AnyDataSource,
-    Entity extends AnyEntity,
-    Selection extends EntitySelectionSchema<Source["options"]["entities"], Entity>, // | undefined,
-    Relations extends EntityRelationSchema<Source["options"]["entities"], Entity>, // | undefined,
+    Entity extends ValueOf<Source["options"]["entities"]>,
+    Selection extends EntitySelectionSchema<Source, Entity>, // | undefined,
     P extends keyof Props<Entity>,
-    Property extends Props<Entity>[P]["property"]
+    Property extends Props<Entity>[P]["property"],
+    ParentPartiallySelected extends boolean
 > = P extends keyof Entity["columns"] ?
     Entity["model"]["type"][P]
     : P extends keyof Entity["embeds"] ?
         Selection[Property] extends object ?
-            Relations extends EntityRelationSchema<Source["options"]["entities"], Entity>
-                ? FindReturnType<Source, Entity["embeds"][Property], Selection[Property], Relations[Property]>
-                : FindReturnType<Source, Entity["embeds"][Property], Selection[Property], Relations[Property]>
-            :
-            Relations extends EntityRelationSchema<Source["options"]["entities"], Entity>
-                ? FindReturnType<Source, Entity["embeds"][Property], {}, Relations[Property]>
-                : FindReturnType<Source, Entity["embeds"][Property], {}, {}>
-        : P extends keyof Entity["relations"] ?
-            // (Relations extends EntityRelationSchema<Source["options"]["entities"], Entity> ?
-            Relations[Property] extends object ?
-                Entity["relations"][Property]["type"] extends "many-to-many" | "one-to-many" ? // Entity["model"]["type"][P] extends Array<infer U> ?
-                    Selection[Property] extends object ?
-                        FindReturnType<Source, Source["options"]["entities"][Entity["relations"][Property]["reference"]], Selection[Property], Relations[Property]>[]
-                        :
-                        FindReturnType<Source, Source["options"]["entities"][Entity["relations"][Property]["reference"]], {}, Relations[Property]>[]
+           FindReturnType<Source, Entity["embeds"][Property], Selection[Property], ParentPartiallySelected>
+        :
+            FindReturnType<Source, Entity["embeds"][Property], {}, ParentPartiallySelected>
+    : P extends keyof Entity["relations"] ?
+        Selection[Property] extends object ?
+            Entity["relations"][Property]["type"] extends "many-to-many" | "one-to-many" ? // Entity["model"]["type"][P] extends Array<infer U> ?
+                Selection[Property] extends object ?
+                    FindReturnType<Source, Source["options"]["entities"][Entity["relations"][Property]["reference"]], Selection[Property], false>[]
                     :
-                    FindReturnType<Source, Source["options"]["entities"][Entity["relations"][Property]["reference"]], Selection[Property], Relations[Property]>
-                : Relations[Property] extends true ?
-                Entity["relations"][P]["type"] extends "many-to-many" | "one-to-many" ? // Entity["model"]["type"][P] extends Array<infer U> ?
-                    Selection[Property] extends object ?
-                        FindReturnType<Source, Source["options"]["entities"][Entity["relations"][Property]["reference"]], Selection[Property], {}>[]
-                        :
-                        FindReturnType<Source, Source["options"]["entities"][Entity["relations"][Property]["reference"]], {}, {}>[]
+                    FindReturnType<Source, Source["options"]["entities"][Entity["relations"][Property]["reference"]], {}, false>[]
+                :
+                FindReturnType<Source, Source["options"]["entities"][Entity["relations"][Property]["reference"]], Selection[Property], false>
+            : Selection[Property] extends true ?
+            Entity["relations"][P]["type"] extends "many-to-many" | "one-to-many" ? // Entity["model"]["type"][P] extends Array<infer U> ?
+                Selection[Property] extends object ?
+                    FindReturnType<Source, Source["options"]["entities"][Entity["relations"][Property]["reference"]], Selection[Property], false>[]
                     :
-                    FindReturnType<Source, Source["options"]["entities"][Entity["relations"][Property]["reference"]], Selection[Property], {}>
-                : never
-            // : Entity["model"]["type"][P]
-            /* : Relations extends true ? ({
-                [P in keyof EntitySelectionPickRelations<Entity, Relations>]:
-                Entity["relations"][P] extends EntityRelationItem<Entity["model"]> ?
-                    Entity["model"]["type"][P] extends Array<infer U> ?
-                        FindReturnType<Source, Source["options"]["entities"][Entity["relations"][P]["reference"]], Selection[P], Relations[P]>[]
-                        : Entity["model"]["type"][P] extends object ?
-                        FindReturnType<Source, Source["options"]["entities"][Entity["relations"][P]["reference"]], Selection[P], Relations[P]>
-                        : never
-                    : Entity["model"]["type"][P]
-            })*///: never)
+                    FindReturnType<Source, Source["options"]["entities"][Entity["relations"][Property]["reference"]], {}, false>[]
+                :
+                FindReturnType<Source, Source["options"]["entities"][Entity["relations"][Property]["reference"]], Selection[Property], false>
+        : never
+    : never
 
+export type KeysOf<Entity extends AnyEntity> = keyof Entity["columns"] // & Entity["embeds"]
+
+// type GetDefined<TypesMap extends { [key: string]: any }> = keyof NonNever<
+//     { [T in keyof TypesMap]: TypesMap[T] extends undefined ? never : TypesMap[T] }
+//     >;
+
+/**
+ * Helper type to mark non-selected properties as "never".
+ */
+export type EntitySelectionTruthyKeys222<
+    Source extends AnyDataSource,
+    Entity extends ValueOf<Source["options"]["entities"]>,
+    Selection extends EntitySelectionSchema<Source, Entity>> =
+    {
+        [P in keyof Selection]:
+            Selection[P] extends true ?
+                P extends keyof Entity["columns"] ? P
+                : P extends keyof Entity["relations"] ? P
+                : never
             : never
+    }[keyof Selection]
+
+export type OnlyColumnKeys<
+    Selection,
+    Entity extends AnyEntity
+> = {
+    [P in keyof Selection]:
+        Selection[P] extends true ?
+            P extends keyof Entity["columns"] ? P : never
+        : Selection[P] extends object ?
+            P extends keyof Entity["embeds"] ?
+                OnlyColumnKeys<Selection[P], Entity["embeds"][P]> extends never ? never : P
+            : never
+        : never
+}[keyof Selection]
+
+/**
+ * Helper type to mark non-selected properties as "never".
+ */
+export type EntitySelectionTruthyKeys<Selection> = {
+    [P in keyof Selection]: Selection[P] extends false ? never : P
+}[keyof Selection]
+
+/**
+ * Helper type to mark non-selected properties as "never".
+ */
+export type EntitySelectionAllColumns<
+    Source extends AnyDataSource,
+    Entity extends ValueOf<Source["options"]["entities"]>,
+    Selection extends EntitySelectionSchema<Source, Entity>,
+    > =  keyof (Entity["columns"] & {
+    [P in keyof Entity["relations"] as
+        Selection[P] extends true ? P
+            : Selection[P] extends object ? P
+            : never
+    ]: true
+}  & Entity["embeds"])
+
+// : P extends keyof Entity["embeds"] ?
+//     Selection[Property] extends object ?
+//     FindReturnType<Source, Entity["embeds"][Property], Selection[Property]>
+//     :
+//     FindReturnType<Source, Entity["embeds"][Property], {}>
+//     )
+// // {
+// //     [P in keyof Selection]: P // Selection[P] extends false ? never : P
+// }[keyof Selection]
+
 
 export type FindReturnType<
     Source extends AnyDataSource,
-    Entity extends AnyEntity,
-    Selection extends EntitySelectionSchema<Source["options"]["entities"], Entity>, // | undefined,
-    Relations extends EntityRelationSchema<Source["options"]["entities"], Entity> // | undefined,
-> = keyof Selection extends never ? {
-    [P in keyof Props<Entity>]:
-    FindReturnTypeItem<Source, Entity, Selection, Relations, P, Props<Entity>[P]["property"]>
-} : {
-    [P in keyof Props<Entity> as P extends EntitySelectionTruthyKeys<Selection, Relations> ? P : never]:
-        FindReturnTypeItem<Source, Entity, Selection, Relations, P, Props<Entity>[P]["property"]>
-}
+    Entity extends ValueOf<Source["options"]["entities"]>,
+    Selection extends EntitySelectionSchema<Source, Entity>, // | undefined,
+    ParentPartiallySelected extends boolean
+> =  ParentPartiallySelected extends true ? // true : false
+    {
+        [P in keyof Props<Entity> as P extends EntitySelectionTruthyKeys<Selection> ? P : never]:
+        FindReturnTypeItem<Source, Entity, Selection, P, Props<Entity>[P]["property"], true>
+    } : OnlyColumnKeys<Selection, Entity> extends never ? // true : false // means everything selected (no columns specified in selection)
+    {
+        [P in keyof Props<Entity> as P extends EntitySelectionAllColumns<Source, Entity, Selection> ? P : never]:
+        FindReturnTypeItem<Source, Entity, Selection, P, Props<Entity>[P]["property"], false>
+    } : {
+        [P in keyof Props<Entity> as P extends EntitySelectionTruthyKeys<Selection> ? P : never]:
+        FindReturnTypeItem<Source, Entity, Selection, P, Props<Entity>[P]["property"], true>
+    }
     /*& {
         [P in keyof Entity["embeds"] as P extends EntitySelectionTruthyKeys<Selection, Relations> ? P : never]:
             Selection[P] extends object ?
@@ -280,10 +320,10 @@ export type Manager<Source extends AnyDataSource> = {
 
 export type FindOptions<
     Source extends AnyDataSource,
-    Entity extends AnyEntity
+    Entity extends ValueOf<Source["options"]["entities"]>
 > = {
-  select?: EntitySelectionSchema<Source["options"]["entities"], Entity>
-  relations?: EntityRelationSchema<Source["options"]["entities"], Entity>
+  select?: EntitySelectionSchema<Source, Entity>
+  // relations?: EntityRelationSchema<Source["options"]["entities"], Entity>
   // relations?: FindOptionsRelation<Entity>
   // where?: FindOptionsWhere<Entity>
   // order?: FindOptionsOrder<Entity>
@@ -300,14 +340,16 @@ export type ForceEmptyType<T> = T extends undefined ? {} : T
 
 export type Repository<
     Source extends AnyDataSource,
-    Entity extends AnyEntity
+    Entity extends ValueOf<Source["options"]["entities"]>
 > = {
-    find<Options extends FindOptions<Source, Entity>>(options: Options): FindReturnType<
+    // x(a: keyof Entity["columns"]): keyof Entity["columns"]
+    // x<T extends keyof Entity["columns"]>(a: T): T
+    find<SomeEntity extends Entity, Options extends FindOptions<Source, SomeEntity>>(options: Options): FindReturnType<
         Source,
-        Entity,
+        SomeEntity,
         ForceEmptyType<Options["select"]>,
-        ForceEmptyType<Options["relations"]
-    >>
+        false
+    >
         // FindReturnType<DataSourceEntity<Source, EntityName>, Options>
 }
 
@@ -589,58 +631,81 @@ const myDataSource = DataSource.create({
 // const a = User
 // type keys = keyof typeof a.prototype
 
-const loadedUserx = myDataSource
+// const a = { age: 1, name: "Umed", id: 2 }
+// const selection = { age: true, name: true }
+// type A = keyof typeof a
+// type B = keyof typeof selection
+// // type Checker<T1, T2> = { [P in T1 as T1[P]]: true }
+// type C = B extends A ? true : false
+//
+const loadedUsers = myDataSource
     .manager
     .repository("UserEntity")
     .find({
         select: {
-            id: true,
-            name: true,
+            // id: true,
+            // name: true,
             photos: {
-                id: true,
-                filename: true,
-                album: {
-                    id: true
-                }
+                id: true
             },
             profile: {
                 bio: true,
                 educationPhotos: {
-                    id: true,
-                    album: {
-                        name: true
-                    }
-                }
-            }
-        },
-        relations: {
-            photos: {
-                album: true
-            },
-            profile: {
-                educationPhotos: {
-                    album: true
+                    id: true
                 }
             }
         }
-        // relations: {
-        //     photos: {
-        //         album: {
-        //             photos: {
-        //                 album: true
-        //             }
-        //         }
-        //     },
-        //     avatar: {
-        //         album: {
-        //             photos: {
-        //                 album: true
-        //             }
-        //         }
-        //     }
-        // }
     })
-console.log(loadedUserx);
+console.log(loadedUsers.avatar);
+//
+// const loadedUserx = myDataSource
+//     .manager
+//     .repository("UserEntity")
+//     .find({
+//         select: {
+//             id: true,
+//             name: true,
+//             // photos: {
+//             //     id: true,
+//             //     filename: true,
+//             //     // album: {
+//             //     //     id: true
+//             //     // }
+//             // },
+//             profile: {
+//                 bio: true,
+//                 // educationPhotos: {
+//                 //     id: true,
+//                 //     // album: {
+//                 //     //     name: true
+//                 //     // }
+//                 // }
+//             }
+//         },
+//         // relations: {
+//         //     photos: true,
+//         //     // profile: {
+//         //     //     educationPhotos: true
+//         //     // }
+//         // }
+//         // relations: {
+//         //     photos: {
+//         //         album: {
+//         //             photos: {
+//         //                 album: true
+//         //             }
+//         //         }
+//         //     },
+//         //     avatar: {
+//         //         album: {
+//         //             photos: {
+//         //                 album: true
+//         //             }
+//         //         }
+//         //     }
+//         // }
+//     })
+// console.log(loadedUserx);
 //
 // const selection: EntityRelationSchema<
 //     typeof myDataSource["options"]["entities"],
