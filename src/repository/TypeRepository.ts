@@ -143,8 +143,14 @@ export type FindReturnTypeItem<
     P extends keyof Props<Entity>,
     Property extends Props<Entity>[P]["property"],
     ParentPartiallySelected extends boolean
-> = P extends keyof Entity["columns"] ?
-    Entity["model"]["type"][P]
+> =
+    // if property is a column, just return it's type in the model
+    // if model isn't defined, we infer type from a driver column types defined in the entity
+    P extends keyof Entity["columns"] ?
+        Entity["model"] extends never ?
+            Entity["driverTypes"]["columnTypes"][Entity["columns"][P]["type"]]["type"]  // todo: also need to consider transformers
+        :
+            Entity["model"]["type"][P]
     : P extends keyof Entity["embeds"] ?
         Selection[Property] extends object ?
            FindReturnType<Source, Entity["embeds"][Property], Selection[Property], ParentPartiallySelected>
@@ -343,17 +349,20 @@ export const DataSource = {
 }
 
 export type AnyEntity<Model extends AnyModel = AnyModel> = Entity<
+    any,
     Model,
     EntityColumns<AnyDriverTypes, Model>,
     EntityRelations<Model>,
     EntityEmbeds<AnyDriverTypes, Model>
 >
 export type Entity<
+    GivenDriverTypes extends DriverTypes<any>,
     Model extends AnyModel,
     Columns extends EntityColumns<AnyDriverTypes, Model>,
     Relations extends EntityRelations<Model>,
     Embeds extends EntityEmbeds<AnyDriverTypes, Model>
 > = {
+    driverTypes: GivenDriverTypes
     model: Model
     columns: Columns
     relations: Relations
@@ -361,18 +370,26 @@ export type Entity<
 }
 
 export type AnyDriverTypes = DriverTypes<any>
-export type DriverTypes<
-    ColumnTypes extends string
-> = {
+export type DriverTypes<ColumnTypes extends DriverColumnTypes> = {
     columnTypes: ColumnTypes
 }
 
-export type PostgresColumnTypes =
-    "int" | "varchar" | "boolean"
+export type DriverColumnTypes = {
+    [databaseTypeName: string]: DriverColumnTypeOptions<any>
+}
 
-export type PostgresTypes = DriverTypes<
-    PostgresColumnTypes
->
+export type DriverColumnTypeOptions<Type> = {
+    type: Type
+}
+
+// export type PostgresColumnTypes =
+//     "int" | "varchar" | "boolean"
+
+export type PostgresTypes = DriverTypes<{
+    int: { type: number },
+    varchar: { type: string },
+    boolean: { type: boolean },
+}>
 
 export type AnyEntityColumns = EntityColumns<AnyDriverTypes, AnyModel>
 export type EntityColumns<
@@ -381,7 +398,7 @@ export type EntityColumns<
 > = {
     // [P in keyof Model["type"]]?: {
     [key: string]: {
-        type: DriverTypes["columnTypes"]
+        type: keyof DriverTypes["columnTypes"]
     }
 }
 
@@ -462,7 +479,7 @@ export const Postgres = {
         columns: Columns
         relations: Relations
         embeds: Embeds
-    }): Entity<Model, Columns, Relations, Embeds> {
+    }): Entity<PostgresTypes, Model, Columns, Relations, Embeds> {
         return undefined as any
     }
 }
