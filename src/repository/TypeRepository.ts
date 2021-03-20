@@ -13,10 +13,7 @@ export type EntitySelectionSchema<
 > = /*{ "*"?: boolean } &*/ {
     [P in keyof Entity["columns"]]?: P extends keyof Entity["columns"] ? boolean : never
 } & {
-    [P in keyof Entity["relations"]]?:
-        Entity["relations"][P] extends EntityRelationItem<Entity["model"]> ?
-            EntitySelectionSchema<Source, Source["options"]["entities"][Entity["relations"][P]["reference"]]> | boolean
-        : never
+    [P in keyof Entity["relations"]]?: boolean | EntitySelectionSchema<Source, Source["options"]["entities"][Entity["relations"][P]["reference"]]>
 } & {
     [P in keyof Entity["embeds"]]?: EntitySelectionSchema<Source, Entity["embeds"][P]>
 }
@@ -51,10 +48,10 @@ export type FindReturnTypeProperty<
     // if property is a column, just return it's type in the model
     // if model isn't defined, we infer type from a driver column types defined in the entity
     P extends keyof Entity["columns"] ?
-        Entity["model"] extends never ?
-            Entity["driverTypes"]["columnTypes"][Entity["columns"][P]["type"]]["type"]  // todo: also need to consider transformers
-        :
+        Entity["model"] extends object ?
             Entity["model"]["type"][P]
+        :
+            Entity["driverTypes"]["columnTypes"][Entity["columns"][P]["type"]]["type"]  // todo: also need to consider transformers
 
     // if selected property is an embed, we just go recursively
     : P extends keyof Entity["embeds"] ?
@@ -98,7 +95,10 @@ export type OnlyColumnKeys<
  * Helper type to mark non-selected properties as "never".
  */
 export type EntitySelectionTruthyKeys<Selection> = {
-    [P in keyof Selection]: Selection[P] extends false ? never : P
+    [P in keyof Selection]:
+        Selection[P] extends true ? P
+        : Selection[P] extends object ? P
+        : never
 }[keyof Selection]
 
 /**
@@ -220,16 +220,16 @@ export const DataSource = {
     }
 }
 
-export type AnyEntity<Model extends AnyModel = AnyModel> = Entity<
+export type AnyEntity = Entity<
     any,
-    Model,
-    EntityColumns<AnyDriverTypes, Model>,
-    EntityRelations<Model>,
-    EntityEmbeds<AnyDriverTypes, Model>
+    AnyModel | undefined,
+    EntityColumns<AnyDriverTypes, AnyModel>,
+    EntityRelations<AnyModel>,
+    EntityEmbeds<AnyDriverTypes, AnyModel>
 >
 export type Entity<
     GivenDriverTypes extends DriverTypes<any>,
-    Model extends AnyModel,
+    Model extends AnyModel | undefined,
     Columns extends EntityColumns<AnyDriverTypes, Model>,
     Relations extends EntityRelations<Model>,
     Embeds extends EntityEmbeds<AnyDriverTypes, Model>
@@ -266,7 +266,7 @@ export type PostgresTypes = DriverTypes<{
 export type AnyEntityColumns = EntityColumns<AnyDriverTypes, AnyModel>
 export type EntityColumns<
     DriverTypes extends AnyDriverTypes,
-    Model extends AnyModel
+    Model extends AnyModel | undefined
 > = {
     // [P in keyof Model["type"]]?: {
     [key: string]: {
@@ -277,77 +277,43 @@ export type EntityColumns<
 export type EntityRelationTypes = "one-to-one" | "many-to-one" | "one-to-many" | "many-to-many"
 export type AnyEntityRelations = EntityRelations<AnyModel>
 export type EntityRelationItem<
-    Model extends AnyModel,
-    // Relation extends keyof Model["type"]
+    Model extends AnyModel | undefined,
+    Reference extends string
 > = {
-    type: "one-to-many" | "many-to-many" | "one-to-one" | "many-to-one"
+    type: "one-to-many"
+    inverse: string
+    reference: Reference
+} | {
+    type: "many-to-many"
     inverse?: string
-    reference: string
-} /*Model["type"][Relation] extends Array<infer U> ?
-    *//*{
-        type: "one-to-many"
-        inverse: keyof Model["type"][Relation][0] // U doesn't work here, looks like a TypeScript bug
-        reference: string
-    } | {
-        type: "many-to-many"
-        inverse?: keyof Model["type"][Relation][0] // U doesn't work here, looks like a TypeScript bug
-        reference: string
-    } | // : Model["type"][Relation] extends object ?
-{
-        type: "one-to-one"
-        inverse?: keyof Model["type"][Relation]
-        reference: string
-    } | {
-        type: "many-to-one"
-        inverse?: keyof Model["type"][Relation]
-        reference: string
-     } *///: never
+    reference: Reference
+} | {
+    type: "one-to-one"
+    inverse?: string
+    reference: Reference
+} | {
+    type: "many-to-one"
+    inverse?: string
+    reference: Reference
+ }
 
-export type EntityRelations<Model extends AnyModel> = {
-    [key: string]:  EntityRelationItem<Model>
-    // [P in keyof Model["type"]]?: EntityRelationItem<Model, P>
+export type EntityRelations<Model extends AnyModel | undefined> = {
+    [key: string]: EntityRelationItem<Model, string>
 }
 
 export type AnyEntityEmbeds = EntityEmbeds<AnyDriverTypes, AnyModel>
-export type EntityEmbeds<DriverTypes extends AnyDriverTypes, TModel extends AnyModel> = {
+export type EntityEmbeds<DriverTypes extends AnyDriverTypes, Model extends AnyModel | undefined> = {
     [key: string]: AnyEntity
-    // [P in keyof TModel["type"]]?:
-    //     TModel["type"][P] extends Array<infer U> ?
-    //         Entity<
-    //             Model<TModel["type"][P][0]>,
-    //             EntityColumns<DriverTypes, Model<TModel["type"][P][0]>>,
-    //             EntityRelations<Model<TModel["type"][P][0]>>,
-    //             EntityEmbeds<DriverTypes, Model<TModel["type"][P][0]>>
-    //         >
-    //         // {
-    //         //     columns: EntityColumns<DriverTypes, Model["type"][P][0]>
-    //         // }
-    //     : TModel["type"][P] extends object ?             Entity<
-    //             Model<TModel["type"][P]>,
-    //             EntityColumns<DriverTypes, Model<TModel["type"][P]>>,
-    //             EntityRelations<Model<TModel["type"][P]>>,
-    //             EntityEmbeds<DriverTypes, Model<TModel["type"][P]>>
-    //             >
-    //         : never
 }
-
-// export type AnyEntityOptions<Source extends AnyDataSource> = EntityOptions<Source, _, _>
-// export type EntityOptions<
-//     Columns extends EntityColumns,
-//     Relations extends EntityRelations
-//     > = {
-//
-// }
-
 
 export const Postgres = {
     entity<
-        Model extends AnyModel,
+        Model extends AnyModel | undefined,
         Columns extends EntityColumns<PostgresTypes, Model>,
         Relations extends EntityRelations<Model>,
         Embeds extends EntityEmbeds<PostgresTypes, Model>,
     >(options: {
-        model: Model
+        model?: Model
         columns: Columns
         relations: Relations
         embeds: Embeds
@@ -402,10 +368,17 @@ export const AlbumEntity = Postgres.entity({
         photos: {
             type: "one-to-many",
             inverse: "album",
-            reference: "PhotoEntity" as const
+            reference: "PhotoEntity"
         }
     },
     embeds: {},
+    // uniques: [{
+    //     name: "UQ_1234",
+    //     columns: {
+    //         id: true
+    //         name: true
+    //     },
+    // }]
 })
 
 export const PhotoEntity = Postgres.entity({
@@ -416,7 +389,7 @@ export const PhotoEntity = Postgres.entity({
         },
         filename: {
             type: "varchar"
-        }
+        },
     },
     relations: {
         album: {
@@ -455,7 +428,7 @@ export const ProfileEntity = Postgres.entity({
 })
 
 export const UserEntity = Postgres.entity({
-    model: model<User>(),
+    // model: model<User>(),
     columns: {
         id: {
             type: "int"
@@ -503,11 +476,13 @@ const loadedUsers = myDataSource
     .repository("UserEntity")
     .find({
         select: {
-            // id: true,
+            id: true,
             // name: true,
             photos: {
-                // id: true,
-                album: true
+                id: true,
+                album: {
+                    photos: true
+                }
             },
             profile: {
                 bio: true,
