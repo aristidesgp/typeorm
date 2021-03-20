@@ -1,10 +1,4 @@
 /**
- * If given T type is exactly a Desired one, returns just this T type.
- * Otherwise returns "any". Used to for force typing.
- */
-import { AnyModel, model } from "./model";
-
-/**
  * Schema for a EntitySelection, used to specify what properties of a Entity must be selected.
  */
 export type EntitySelectionSchema<
@@ -45,13 +39,9 @@ export type FindReturnTypeProperty<
     Property extends Props<Entity>[P]["property"],
     ParentPartiallySelected extends boolean
 > =
-    // if property is a column, just return it's type in the model
-    // if model isn't defined, we infer type from a driver column types defined in the entity
+    // if property is a column, just return it's type inferred from a driver column types defined in the entity
     P extends keyof Entity["columns"] ?
-        Entity["model"] extends object ?
-            Entity["model"]["type"][P]
-        :
-            Entity["driverTypes"]["columnTypes"][Entity["columns"][P]["type"]]["type"]  // todo: also need to consider transformers
+        Entity["driverTypes"]["columnTypes"][Entity["columns"][P]["type"]]["type"]  // todo: also need to consider transformers
 
     // if selected property is an embed, we just go recursively
     : P extends keyof Entity["embeds"] ?
@@ -222,20 +212,17 @@ export const DataSource = {
 
 export type AnyEntity = Entity<
     any,
-    AnyModel | undefined,
-    EntityColumns<AnyDriverTypes, AnyModel>,
-    EntityRelations<AnyModel>,
-    EntityEmbeds<AnyDriverTypes, AnyModel>
+    EntityColumns<AnyDriverTypes>,
+    EntityRelations,
+    EntityEmbeds<AnyDriverTypes>
 >
 export type Entity<
     GivenDriverTypes extends DriverTypes<any>,
-    Model extends AnyModel | undefined,
-    Columns extends EntityColumns<AnyDriverTypes, Model>,
-    Relations extends EntityRelations<Model>,
-    Embeds extends EntityEmbeds<AnyDriverTypes, Model>
+    Columns extends EntityColumns<AnyDriverTypes>,
+    Relations extends EntityRelations,
+    Embeds extends EntityEmbeds<AnyDriverTypes>
 > = {
     driverTypes: GivenDriverTypes
-    model: Model
     columns: Columns
     relations: Relations
     embeds: Embeds
@@ -263,61 +250,49 @@ export type PostgresTypes = DriverTypes<{
     boolean: { type: boolean },
 }>
 
-export type AnyEntityColumns = EntityColumns<AnyDriverTypes, AnyModel>
-export type EntityColumns<
-    DriverTypes extends AnyDriverTypes,
-    Model extends AnyModel | undefined
-> = {
-    // [P in keyof Model["type"]]?: {
+export type EntityColumns<DriverTypes extends AnyDriverTypes> = {
     [key: string]: {
         type: keyof DriverTypes["columnTypes"]
     }
 }
 
 export type EntityRelationTypes = "one-to-one" | "many-to-one" | "one-to-many" | "many-to-many"
-export type AnyEntityRelations = EntityRelations<AnyModel>
-export type EntityRelationItem<
-    Model extends AnyModel | undefined,
-    Reference extends string
-> = {
+export type EntityRelationItem = {
     type: "one-to-many"
     inverse: string
-    reference: Reference
+    reference: string
 } | {
     type: "many-to-many"
     inverse?: string
-    reference: Reference
+    reference: string
 } | {
     type: "one-to-one"
     inverse?: string
-    reference: Reference
+    reference: string
 } | {
     type: "many-to-one"
     inverse?: string
-    reference: Reference
+    reference: string
  }
 
-export type EntityRelations<Model extends AnyModel | undefined> = {
-    [key: string]: EntityRelationItem<Model, string>
+export type EntityRelations = {
+    [key: string]: EntityRelationItem
 }
 
-export type AnyEntityEmbeds = EntityEmbeds<AnyDriverTypes, AnyModel>
-export type EntityEmbeds<DriverTypes extends AnyDriverTypes, Model extends AnyModel | undefined> = {
+export type EntityEmbeds<DriverTypes extends AnyDriverTypes> = {
     [key: string]: AnyEntity
 }
 
 export const Postgres = {
     entity<
-        Model extends AnyModel | undefined,
-        Columns extends EntityColumns<PostgresTypes, Model>,
-        Relations extends EntityRelations<Model>,
-        Embeds extends EntityEmbeds<PostgresTypes, Model>,
+        Columns extends EntityColumns<PostgresTypes>,
+        Relations extends EntityRelations,
+        Embeds extends EntityEmbeds<PostgresTypes>,
     >(options: {
-        model?: Model
         columns: Columns
         relations: Relations
         embeds: Embeds
-    }): Entity<PostgresTypes, Model, Columns, Relations, Embeds> {
+    }): Entity<PostgresTypes, Columns, Relations, Embeds> {
         return undefined as any
     }
 }
@@ -355,7 +330,6 @@ export class Profile {
 // const UserEntity: UserEntityType = undefined as any
 // todo: there wasn't error when this wasn't connected in data source
 export const AlbumEntity = Postgres.entity({
-    model: model<Album>(),
     columns: {
         id: {
             type: "int"
@@ -382,7 +356,6 @@ export const AlbumEntity = Postgres.entity({
 })
 
 export const PhotoEntity = Postgres.entity({
-    model: model<Photo>(),
     columns: {
         id: {
             type: "int"
@@ -402,7 +375,6 @@ export const PhotoEntity = Postgres.entity({
 })
 
 export const ProfileEntity = Postgres.entity({
-    model: model<Profile>(),
     columns: {
         bio: {
             type: "varchar"
