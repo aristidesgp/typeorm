@@ -5,40 +5,6 @@
 import { AnyModel, model } from "./model";
 
 /**
- * Helper type to pick non-never properties of the selection.
- */
-/*export type EntitySelectionPick<Entity extends AnyEntity, Selection> = Pick<
-    Entity["model"]["type"],
-    {
-        [P in keyof Entity["model"]["type"]]:
-        P extends EntitySelectionTruthyKeys<Selection> ?
-            P extends keyof Entity["columns"] ? P
-            : P extends keyof Entity["relations"] ? P
-        : never : never
-    }[keyof Entity["model"]["type"]]
-    >*/
-
-export type EntitySelectionPickColumns<Entity extends AnyEntity, Selection> = Pick<
-    Entity["model"]["type"],
-    {
-        [P in keyof Entity["model"]["type"]]:
-            P extends EntitySelectionTruthyKeys<Selection> ?
-                P extends keyof Entity["columns"] ? P
-            : never : never
-    }[keyof Entity["model"]["type"]]
-    >
-
-export type EntitySelectionPickRelations<Entity extends AnyEntity, Selection> = Pick<
-    Entity["model"]["type"],
-    {
-        [P in keyof Entity["model"]["type"]]:
-        P extends EntitySelectionTruthyKeys<Selection> ?
-            P extends keyof Entity["relations"] ? P
-        : never : never
-    }[keyof Entity["model"]["type"]]
-    >
-
-/**
  * Schema for a EntitySelection, used to specify what properties of a Entity must be selected.
  */
 export type EntitySelectionSchema<
@@ -49,71 +15,11 @@ export type EntitySelectionSchema<
 } & {
     [P in keyof Entity["relations"]]?:
         Entity["relations"][P] extends EntityRelationItem<Entity["model"]> ?
-            EntitySelectionSchema<Source, Source["options"]["entities"][Entity["relations"][P]["reference"]]>
+            EntitySelectionSchema<Source, Source["options"]["entities"][Entity["relations"][P]["reference"]]> | boolean
         : never
 } & {
     [P in keyof Entity["embeds"]]?: EntitySelectionSchema<Source, Entity["embeds"][P]>
-} /*{
-    [P in keyof (Entity["columns"] & Entity["relations"] & Entity["embeds"])]?:
-        P extends keyof Entity["columns"] ? boolean
-        : P extends keyof Entity["relations"] ?
-            Entity["relations"][P] extends EntityRelationItem<Entity["model"], P> ?
-                EntitySelectionSchema<Entities, Entities[Entity["relations"][P]["reference"]]>
-            : never
-        : P extends keyof Entity["embeds"] ?
-            Entity["embeds"][P] extends AnyEntity ?
-                EntitySelectionSchema<Entities, Entity["embeds"][P]>
-            : never
-        : never
-}*/
-//
-// & (Entity["embeds"] extends EntityEmbeds<AnyDriverTypes, AnyEntity["model"]> ? {
-//     [P in keyof Entity["embeds"]]?:
-//         Entity["embeds"][P] extends AnyEntity ?
-//             EntitySelectionSchema<Entities, Entity["embeds"][P]> // todo
-//         : never
-// } : {})
-
-export type EntityRelationSchema<
-    Entities extends EntityMap,
-    Entity extends AnyEntity
-> = {
-    [P in keyof Entity["relations"]]?:
-        Entity["relations"][P] extends EntityRelationItem<Entity["model"]> ?
-            EntityRelationSchema<Entities, Entities[Entity["relations"][P]["reference"]]> | boolean
-        : never
-} & {
-    [P in keyof Entity["embeds"]]?:
-    // Relations extends EntityRelationSchema<Source["options"]["entities"], Entity> ?
-    EntityRelationSchema<Entities, Entity["embeds"][P]> | boolean
-    // : never
 }
-
-/*export type FindReturnTypeRelations<
-    Source extends AnyDataSource,
-    Entity extends AnyEntity,
-    Selection extends EntitySelectionSchema<Source["options"]["entities"], Entity> | undefined,
-    Relations extends EntityRelationSchema<Source["options"]["entities"], Entity> | undefined,
-    > =
-(Relations extends EntityRelationSchema<Source["options"]["entities"], Entity> ? ({
-    [P in keyof EntitySelectionPickRelations<Entity, Relations>]:
-    Entity["relations"][P] extends EntityRelationItem<Entity["model"]> ?
-        Entity["model"]["type"][P] extends Array<infer U> ?
-            FindReturnType<Source, Source["options"]["entities"][Entity["relations"][P]["reference"]], Selection[P], Relations[P]>[]
-            : Entity["model"]["type"][P] extends object ?
-            FindReturnType<Source, Source["options"]["entities"][Entity["relations"][P]["reference"]], Selection[P], Relations[P]>
-            : never
-        : Entity["model"]["type"][P]
-}) : Relations extends true ? ({
-    [P in keyof EntitySelectionPickRelations<Entity, Relations>]:
-    Entity["relations"][P] extends EntityRelationItem<Entity["model"]> ?
-        Entity["model"]["type"][P] extends Array<infer U> ?
-            FindReturnType<Source, Source["options"]["entities"][Entity["relations"][P]["reference"]], Selection[P], Relations[P]>[]
-            : Entity["model"]["type"][P] extends object ?
-            FindReturnType<Source, Source["options"]["entities"][Entity["relations"][P]["reference"]], Selection[P], Relations[P]>
-            : never
-        : Entity["model"]["type"][P]
-}): {  })*/
 
 export type Props<
     Entity extends AnyEntity
@@ -134,9 +40,7 @@ export type Props<
     }
 }
 
-// type UserEntitySelection = FindReturnType<typeof myDataSource, typeof UserEntity, {}, {}>
-
-export type FindReturnTypeItem<
+export type FindReturnTypeProperty<
     Source extends AnyDataSource,
     Entity extends ValueOf<Source["options"]["entities"]>,
     Selection extends EntitySelectionSchema<Source, Entity>, // | undefined,
@@ -151,52 +55,30 @@ export type FindReturnTypeItem<
             Entity["driverTypes"]["columnTypes"][Entity["columns"][P]["type"]]["type"]  // todo: also need to consider transformers
         :
             Entity["model"]["type"][P]
+
+    // if selected property is an embed, we just go recursively
     : P extends keyof Entity["embeds"] ?
-        Selection[Property] extends object ?
-           FindReturnType<Source, Entity["embeds"][Property], Selection[Property], ParentPartiallySelected>
-        :
-            FindReturnType<Source, Entity["embeds"][Property], {}, ParentPartiallySelected>
+        FindReturnType<Source, Entity["embeds"][Property], Selection[Property], ParentPartiallySelected>
+
+    // if selected property is relation
     : P extends keyof Entity["relations"] ?
+
+        // relation selection can be defined two ways:
+        // 1. we can select some properties of the related object
         Selection[Property] extends object ?
             Entity["relations"][Property]["type"] extends "many-to-many" | "one-to-many" ? // Entity["model"]["type"][P] extends Array<infer U> ?
-                Selection[Property] extends object ?
-                    FindReturnType<Source, Source["options"]["entities"][Entity["relations"][Property]["reference"]], Selection[Property], false>[]
-                    :
-                    FindReturnType<Source, Source["options"]["entities"][Entity["relations"][Property]["reference"]], {}, false>[]
-                :
+                FindReturnType<Source, Source["options"]["entities"][Entity["relations"][Property]["reference"]], Selection[Property], false>[]
+            :
                 FindReturnType<Source, Source["options"]["entities"][Entity["relations"][Property]["reference"]], Selection[Property], false>
-            : Selection[Property] extends true ?
+
+        // 2. we can select the whole related object (means its columns) by using relation: true
+        : Selection[Property] extends true ?
             Entity["relations"][P]["type"] extends "many-to-many" | "one-to-many" ? // Entity["model"]["type"][P] extends Array<infer U> ?
-                Selection[Property] extends object ?
-                    FindReturnType<Source, Source["options"]["entities"][Entity["relations"][Property]["reference"]], Selection[Property], false>[]
-                    :
-                    FindReturnType<Source, Source["options"]["entities"][Entity["relations"][Property]["reference"]], {}, false>[]
-                :
-                FindReturnType<Source, Source["options"]["entities"][Entity["relations"][Property]["reference"]], Selection[Property], false>
+                FindReturnType<Source, Source["options"]["entities"][Entity["relations"][Property]["reference"]], {}, false>[]
+            :
+                FindReturnType<Source, Source["options"]["entities"][Entity["relations"][Property]["reference"]], {}, false>
         : never
     : never
-
-export type KeysOf<Entity extends AnyEntity> = keyof Entity["columns"] // & Entity["embeds"]
-
-// type GetDefined<TypesMap extends { [key: string]: any }> = keyof NonNever<
-//     { [T in keyof TypesMap]: TypesMap[T] extends undefined ? never : TypesMap[T] }
-//     >;
-
-/**
- * Helper type to mark non-selected properties as "never".
- */
-export type EntitySelectionTruthyKeys222<
-    Source extends AnyDataSource,
-    Entity extends ValueOf<Source["options"]["entities"]>,
-    Selection extends EntitySelectionSchema<Source, Entity>> =
-    {
-        [P in keyof Selection]:
-            Selection[P] extends true ?
-                P extends keyof Entity["columns"] ? P
-                : P extends keyof Entity["relations"] ? P
-                : never
-            : never
-    }[keyof Selection]
 
 export type OnlyColumnKeys<
     Selection,
@@ -229,20 +111,10 @@ export type EntitySelectionAllColumns<
     > =  keyof (Entity["columns"] & {
     [P in keyof Entity["relations"] as
         Selection[P] extends true ? P
-            : Selection[P] extends object ? P
-            : never
+        : Selection[P] extends object ? P
+        : never
     ]: true
 }  & Entity["embeds"])
-
-// : P extends keyof Entity["embeds"] ?
-//     Selection[Property] extends object ?
-//     FindReturnType<Source, Entity["embeds"][Property], Selection[Property]>
-//     :
-//     FindReturnType<Source, Entity["embeds"][Property], {}>
-//     )
-// // {
-// //     [P in keyof Selection]: P // Selection[P] extends false ? never : P
-// }[keyof Selection]
 
 
 export type FindReturnType<
@@ -256,21 +128,21 @@ export type FindReturnType<
     ParentPartiallySelected extends true ?
     {
         [P in keyof Props<Entity> as P extends EntitySelectionTruthyKeys<Selection> ? P : never]:
-            FindReturnTypeItem<Source, Entity, Selection, P, Props<Entity>[P]["property"], true>
+            FindReturnTypeProperty<Source, Entity, Selection, P, Props<Entity>[P]["property"], true>
     }
 
     // if no columns were specified in selection, it means we need to select every column
     : OnlyColumnKeys<Selection, Entity> extends never ?
     {
         [P in keyof Props<Entity> as P extends EntitySelectionAllColumns<Source, Entity, Selection> ? P : never]:
-            FindReturnTypeItem<Source, Entity, Selection, P, Props<Entity>[P]["property"], false>
+            FindReturnTypeProperty<Source, Entity, Selection, P, Props<Entity>[P]["property"], false>
     }
 
     // otherwise it means only set of columns were selected, and we should only select them
     :
     {
         [P in keyof Props<Entity> as P extends EntitySelectionTruthyKeys<Selection> ? P : never]:
-            FindReturnTypeItem<Source, Entity, Selection, P, Props<Entity>[P]["property"], true>
+            FindReturnTypeProperty<Source, Entity, Selection, P, Props<Entity>[P]["property"], true>
     }
 
 export type DataSourceDatabaseType = "mysql" | "postgres" | "sqlite"
@@ -625,7 +497,7 @@ const myDataSource = DataSource.create({
 // type B = keyof typeof selection
 // // type Checker<T1, T2> = { [P in T1 as T1[P]]: true }
 // type C = B extends A ? true : false
-//
+
 const loadedUsers = myDataSource
     .manager
     .repository("UserEntity")
@@ -634,17 +506,18 @@ const loadedUsers = myDataSource
             // id: true,
             // name: true,
             photos: {
-                id: true
+                // id: true,
+                album: true
             },
             profile: {
-                // bio: true,
+                bio: true,
                 educationPhotos: {
                     id: true
                 }
             }
         }
     })
-console.log(loadedUsers.avatar);
+console.log(loadedUsers);
 //
 // const loadedUserx = myDataSource
 //     .manager
