@@ -1,19 +1,461 @@
-export type ForceEmptyType<T> = T extends undefined ? {} : T
+/**
+ * Value of order by in find options.
+ */
+import { Entity } from "../decorator/entity/Entity";
 
+export type FindOptionsOrderByValue = "ASC" | "DESC" | "asc" | "desc" | 1 | -1 | {
+    direction?: "asc"|"desc"|"ASC"|"DESC";
+    nulls?: "first"|"last"|"FIRST"|"LAST";
+};
+
+/**
+ * Order by find options.
+ */
+export type FindOptionsOrder<E> = {
+    [P in keyof E]?:
+        E[P] extends (infer R)[] ? FindOptionsOrder<R> :
+        E[P] extends Promise<infer R> ? FindOptionsOrder<R> :
+        E[P] extends object ? FindOptionsOrder<E[P]> :
+        FindOptionsOrderByValue;
+};
+
+/**
+ * "where" in find options.
+
+ export type FindOptionsWhereCondition<E> = {
+    [P in keyof E]?:
+    E[P] extends (infer R)[] ? FindOptionsWhere<R> | boolean | FindOperator<number> | FindAltOperator<number> :
+        E[P] extends Promise<infer R> ? FindOptionsWhere<R> | boolean :
+            E[P] extends Object ? FindOperator<E[P]> | FindAltOperator<E[P]> | FindOptionsWhere<E[P]> | boolean :
+                FindOperator<E[P]> | FindAltOperator<E[P]> | E[P]
+}; */
+
+/**
+ * "where" in find options.
+ * Includes "array where" as well.
+
+ export type FindOptionsWhere<E> = FindOptionsWhereCondition<E>|FindOptionsWhereCondition<E>[];
+ */
+
+
+// export function Column<
+//     Source extends AnyDataSource,
+//     Entity extends ValueOf<Source["options"]["entities"]>,
+//     // Property extends string
+//     >(
+//     column: keyof Entity["columns"],
+//     alias?: string
+// ): FindOperatorColumn<Source, Entity> {
+//     return {
+//         kind: "FindOperatorColumn",
+//         // entity: null as any,
+//         value: column
+//     }
+// }
+//
+// export function Equal<
+//     Source extends AnyDataSource,
+//     Entity extends ValueOf<Source["options"]["entities"]>,
+//     ColumnName extends keyof Entity["columns"]
+//     >(
+//     value: ColumnCompileType<Entity, ColumnName>
+// ): FindOperatorColumn<Source, Entity> {
+//     return {
+//         kind: "FindOperatorColumn",
+//         // entity: null as any,
+//         value: column
+//     }
+// }
+
+
+// -----------------------------------------------------------------
+// common
+// -----------------------------------------------------------------
+
+export type ForceEmptyType<T> = T extends undefined ? {} : T
 export type ValueOf<T> = T[keyof T];
+
+// -----------------------------------------------------------------
+// FindOperator
+// -----------------------------------------------------------------
+
+//
+// export function Raw(expression: string) {
+//     return {
+//         kind: "Raw",
+//         expression
+//     }
+// }
+//
+// export function Fn(name: string, args: (string | FindOperatorColumn<any>)[]) {
+//     return {
+//         kind: "Fn",
+//         name,
+//         args
+//     }
+// }
+//
+// export function Escaped(value: string) {
+//     return {
+//         kind: "Escaped",
+//         value
+//     }
+// }
+//
+// export function Like<ColumnType>(value: ColumnType): FindExpression<ColumnType> {
+//     return {
+//         kind: "Like",
+//         value
+//     }
+// }
+//
+// export function Equal<ColumnType>(value: ColumnType): FindExpression<ColumnType> {
+//     return {
+//         kind: "Equal",
+//         value
+//     }
+// }
+
+export type FindOperatorRaw<
+    Source extends AnyDataSource,
+    Entity extends ValueOf<Source["options"]["entities"]>,
+> = {
+    kind: "FindOperatorRaw"
+    value: any
+}
+
+export type FindOperatorColumn<
+    Source extends AnyDataSource,
+    Entity extends ValueOf<Source["options"]["entities"]>,
+    > = {
+    kind: "FindOperatorColumn"
+    value: any
+}
+
+export type FindOperatorLessThan<
+    Source extends AnyDataSource,
+    Entity extends ValueOf<Source["options"]["entities"]>,
+> = {
+    kind: "FindOperatorLessThan"
+    value: any
+}
+
+export type FindOperatorLessThanOrEqual<
+    Source extends AnyDataSource,
+    Entity extends ValueOf<Source["options"]["entities"]>,
+> = {
+    kind: "FindOperatorLessThanOrEqual"
+    value: any
+}
+
+export type FindOperatorMoreThan<
+    Source extends AnyDataSource,
+    Entity extends ValueOf<Source["options"]["entities"]>,
+> = {
+    kind: "FindOperatorMoreThan"
+    value: any
+}
+
+export type FindOperatorMoreThanOrEqual<
+    Source extends AnyDataSource,
+    Entity extends ValueOf<Source["options"]["entities"]>,
+> = {
+    kind: "FindOperatorMoreThanOrEqual"
+    value: any
+}
+
+export type FindOperatorBetween<
+    Source extends AnyDataSource,
+    Entity extends ValueOf<Source["options"]["entities"]>,
+> = {
+    kind: "FindOperatorBetween"
+    value: any
+}
+
+export type FindOperatorLike<
+    Source extends AnyDataSource,
+    Entity extends ValueOf<Source["options"]["entities"]>,
+> = {
+    kind: "FindOperatorLike"
+    value: any
+}
+
+export type FindOperatorILike<
+    Source extends AnyDataSource,
+    Entity extends ValueOf<Source["options"]["entities"]>,
+> = {
+    kind: "FindOperatorILike"
+    value: any
+}
+
+export type FindOperator<
+    Source extends AnyDataSource,
+    Entity extends ValueOf<Source["options"]["entities"]>,
+    Type extends keyof Entity["columns"]
+> = {
+        kind: "FindOperator"
+        value: any
+    }
+    // | FindOperatorRaw<Source, Entity>
+    // | FindOperatorColumn<Source, Entity>
+    // | FindOperatorLessThan<Source, Entity>
+    // | FindOperatorLessThanOrEqual<Source, Entity>
+    // | FindOperatorMoreThan<Source, Entity>
+    // | FindOperatorMoreThanOrEqual<Source, Entity>
+    // | FindOperatorBetween<Source, Entity>
+    // | FindOperatorLike<Source, Entity>
+    // | FindOperatorILike<Source, Entity>
+    // | FindOperatorAny<Source, Entity>
+    // | FindOperatorIn<Source, Entity>
+    // | FindOperatorCoalesce<Source, Entity>
+
+// Equal, IsNull will be removed
+
+// -----------------------------------------------------------------
+// FindExpression
+// -----------------------------------------------------------------
+
+// export type FindExpression<
+//     Source extends AnyDataSource,
+//     Entity extends ValueOf<Source["options"]["entities"]>
+// > =
+//     | FindExpressionOr<Source, Entity>
+//     | FindExpressionAnd<Source, Entity>
+
+export type FindExpression<
+    Source extends AnyDataSource,
+    Entity extends ValueOf<Source["options"]["entities"]>
+> = {
+    "@type": "FindExpression"
+    kind: "not" | "or" | "and" | "xor"
+    source: Source
+    entity: Entity
+    options: FindOptionsWhere<Source, Entity>[]
+}
+
+/*export type FindExpressionOr<
+    Source extends AnyDataSource,
+    Entity extends ValueOf<Source["options"]["entities"]>
+> = {
+    "@type": "FindExpressionOr"
+    source: Source
+    entity: Entity
+    options: FindOptionsWhere<Source, Entity>[]
+}
+
+export type FindExpressionAnd<
+    Source extends AnyDataSource,
+    Entity extends ValueOf<Source["options"]["entities"]>
+> = {
+    "@type": "FindExpressionAnd"
+    source: Source
+    entity: Entity
+    options: FindOptionsWhere<Source, Entity>[]
+}
+
+export type FindExpressionNot<
+    Source extends AnyDataSource,
+    Entity extends ValueOf<Source["options"]["entities"]>
+> = {
+    "@type": "FindExpressionNot"
+    source: Source
+    entity: Entity
+    options: FindOptionsWhere<Source, Entity>[]
+}
+
+export type FindExpressionXor<
+    Source extends AnyDataSource,
+    Entity extends ValueOf<Source["options"]["entities"]>
+> = {
+    "@type": "FindExpressionXor"
+    source: Source
+    entity: Entity
+    options: FindOptionsWhere<Source, Entity>[]
+}*/
+
+// export type FindExpressionWhere<
+//     Source extends AnyDataSource,
+//     Entity extends ValueOf<Source["options"]["entities"]>
+// > = {
+//     "@type": "FindExpressionWhere"
+//     source: Source
+//     entity: Entity
+//     options: FindOperatorWhereOptions<Source, Entity>[]
+// }
+
+// -----------------------------------------------------------------
+// FindOptions Where
+// -----------------------------------------------------------------
+
+// export type ExpressionBuilder<
+//     Source extends AnyDataSource,
+//     Entity extends ValueOf<Source["options"]["entities"]>
+// > = {
+//     or(...args: FindOptionsWhere<Source, Entity>[]): FindExpressionOr<Source, Entity>
+//     and(...args: FindOptionsWhere<Source, Entity>[]): FindExpressionAnd<Source, Entity>
+//     raw(expression: string): FindOperator<Source, Entity, any>
+//     column(name: keyof Entity["columns"]): FindOperator<Source, Entity, any>
+//     raw(expression: string): FindOperator<Source, Entity, any>
+//     lessThan<Type extends keyof Entity["columns"]>(value: ColumnCompileType<Entity, Type>): FindOperator<Source, Entity, Type>
+//     // equal(name: keyof Entity["columns"], alias?: string): FindOperatorEqual<Source, Entity>
+// }
+
+export function Or<
+    Source extends AnyDataSource,
+    Entity extends ValueOf<Source["options"]["entities"]>
+>(...args: FindOptionsWhere<Source, Entity>[])
+    : FindExpression<Source, Entity> {
+    return {
+        "@type": "FindExpression",
+        kind: "or",
+        source: null as any,
+        entity: null as any,
+        options: args
+    }
+}
+
+export function And<
+    Source extends AnyDataSource,
+    Entity extends ValueOf<Source["options"]["entities"]>
+>(...args: FindOptionsWhere<Source, Entity>[])
+    : FindExpression<Source, Entity> {
+    return {
+        "@type": "FindExpression",
+        kind: "and",
+        source: null as any,
+        entity: null as any,
+        options: args
+    }
+}
+
+export function Not<
+    Source extends AnyDataSource,
+    Entity extends ValueOf<Source["options"]["entities"]>
+>(...args: FindOptionsWhere<Source, Entity>[])
+    : FindExpression<Source, Entity> {
+    return {
+        "@type": "FindExpression",
+        kind: "not",
+        source: null as any,
+        entity: null as any,
+        options: args
+    }
+}
+
+export function Xor<
+    Source extends AnyDataSource,
+    Entity extends ValueOf<Source["options"]["entities"]>
+>(...args: FindOptionsWhere<Source, Entity>[])
+    : FindExpression<Source, Entity> {
+    return {
+        "@type": "FindExpression",
+        kind: "xor",
+        source: null as any,
+        entity: null as any,
+        options: args
+    }
+}
 
 /**
  * Schema for a EntitySelection, used to specify what properties of a Entity must be selected.
  */
-export type EntitySelectionSchema<
+export type FindOptionsWhere<
+    Source extends AnyDataSource,
+    Entity extends ValueOf<Source["options"]["entities"]>
+> =
+    | FindExpression<Source, Entity>
+    // | FindExpressionOr<Source, Entity>
+    // | FindExpressionAnd<Source, Entity>
+    // | FindExpressionNot<Source, Entity>
+    // | FindExpressionXor<Source, Entity>
+    // | FindExpressionWhere<Source, Entity>
+    | FindOperatorWhereOptions<Source, Entity>
+
+export type FindOperatorWhereOptions<
+    Source extends AnyDataSource,
+    Entity extends ValueOf<Source["options"]["entities"]>
+> =
+{
+    [P in string & keyof Entity["columns"]]?:
+        | ColumnCompileType<Entity, P>
+        // | FindOperator<Source, Entity, P>
+} & {
+    [P in keyof Entity["relations"]]?: FindOptionsWhere<Source, Source["options"]["entities"][Entity["relations"][P]["reference"]]>
+} & {
+    [P in keyof Entity["embeds"]]?: FindOptionsWhere<Source, Entity["embeds"][P]>
+}
+
+// export type FindOperatorWhere<
+//     Entity extends AnyEntity,
+//     Columns extends string
+// > = {
+//     "@type": "FindOperator"
+//     kind: "where"
+//     options: FindOperatorWhereXXX<Entity, Columns> // FindOperatorWhereOptions<Source, Entity>
+// }
+
+// export type FindOperatorWhereXXX<
+//     Entity extends AnyEntity,
+//     Columns extends string
+// > =
+// {
+//     [P in keyof Columns]?: ColumnCompileType<Entity, P>
+// }
+
+// export function Where<
+//     Entity extends AnyEntity,
+//     Columns extends string
+// >(options: FindOperatorWhereXXX<Entity, Columns>): FindOperatorWhere<Entity, Columns> {
+//     return {
+//         "@type": "FindOperator",
+//         kind: "where",
+//         options // : [args]
+//     }
+// }
+// export type FindOperatorOr<
+//     Source extends AnyDataSource,
+//     Entity extends ValueOf<Source["options"]["entities"]>
+// > = {
+//     "@type": "FindOperator"
+//     kind: "or"
+//     wheres: FindOperatorWhereXXX<Entity>[]
+// }
+
+// export function Or<
+//     Source extends AnyDataSource,
+//     Entity extends ValueOf<Source["options"]["entities"]>
+// >(args: FindOperatorWhere<Entity, any>): FindOperatorOr<Source, Entity> {
+//     return {
+//         "@type": "FindOperator",
+//         kind: "or",
+//         wheres: [] // [args]
+//     }
+// }
+
+// export type FindOperator<ColumnType> = {
+//     kind: "Like" | "Equal"
+//     value: ColumnType
+// }
+
+// export type FindOperator<ColumnType> = (value: ColumnType) => FindOperatorKind
+
+
+// -----------------------------------------------------------------
+// FindOptions
+// -----------------------------------------------------------------
+
+/**
+ * Schema for a EntitySelection, used to specify what properties of a Entity must be selected.
+ */
+export type FindOptionsSelect<
     Source extends AnyDataSource,
     Entity extends ValueOf<Source["options"]["entities"]>
 > = /*{ "*"?: boolean } &*/ {
-    [P in keyof Entity["columns"]]?: P extends keyof Entity["columns"] ? boolean : never
+    [P in keyof Entity["columns"]]?: boolean // P extends keyof Entity["columns"] ? boolean : never
 } & {
-    [P in keyof Entity["relations"]]?: boolean | EntitySelectionSchema<Source, Source["options"]["entities"][Entity["relations"][P]["reference"]]>
+    [P in keyof Entity["relations"]]?: boolean | FindOptionsSelect<Source, Source["options"]["entities"][Entity["relations"][P]["reference"]]>
 } & {
-    [P in keyof Entity["embeds"]]?: EntitySelectionSchema<Source, Entity["embeds"][P]>
+    [P in keyof Entity["embeds"]]?: FindOptionsSelect<Source, Entity["embeds"][P]>
 }
 
 export type EntityProps<
@@ -35,17 +477,30 @@ export type EntityProps<
     }
 }
 
+/**
+ * todo: also need to consider transformers
+ */
+export type ColumnCompileType<
+    Entity extends AnyEntity,
+    Property extends keyof Entity["columns"]
+> =
+    Entity["columns"][Property]["nullable"] extends true ?
+        Entity["driverTypes"]["columnTypes"][Entity["columns"][Property]["type"]]["type"] | null
+    :
+        Entity["driverTypes"]["columnTypes"][Entity["columns"][Property]["type"]]["type"]
+
+
 export type FindReturnTypeProperty<
     Source extends AnyDataSource,
     Entity extends ValueOf<Source["options"]["entities"]>,
-    Selection extends EntitySelectionSchema<Source, Entity>, // | undefined,
+    Selection extends FindOptionsSelect<Source, Entity>, // | undefined,
     P extends keyof EntityProps<Entity>,
     Property extends EntityProps<Entity>[P]["property"],
     ParentPartiallySelected extends boolean
 > =
     // if property is a column, just return it's type inferred from a driver column types defined in the entity
     P extends keyof Entity["columns"] ?
-        Entity["driverTypes"]["columnTypes"][Entity["columns"][P]["type"]]["type"]  // todo: also need to consider transformers
+        ColumnCompileType<Entity, P>
 
     // if selected property is an embed, we just go recursively
     : P extends keyof Entity["embeds"] ?
@@ -101,7 +556,7 @@ export type EntitySelectionTruthyKeys<Selection> = {
 export type EntitySelectionAllColumns<
     Source extends AnyDataSource,
     Entity extends ValueOf<Source["options"]["entities"]>,
-    Selection extends EntitySelectionSchema<Source, Entity>,
+    Selection extends FindOptionsSelect<Source, Entity>,
     > =  keyof (Entity["columns"] & {
     [P in keyof Entity["relations"] as
         Selection[P] extends true ? P
@@ -114,7 +569,7 @@ export type EntitySelectionAllColumns<
 export type FindReturnType<
     Source extends AnyDataSource,
     Entity extends ValueOf<Source["options"]["entities"]>,
-    Selection extends EntitySelectionSchema<Source, Entity>, // | undefined,
+    Selection extends FindOptionsSelect<Source, Entity>, // | undefined,
     ParentPartiallySelected extends boolean
 > =
     // this case is possible in embed, when parent selected set of columns,
@@ -163,28 +618,29 @@ export type FindOptions<
     Source extends AnyDataSource,
     Entity extends ValueOf<Source["options"]["entities"]>
 > = {
-  select?: EntitySelectionSchema<Source, Entity>
-  // relations?: EntityRelationSchema<Source["options"]["entities"], Entity>
-  // relations?: FindOptionsRelation<Entity>
-  // where?: FindOptionsWhere<Entity>
+  select?: FindOptionsSelect<Source, Entity>
+  where?: FindOptionsWhere<Source, Entity> // FindExpressionOr<Source, Entity>
   // order?: FindOptionsOrder<Entity>
 }
-
-// export type DataSourceEntityName<Source extends AnyDataSource> = keyof Source["options"]["entities"]
-// export type DataSourceEntity<Source extends AnyDataSource, EntityName extends DataSourceEntityName<Source>> =
-//     Source["options"]["entities"][EntityName] extends Function ? Source["options"]["entities"][EntityName]["prototype"] : Source["options"]["entities"][EntityName]
-
 
 export type Repository<
     Source extends AnyDataSource,
     Entity extends ValueOf<Source["options"]["entities"]>
 > = {
-    find<SomeEntity extends Entity, Options extends FindOptions<Source, SomeEntity>>(options: Options): FindReturnType<
+    find<
+        FindEntity extends Entity,
+        Options extends FindOptions<Source, FindEntity>
+    >(options: Options): FindReturnType<
         Source,
-        SomeEntity,
+        FindEntity,
         ForceEmptyType<Options["select"]>,
         false
     >
+
+    options<
+        FindEntity extends Entity,
+        Options extends FindOptions<Source, Entity>
+    >(options: Options): Options
 }
 
 export const DataSource = {
@@ -245,6 +701,7 @@ export type PostgresTypes = DriverTypes<{
 export type EntityColumns<DriverTypes extends AnyDriverTypes> = {
     [key: string]: {
         type: keyof DriverTypes["columnTypes"]
+        nullable?: boolean
     }
 }
 
@@ -318,7 +775,8 @@ export const PhotoEntity = Postgres.entity({
             type: "int"
         },
         filename: {
-            type: "varchar"
+            type: "varchar",
+            nullable: true
         },
     },
     relations: {
@@ -378,6 +836,10 @@ export const UserEntity = Postgres.entity({
     }
 })
 
+// -----------------------------------------------------------------
+// usage example
+// -----------------------------------------------------------------
+
 const myDataSource = DataSource.create({
     type: "postgres",
     entities: {
@@ -387,62 +849,88 @@ const myDataSource = DataSource.create({
     }
 })
 
-const loadedUsers = myDataSource
+const options = myDataSource
     .manager
     .repository("UserEntity")
-    .find({
-        select: {
-            id: true,
-            // name: true,
-            photos: {
-                id: true,
-                album: {
-                    photos: true
-                }
-            },
-            profile: {
-                bio: true,
-                educationPhotos: {
-                    id: true
-                }
-            }
-        }
+    .options({
+        where: /*Or({
+            id: 1,
+            name: "Dima"
+        }, {
+            id: 2
+        })*/
+            Or(
+               {
+                   avatar: {
+                       filename: "123",
+                       album: {
+                           id: 1
+                       }
+                   },
+                    profile: {
+                        maritalStatus: "Married",
+                        educationPhotos: {
+                            filename: "asd"
+                        }
+                    }
+                })
+            // And(
+            //     Or(
+            //         Xor(
+            //             Or({
+            //                 name: "Umed",
+            //             }),
+            //             Not({
+            //                 profile: {
+            //                     maritalStatus: "Married"
+            //                 }
+            //             })
+            //         )
+            //     )
+            // )
+
     })
-console.log(loadedUsers);
+console.log(options)
 
-/**
- * Value of order by in find options.
- */
-export type FindOptionsOrderByValue = "ASC" | "DESC" | "asc" | "desc" | 1 | -1 | {
-    direction?: "asc"|"desc"|"ASC"|"DESC";
-    nulls?: "first"|"last"|"FIRST"|"LAST";
-};
-
-/**
- * Order by find options.
- */
-export type FindOptionsOrder<E> = {
-    [P in keyof E]?:
-        E[P] extends (infer R)[] ? FindOptionsOrder<R> :
-        E[P] extends Promise<infer R> ? FindOptionsOrder<R> :
-        E[P] extends object ? FindOptionsOrder<E[P]> :
-        FindOptionsOrderByValue;
-};
-
-/**
- * "where" in find options.
-
-export type FindOptionsWhereCondition<E> = {
-    [P in keyof E]?:
-    E[P] extends (infer R)[] ? FindOptionsWhere<R> | boolean | FindOperator<number> | FindAltOperator<number> :
-        E[P] extends Promise<infer R> ? FindOptionsWhere<R> | boolean :
-            E[P] extends Object ? FindOperator<E[P]> | FindAltOperator<E[P]> | FindOptionsWhere<E[P]> | boolean :
-                FindOperator<E[P]> | FindAltOperator<E[P]> | E[P]
-}; */
-
-/**
- * "where" in find options.
- * Includes "array where" as well.
-
-export type FindOptionsWhere<E> = FindOptionsWhereCondition<E>|FindOptionsWhereCondition<E>[];
- */
+// const loadedUsers = myDataSource
+//     .manager
+//     .repository("UserEntity")
+//     .find({
+//         // select: {
+//         //     id: true,
+//         //     // name: true,
+//         //     photos: {
+//         //         id: true,
+//         //         album: {
+//         //             photos: true
+//         //         }
+//         //     },
+//         //     profile: {
+//         //         bio: true,
+//         //         educationPhotos: {
+//         //             id: true
+//         //         }
+//         //     }
+//         // },
+//         where2: where2({
+//
+//         }),
+//         // where: or<typeof myDataSource, typeof UserEntity>({
+//         //     id: 1, // "wwwjjjat",
+//         //     name: "Dima",
+//         //     // photos: ({ or, column, lessThan }) => or({
+//         //     //     id: lessThan(2),
+//         //     //     filename: column("filename"),
+//         //     // }, {
+//         //     //     filename: "Umed",
+//         //     // }),
+//         //     // photos: Or(Where({
+//         //     //
+//         //     // }))
+//         //     // photos: {
+//         //     //     id: Column("wow"), // Like(1)
+//         //     //     filename: Column("id"),
+//         //     // }
+//         // })
+//     })
+// console.log(loadedUsers);
