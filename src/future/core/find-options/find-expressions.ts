@@ -1,9 +1,6 @@
-import {
-    AnyDataSource,
-    AnyEntity,
-    FindExpression,
-    FindOptionsWhere
-} from "../../repository/TypeRepository";
+import { AnyDataSource } from "../data-source";
+import { AnyEntity } from "../entity";
+import { FindExpression, FindOptionsWhere } from "./find-options-where";
 
 export function Or<
     Source extends AnyDataSource,
