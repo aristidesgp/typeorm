@@ -1,14 +1,17 @@
-import { DriverType } from "../driver";
+import { DriverType } from "../driver"
 
+/**
+ * Errors thrown in the data-source package.
+ */
 export const DataSourceErrors = {
-    driverTypeNotSupported(type: DriverType) {
-        return new Error(
-            `Driver "${type}" isn't supported. Please make sure to specify a correct data source type.`
-        );
-    },
-    driverTypeFailedToLoad(type: DriverType) {
-        return new Error(
-            `Cannot initialize data source with type "${type}". Please make sure to install required driver.`
-        );
-    }
-};
+  driverTypeNotSupported(type: DriverType) {
+    return new Error(
+      `Driver "${type}" isn't supported. Please make sure to specify a correct data source type.`,
+    )
+  },
+  driverTypeFailedToLoad(type: DriverType) {
+    return new Error(
+      `Cannot initialize data source with type "${type}". Please make sure to install required driver.`,
+    )
+  },
+}

@@ -1,25 +1,25 @@
 import {
-    Entity,
-    EntityColumns,
-    EntityEmbeds,
-    EntityRelations,
-    ForceEmptyType
-} from "../core";
-import { PostgresTypes } from "./driver";
+  Entity,
+  EntityColumns,
+  EntityEmbeds,
+  EntityRelations,
+  ForceEmptyTypeIfUndefined,
+} from "../core"
+import { PostgresTypes } from "./types"
 
 export function entity<
-    Columns extends EntityColumns<PostgresTypes> | undefined,
-    Relations extends EntityRelations | undefined,
-    Embeds extends EntityEmbeds<PostgresTypes> | undefined
+  Columns extends EntityColumns<PostgresTypes> | undefined,
+  Relations extends EntityRelations | undefined,
+  Embeds extends EntityEmbeds<PostgresTypes> | undefined
 >(options: {
-    columns?: Columns;
-    relations?: Relations;
-    embeds?: Embeds;
+  columns?: Columns
+  relations?: Relations
+  embeds?: Embeds
 }): Entity<
-    PostgresTypes,
-    ForceEmptyType<Columns>,
-    ForceEmptyType<Relations>,
-    ForceEmptyType<Embeds>
+  PostgresTypes,
+  ForceEmptyTypeIfUndefined<Columns>,
+  ForceEmptyTypeIfUndefined<Relations>,
+  ForceEmptyTypeIfUndefined<Embeds>
 > {
-    return undefined as any;
+  return undefined as any
 }

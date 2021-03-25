@@ -1,15 +1,16 @@
-import { Driver, DriverTypes, Manager } from "../core";
+import { QueryRunner } from "../../query-runner/QueryRunner"
+import { Driver, Manager, Repository } from "../core"
 
-export type PostgresTypes = DriverTypes<{
-    int: { type: number };
-    varchar: { type: string };
-    boolean: { type: boolean };
-}>;
-
-export const PostgresDriver: Driver = {
-    builder: {
-        manager(): Manager<any> {
-            return null as any;
-        }
-    }
-};
+export const PostgresDriver: Driver<"postgres"> = {
+  builder: {
+    manager(): Manager<any> {
+      return null as any
+    },
+    repository(): Repository<any, any> {
+      return null as any
+    },
+    queryRunner(): QueryRunner {
+      return null as any
+    },
+  },
+}
