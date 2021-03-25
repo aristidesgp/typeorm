@@ -1,5 +1,6 @@
 import { Manager } from "../manager";
 
+export type DriverType = "mysql" | "postgres" | "sqlite"
 
 export type AnyDriverTypes = DriverTypes<any>
 export type DriverTypes<ColumnTypes extends DriverColumnTypes> = {

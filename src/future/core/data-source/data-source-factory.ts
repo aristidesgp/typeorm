@@ -1,37 +1,59 @@
 import { PostgresDriver } from "../../postgres";
-import { Driver } from "../driver";
+import { Driver, DriverType } from "../driver";
+import { DataSourceErrors } from "./data-source-errors";
 import { AnyDataSourceOptions } from "./data-source-options-types";
 import { DataSource } from "./data-source-types";
 
 export const DataSourceFactory = {
+    /**
+     * List of supported driver types.
+     */
+    supportedDrivers: [
+        "postgres",
+        "mysql",
+        "sqlite"
+    ] as DriverType[],
+
+    /**
+     * Checks if given driver type is supported or not.
+     */
+    isDriverTypeSupported(type: DriverType): boolean {
+        return type === "postgres" ||
+            type === "mysql" ||
+            type === "sqlite"
+    },
+
+    /**
+     * Loads driver instance out of a given driver type.
+     */
+    loadDriver(type: DriverType): Driver {
+        // once we split the packages, we'll most probably have dynamic requires here
+
+        if (type === "postgres") {
+            return PostgresDriver
+        } else if (type === "mysql") {
+            // return MysqlDriver
+        } else if (type === "sqlite") {
+            // return SqliteDriver
+        }
+
+        throw DataSourceErrors.driverTypeFailedToLoad(type)
+    },
+
+    /**
+     * Creates a new data source.
+     */
     create<Options extends AnyDataSourceOptions>(options: Options): DataSource<Options> {
+        if (!this.isDriverTypeSupported(options.type))
+            throw DataSourceErrors.driverTypeNotSupported(options.type)
 
-        if (options.type !== "postgres" &&
-            options.type !== "mysql" &&
-            options.type !== "sqlite") {
-            throw new Error(`Driver "${options.type}" isn't supported. Please make sure to specify a correct data source type.`)
-        }
-
-        let driver: Driver | undefined = undefined
-        if (options.type === "postgres") {
-            driver = PostgresDriver
-        // } else if (options.type === "mysql") {
-        //     driver = MysqlDriver
-        // } else if (options.type === "sqlite") {
-        //     driver = SqliteDriver
-        }
-        if (!driver)
-            throw new Error(`Cannot initialize data source with type "${options.type}". Please make sure to install required driver.`)
-
+        const driver = this.loadDriver(options.type)
         const manager = driver.builder.manager()
 
         return {
             "@type": "DataSource",
             options,
             manager,
-            // entity: () => {
-            //     return undefined as any
-            // }
         }
     }
 }

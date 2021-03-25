@@ -1,14 +1,14 @@
+import { DriverType } from "../driver";
 import { EntityMap } from "../entity";
 
-export type DataSourceDatabaseType = "mysql" | "postgres" | "sqlite"
 
-export type AnyDataSourceOptions = DataSourceOptions<DataSourceDatabaseType, EntityMap>
+export type AnyDataSourceOptions = DataSourceOptions<DriverType, EntityMap>
 
 export type DataSourceOptions<
-    DatabaseType extends DataSourceDatabaseType,
+    DatabaseType extends DriverType,
     Entities extends EntityMap
 > = {
-    type: DataSourceDatabaseType
+    type: DriverType
     entities: Entities
 }
 
