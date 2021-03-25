@@ -2,6 +2,7 @@
  * Value of order by in find options.
  */
 import { Entity } from "../decorator/entity/Entity";
+import { And, Any, Or } from "../future";
 
 export type FindOptionsOrderByValue = "ASC" | "DESC" | "asc" | "desc" | 1 | -1 | {
     direction?: "asc"|"desc"|"ASC"|"DESC";
@@ -37,37 +38,6 @@ export type FindOptionsOrder<E> = {
  export type FindOptionsWhere<E> = FindOptionsWhereCondition<E>|FindOptionsWhereCondition<E>[];
  */
 
-
-// export function Column<
-//     Source extends AnyDataSource,
-//     Entity extends ValueOf<Source["options"]["entities"]>,
-//     // Property extends string
-//     >(
-//     column: keyof Entity["columns"],
-//     alias?: string
-// ): FindOperatorColumn<Source, Entity> {
-//     return {
-//         kind: "FindOperatorColumn",
-//         // entity: null as any,
-//         value: column
-//     }
-// }
-//
-// export function Equal<
-//     Source extends AnyDataSource,
-//     Entity extends ValueOf<Source["options"]["entities"]>,
-//     ColumnName extends keyof Entity["columns"]
-//     >(
-//     value: ColumnCompileType<Entity, ColumnName>
-// ): FindOperatorColumn<Source, Entity> {
-//     return {
-//         kind: "FindOperatorColumn",
-//         // entity: null as any,
-//         value: column
-//     }
-// }
-
-
 // -----------------------------------------------------------------
 // common
 // -----------------------------------------------------------------
@@ -76,53 +46,12 @@ export type ForceEmptyType<T> = T extends undefined ? {} : T
 export type ValueOf<T> = T[keyof T];
 
 // -----------------------------------------------------------------
-// FindOperator
-// -----------------------------------------------------------------
-
-//
-// export function Raw(expression: string) {
-//     return {
-//         kind: "Raw",
-//         expression
-//     }
-// }
-//
-// export function Fn(name: string, args: (string | FindOperatorColumn<any>)[]) {
-//     return {
-//         kind: "Fn",
-//         name,
-//         args
-//     }
-// }
-//
-// export function Escaped(value: string) {
-//     return {
-//         kind: "Escaped",
-//         value
-//     }
-// }
-//
-// export function Like<ColumnType>(value: ColumnType): FindExpression<ColumnType> {
-//     return {
-//         kind: "Like",
-//         value
-//     }
-// }
-//
-// export function Equal<ColumnType>(value: ColumnType): FindExpression<ColumnType> {
-//     return {
-//         kind: "Equal",
-//         value
-//     }
-// }
-
-// -----------------------------------------------------------------
 // FindExpression
 // -----------------------------------------------------------------
 
 export type FindExpression<
     Source extends AnyDataSource,
-    Entity extends AnyEntity, // ValueOf<Source["options"]["entities"]>
+    Entity extends AnyEntity,
 > = {
     "@type": "FindExpression"
     kind: "not" | "or" | "and" | "xor"
@@ -131,9 +60,13 @@ export type FindExpression<
     options: FindOptionsWhere<Source, Entity>[]
 }
 
+// -----------------------------------------------------------------
+// FindOperator
+// -----------------------------------------------------------------
+
 export type FindOperator<
     Source extends AnyDataSource,
-    Entity extends AnyEntity, // ValueOf<Source["options"]["entities"]>,
+    Entity extends AnyEntity,
     ValueType
 > = {
     "@type": "FindOperator"
@@ -149,75 +82,16 @@ export type FindOperator<
         | "moreThan"
         | "moreThanOrEqual"
         | "raw"
-        | "and"
-        | "or"
-        | "not"
+        // | "and"
+        // | "or"
+        // | "not"
+        | "escaped"
+        | "column"
     source: Source
     entity: Entity
     valueType: ValueType
     value: any
 }
-
-// -----------------------------------------------------------------
-// Functions
-// -----------------------------------------------------------------
-
-export function Or<
-    Source extends AnyDataSource,
-    Entity extends AnyEntity, // ValueOf<Source["options"]["entities"]>
->(...args: FindOptionsWhere<Source, Entity>[])
-    : FindExpression<Source, Entity> {
-    return {
-        "@type": "FindExpression",
-        kind: "or",
-        source: null as any,
-        entity: null as any,
-        options: args
-    }
-}
-
-export function And<
-    Source extends AnyDataSource,
-    Entity extends AnyEntity, // ValueOf<Source["options"]["entities"]>
->(...args: FindOptionsWhere<Source, Entity>[])
-    : FindExpression<Source, Entity> {
-    return {
-        "@type": "FindExpression",
-        kind: "and",
-        source: null as any,
-        entity: null as any,
-        options: args
-    }
-}
-
-export function Not<
-    Source extends AnyDataSource,
-    Entity extends AnyEntity, // ValueOf<Source["options"]["entities"]>
->(...args: FindOptionsWhere<Source, Entity>[])
-    : FindExpression<Source, Entity> {
-    return {
-        "@type": "FindExpression",
-        kind: "not",
-        source: null as any,
-        entity: null as any,
-        options: args
-    }
-}
-
-export function Xor<
-    Source extends AnyDataSource,
-    Entity extends AnyEntity, // ValueOf<Source["options"]["entities"]>
->(...args: FindOptionsWhere<Source, Entity>[])
-    : FindExpression<Source, Entity> {
-    return {
-        "@type": "FindExpression",
-        kind: "xor",
-        source: null as any,
-        entity: null as any,
-        options: args
-    }
-}
-
 
 // -----------------------------------------------------------------
 // Functions
@@ -233,24 +107,21 @@ export type FindOptionsWhere<
     | FindExpression<Source, Entity>
     | FindOperatorWhereOptions<Source, Entity>
 
-// export type EntityKeys<Entity extends AnyEntity> = keyof (Entity["columns"] & Entity["relations"] & Entity["embeds"])
 
 export type FindOperatorWhereOptionsProperty<
     Source extends AnyDataSource,
     Entity extends AnyEntity,
     P extends keyof EntityProps<Entity>,
-    Property extends EntityProps<Entity>[P]["property"],
+    // Property extends EntityProps<Entity>[P]["property"],
 > =
-    // if property is a column, just return it's type inferred from a driver column types defined in the entity
     P extends keyof Entity["columns"] ?
         | ColumnCompileType<Entity, P>
         | FindOperator<Source, Entity, ColumnCompileType<Entity, P>>
+        | FindExpression<Source, Entity>
 
-    // if selected property is an embed, we just go recursively
     : P extends keyof Entity["embeds"] ?
         FindOptionsWhere<Source, Entity["embeds"][P]>
 
-    // if selected property is relation
     : P extends keyof Entity["relations"] ?
         FindOptionsWhere<Source, Source["options"]["entities"][Entity["relations"][P]["reference"]]>
 
@@ -258,67 +129,12 @@ export type FindOperatorWhereOptionsProperty<
 
 export type FindOperatorWhereOptions<
     Source extends AnyDataSource,
-    Entity extends AnyEntity, // ValueOf<Source["options"]["entities"]>
-> = true extends false ? {} :
+    Entity extends AnyEntity,
+> =
 {
     [P in keyof EntityProps<Entity>]?:
-        FindOperatorWhereOptionsProperty<Source, Entity, P, EntityProps<Entity>[P]["property"]>
+        FindOperatorWhereOptionsProperty<Source, Entity, P>
 }
-
-// export type FindOperatorWhere<
-//     Entity extends AnyEntity,
-//     Columns extends string
-// > = {
-//     "@type": "FindOperator"
-//     kind: "where"
-//     options: FindOperatorWhereXXX<Entity, Columns> // FindOperatorWhereOptions<Source, Entity>
-// }
-
-// export type FindOperatorWhereXXX<
-//     Entity extends AnyEntity,
-//     Columns extends string
-// > =
-// {
-//     [P in keyof Columns]?: ColumnCompileType<Entity, P>
-// }
-
-// export function Where<
-//     Entity extends AnyEntity,
-//     Columns extends string
-// >(options: FindOperatorWhereXXX<Entity, Columns>): FindOperatorWhere<Entity, Columns> {
-//     return {
-//         "@type": "FindOperator",
-//         kind: "where",
-//         options // : [args]
-//     }
-// }
-// export type FindOperatorOr<
-//     Source extends AnyDataSource,
-//     Entity extends ValueOf<Source["options"]["entities"]>
-// > = {
-//     "@type": "FindOperator"
-//     kind: "or"
-//     wheres: FindOperatorWhereXXX<Entity>[]
-// }
-
-// export function Or<
-//     Source extends AnyDataSource,
-//     Entity extends ValueOf<Source["options"]["entities"]>
-// >(args: FindOperatorWhere<Entity, any>): FindOperatorOr<Source, Entity> {
-//     return {
-//         "@type": "FindOperator",
-//         kind: "or",
-//         wheres: [] // [args]
-//     }
-// }
-
-// export type FindOperator<ColumnType> = {
-//     kind: "Like" | "Equal"
-//     value: ColumnType
-// }
-
-// export type FindOperator<ColumnType> = (value: ColumnType) => FindOperatorKind
-
 
 // -----------------------------------------------------------------
 // FindOptions
