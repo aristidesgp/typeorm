@@ -4,10 +4,8 @@ import { AnyEntity } from "../entity";
 /**
  * Schema for a EntitySelection, used to specify what properties of a Entity must be selected.
  */
-export type FindOptionsSelect<
-    Source extends AnyDataSource,
-    Entity extends AnyEntity
-    > = /*{ "*"?: boolean } &*/ {
+export type FindOptionsSelect<Source extends AnyDataSource,
+    Entity extends AnyEntity> = /*{ "*"?: boolean } &*/ {
     [P in keyof Entity["columns"]]?: boolean // P extends keyof Entity["columns"] ? boolean : never
 } & {
     [P in keyof Entity["relations"]]?: boolean | FindOptionsSelect<Source, Source["options"]["entities"][Entity["relations"][P]["reference"]]>
@@ -15,9 +13,7 @@ export type FindOptionsSelect<
     [P in keyof Entity["embeds"]]?: FindOptionsSelect<Source, Entity["embeds"][P]>
 }
 
-export type EntityProps<
-    Entity extends AnyEntity
-    > = {
+export type EntityProps<Entity extends AnyEntity> = {
     [P in keyof Entity["columns"]]: {
         type: "column",
         property: P
@@ -37,24 +33,20 @@ export type EntityProps<
 /**
  * todo: also need to consider transformers
  */
-export type ColumnCompileType<
-    Entity extends AnyEntity,
-    Property extends keyof Entity["columns"]
-    > =
+export type ColumnCompileType<Entity extends AnyEntity,
+    Property extends keyof Entity["columns"]> =
     Entity["columns"][Property]["nullable"] extends true ?
         Entity["driverTypes"]["columnTypes"][Entity["columns"][Property]["type"]]["type"] | null
         :
         Entity["driverTypes"]["columnTypes"][Entity["columns"][Property]["type"]]["type"]
 
 
-export type FindReturnTypeProperty<
-    Source extends AnyDataSource,
+export type FindReturnTypeProperty<Source extends AnyDataSource,
     Entity extends AnyEntity,
     Selection extends FindOptionsSelect<Source, Entity>, // | undefined,
     P extends keyof EntityProps<Entity>,
     Property extends EntityProps<Entity>[P]["property"],
-    ParentPartiallySelected extends boolean
-    > =
+    ParentPartiallySelected extends boolean> =
 // if property is a column, just return it's type inferred from a driver column types defined in the entity
     P extends keyof Entity["columns"] ?
         ColumnCompileType<Entity, P>
@@ -83,10 +75,8 @@ export type FindReturnTypeProperty<
                 : never
             : never
 
-export type OnlyColumnKeys<
-    Selection,
-    Entity extends AnyEntity
-    > = {
+export type OnlyColumnKeys<Selection,
+    Entity extends AnyEntity> = {
     [P in keyof Selection]:
     Selection[P] extends true ?
         P extends keyof Entity["columns"] ? P : never
@@ -110,25 +100,20 @@ export type EntitySelectionTruthyKeys<Selection> = {
 /**
  * Helper type to mark non-selected properties as "never".
  */
-export type EntitySelectionAllColumns<
-    Source extends AnyDataSource,
+export type EntitySelectionAllColumns<Source extends AnyDataSource,
     Entity extends AnyEntity,
     Selection extends FindOptionsSelect<Source, Entity>,
-    > =  keyof (Entity["columns"] & {
-    [P in keyof Entity["relations"] as
-        Selection[P] extends true ? P
-            : Selection[P] extends object ? P
-            : never
-    ]: true
-}  & Entity["embeds"])
+    > = keyof (Entity["columns"] & {
+    [P in keyof Entity["relations"] as Selection[P] extends true ? P
+        : Selection[P] extends object ? P
+            : never]: true
+} & Entity["embeds"])
 
 
-export type FindReturnType<
-    Source extends AnyDataSource,
+export type FindReturnType<Source extends AnyDataSource,
     Entity extends AnyEntity,
     Selection extends FindOptionsSelect<Source, Entity>, // | undefined,
-    ParentPartiallySelected extends boolean
-    > =
+    ParentPartiallySelected extends boolean> =
 // this case is possible in embed, when parent selected set of columns,
 // we need to tell to child (embed) to select only what was selected, to prevent selection of every column
     ParentPartiallySelected extends true ?

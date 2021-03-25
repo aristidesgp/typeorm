@@ -4,21 +4,21 @@ import { ColumnCompileType, EntityProps } from "./find-options-select";
 
 export type FindExpression<
     Source extends AnyDataSource,
-    Entity extends AnyEntity,
-    > = {
-    "@type": "FindExpression"
-    kind: "not" | "or" | "and" | "xor"
-    source: Source
-    entity: Entity
-    options: FindOptionsWhere<Source, Entity>[]
-}
+    Entity extends AnyEntity
+> = {
+    "@type": "FindExpression";
+    kind: "not" | "or" | "and" | "xor";
+    source: Source;
+    entity: Entity;
+    options: FindOptionsWhere<Source, Entity>[];
+};
 
 export type FindOperator<
     Source extends AnyDataSource,
     Entity extends AnyEntity,
     ValueType
-    > = {
-    "@type": "FindOperator"
+> = {
+    "@type": "FindOperator";
     kind:
         | "any"
         | "between"
@@ -35,48 +35,47 @@ export type FindOperator<
         // | "or"
         // | "not"
         | "escaped"
-        | "column"
-    source: Source
-    entity: Entity
-    valueType: ValueType
-    value: any
-}
+        | "column";
+    source: Source;
+    entity: Entity;
+    valueType: ValueType;
+    value: any;
+};
 
 /**
  * Schema for a EntitySelection, used to specify what properties of a Entity must be selected.
  */
 export type FindOptionsWhere<
     Source extends AnyDataSource,
-    Entity extends AnyEntity,
-    > =
-    | FindExpression<Source, Entity>
-    | FindOperatorWhereOptions<Source, Entity>
-
+    Entity extends AnyEntity
+> = FindExpression<Source, Entity> | FindOperatorWhereOptions<Source, Entity>;
 
 export type FindOperatorWhereOptionsProperty<
     Source extends AnyDataSource,
     Entity extends AnyEntity,
-    P extends keyof EntityProps<Entity>,
+    P extends keyof EntityProps<Entity>
     // Property extends EntityProps<Entity>[P]["property"],
-    > =
-    P extends keyof Entity["columns"] ?
-        | ColumnCompileType<Entity, P>
-        | FindOperator<Source, Entity, ColumnCompileType<Entity, P>>
-        | FindExpression<Source, Entity>
-
-        : P extends keyof Entity["embeds"] ?
-        FindOptionsWhere<Source, Entity["embeds"][P]>
-
-        : P extends keyof Entity["relations"] ?
-            FindOptionsWhere<Source, Source["options"]["entities"][Entity["relations"][P]["reference"]]>
-
-            : never
+> = P extends keyof Entity["columns"]
+    ?
+          | ColumnCompileType<Entity, P>
+          | FindOperator<Source, Entity, ColumnCompileType<Entity, P>>
+          | FindExpression<Source, Entity>
+    : P extends keyof Entity["embeds"]
+    ? FindOptionsWhere<Source, Entity["embeds"][P]>
+    : P extends keyof Entity["relations"]
+    ? FindOptionsWhere<
+          Source,
+          Source["options"]["entities"][Entity["relations"][P]["reference"]]
+      >
+    : never;
 
 export type FindOperatorWhereOptions<
     Source extends AnyDataSource,
-    Entity extends AnyEntity,
-    > =
-    {
-        [P in keyof EntityProps<Entity>]?:
-        FindOperatorWhereOptionsProperty<Source, Entity, P>
-    }
+    Entity extends AnyEntity
+> = {
+    [P in keyof EntityProps<Entity>]?: FindOperatorWhereOptionsProperty<
+        Source,
+        Entity,
+        P
+    >;
+};

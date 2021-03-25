@@ -7,7 +7,7 @@ export type FindOptions<
     Source extends AnyDataSource,
     Entity extends ValueOf<Source["options"]["entities"]>
 > = {
-    select?: FindOptionsSelect<Source, Entity>
-    where?: FindOptionsWhere<Source, Entity>
+    select?: FindOptionsSelect<Source, Entity>;
+    where?: FindOptionsWhere<Source, Entity>;
     // order?: FindOptionsOrder<Entity>
-}
+};

@@ -14,14 +14,17 @@ export function Any<
         entity: null as any,
         valueType: null as any,
         value: values
-    }
+    };
 }
 
 export function Between<
     Source extends AnyDataSource,
     Entity extends AnyEntity,
     ValueType
->(first: ValueType, second: ValueType): FindOperator<Source, Entity, ValueType> {
+>(
+    first: ValueType,
+    second: ValueType
+): FindOperator<Source, Entity, ValueType> {
     return {
         "@type": "FindOperator",
         kind: "between",
@@ -29,7 +32,7 @@ export function Between<
         entity: null as any,
         valueType: null as any,
         value: [first, second]
-    }
+    };
 }
 
 export function Equal<
@@ -44,7 +47,7 @@ export function Equal<
         entity: null as any,
         valueType: null as any,
         value: value
-    }
+    };
 }
 
 export function Like<
@@ -59,7 +62,7 @@ export function Like<
         entity: null as any,
         valueType: null as any,
         value: value
-    }
+    };
 }
 
 export function ILike<
@@ -74,7 +77,7 @@ export function ILike<
         entity: null as any,
         valueType: null as any,
         value: value
-    }
+    };
 }
 
 export function In<
@@ -89,7 +92,7 @@ export function In<
         entity: null as any,
         valueType: null as any,
         value: values
-    }
+    };
 }
 
 export function LessThan<
@@ -104,7 +107,7 @@ export function LessThan<
         entity: null as any,
         valueType: null as any,
         value: value
-    }
+    };
 }
 
 export function LessThanOrEqual<
@@ -119,7 +122,7 @@ export function LessThanOrEqual<
         entity: null as any,
         valueType: null as any,
         value: value
-    }
+    };
 }
 
 export function MoreThan<
@@ -134,7 +137,7 @@ export function MoreThan<
         entity: null as any,
         valueType: null as any,
         value: value
-    }
+    };
 }
 
 export function MoreThanOrEqual<
@@ -149,7 +152,7 @@ export function MoreThanOrEqual<
         entity: null as any,
         valueType: null as any,
         value: value
-    }
+    };
 }
 
 export function Raw<
@@ -164,7 +167,7 @@ export function Raw<
         entity: null as any,
         valueType: null as any,
         value: value
-    }
+    };
 }
 
 export function Escaped<
@@ -179,7 +182,7 @@ export function Escaped<
         entity: null as any,
         valueType: null as any,
         value: value
-    }
+    };
 }
 
 export function Column<
@@ -187,7 +190,7 @@ export function Column<
     Entity extends AnyEntity,
     ValueType
 >(
-    name: keyof Entity["columns"],
+    name: keyof Entity["columns"]
     // alias?: string
 ): FindOperator<Source, Entity, ValueType> {
     return {
@@ -197,5 +200,5 @@ export function Column<
         entity: null as any,
         valueType: null as any,
         value: name
-    }
+    };
 }

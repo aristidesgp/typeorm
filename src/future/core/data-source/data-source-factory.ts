@@ -8,19 +8,13 @@ export const DataSourceFactory = {
     /**
      * List of supported driver types.
      */
-    supportedDrivers: [
-        "postgres",
-        "mysql",
-        "sqlite"
-    ] as DriverType[],
+    supportedDrivers: ["postgres", "mysql", "sqlite"] as DriverType[],
 
     /**
      * Checks if given driver type is supported or not.
      */
     isDriverTypeSupported(type: DriverType): boolean {
-        return type === "postgres" ||
-            type === "mysql" ||
-            type === "sqlite"
+        return type === "postgres" || type === "mysql" || type === "sqlite";
     },
 
     /**
@@ -30,30 +24,32 @@ export const DataSourceFactory = {
         // once we split the packages, we'll most probably have dynamic requires here
 
         if (type === "postgres") {
-            return PostgresDriver
+            return PostgresDriver;
         } else if (type === "mysql") {
             // return MysqlDriver
         } else if (type === "sqlite") {
             // return SqliteDriver
         }
 
-        throw DataSourceErrors.driverTypeFailedToLoad(type)
+        throw DataSourceErrors.driverTypeFailedToLoad(type);
     },
 
     /**
      * Creates a new data source.
      */
-    create<Options extends AnyDataSourceOptions>(options: Options): DataSource<Options> {
+    create<Options extends AnyDataSourceOptions>(
+        options: Options
+    ): DataSource<Options> {
         if (!this.isDriverTypeSupported(options.type))
-            throw DataSourceErrors.driverTypeNotSupported(options.type)
+            throw DataSourceErrors.driverTypeNotSupported(options.type);
 
-        const driver = this.loadDriver(options.type)
-        const manager = driver.builder.manager()
+        const driver = this.loadDriver(options.type);
+        const manager = driver.builder.manager();
 
         return {
             "@type": "DataSource",
             options,
-            manager,
-        }
+            manager
+        };
     }
-}
+};

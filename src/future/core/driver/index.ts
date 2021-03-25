@@ -1,22 +1,22 @@
 import { Manager } from "../manager";
 
-export type DriverType = "mysql" | "postgres" | "sqlite"
+export type DriverType = "mysql" | "postgres" | "sqlite";
 
-export type AnyDriverTypes = DriverTypes<any>
+export type AnyDriverTypes = DriverTypes<any>;
 export type DriverTypes<ColumnTypes extends DriverColumnTypes> = {
-    columnTypes: ColumnTypes
-}
+    columnTypes: ColumnTypes;
+};
 
 export type DriverColumnTypes = {
-    [databaseTypeName: string]: DriverColumnTypeOptions<any>
-}
+    [databaseTypeName: string]: DriverColumnTypeOptions<any>;
+};
 
 export type DriverColumnTypeOptions<Type> = {
-    type: Type
-}
+    type: Type;
+};
 
 export type Driver = {
     builder: {
-        manager(): Manager<any>
-    }
-}
+        manager(): Manager<any>;
+    };
+};
