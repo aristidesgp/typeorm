@@ -4,7 +4,7 @@ import {PhotoEntity} from "./entity/Photo";
 import {UserEntity} from "./entity/User";
 import {DataSourceFactory} from "../src/future/core/data-source";
 
-describe("common cases", () => {
+describe("find-options > common cases", () => {
     const myDataSource = DataSourceFactory.create({
         type: "postgres",
         entities: {
