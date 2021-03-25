@@ -1,7 +1,8 @@
 import { EntityMap } from "../entity";
 import { Manager } from "../manager";
 import { ValueOf } from "../util";
-import { DriverType, DataSourceOptions } from "./data-source-options-types";
+import { DataSourceOptions } from "./data-source-options-types";
+import {DriverType} from "../driver";
 
 
 export type AnyDataSource = DataSource<DataSourceOptions<DriverType, EntityMap>>

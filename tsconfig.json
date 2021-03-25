@@ -24,7 +24,8 @@
     "include": [
       "sample",
       "src",
-      "test"
+      "test",
+      "test-future"
     ],
     "exclude": [
         "tmp",

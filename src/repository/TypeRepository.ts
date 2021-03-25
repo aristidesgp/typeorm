@@ -1,5 +1,5 @@
-import { And, Any, Or, DataSourceFactory } from "../future/core";
-import { entity } from "../future/postgres";
+import {DataSourceFactory} from "../future/core";
+import {entity} from "../future/postgres";
 
 export const AlbumEntity = entity({
     columns: {
@@ -98,38 +98,34 @@ const myDataSource = DataSourceFactory.create({
         AlbumEntity
     }
 })
+console.log(myDataSource);
 
-const options = myDataSource
-    .manager
-    .repository("UserEntity")
-    .options({
-        where: Or({
-            avatar: {
-                id: Any(1, 2),
-                album: {
-                    photos: And({
-                        filename: Any(null)
-                    }, {
-                        filename: Any("1")
-                    })
-                }
-            },
-            id: 1,
-            name: "Dima",
-            profile: Or({
-                kids: Any(1),
-                adult: Any(true),
-                educationPhotos: {
-                    id: Any(1),
-                    filename: Any(null),
-                    album: {
-                        photos: And({
-                            filename: Any(null)
-                        }, {filename: Any("1")})
-                    }
-                }
-            })
-        })
-    })
-
-console.log(options)
+// const whereOptions: FindOperatorWhereOptions<typeof myDataSource, typeof UserEntity> = Or({
+//     avatar: {
+//         id: Any(1, 2),
+//         album: {
+//             photos: And({
+//                 filename: Any(null)
+//             }, {
+//                 filename: Any("1")
+//             })
+//         }
+//     },
+//     id: 1,
+//     name: "Dima",
+//     profile: Or({
+//         kids: Any(1),
+//         adult: Any(true),
+//         educationPhotos: {
+//             id: Any(1),
+//             filename: Any(null),
+//             album: {
+//                 photos: And({
+//                     filename: Any(null)
+//                 }, {filename: Any("1")})
+//             }
+//         }
+//     })
+// })
+//
+// console.log(whereOptions);
