@@ -1,10 +1,10 @@
-import { AnyDriver } from "../driver"
+import { AnyDataSource } from "../data-source"
 import { AnyEntity } from "../entity"
 import { FindExpression, FindOptionsWhere } from "./find-options-where"
 
-export function Or<Driver extends AnyDriver, Entity extends AnyEntity>(
-  ...args: FindOptionsWhere<Driver, Entity>[]
-): FindExpression<Driver, Entity> {
+export function Or<Source extends AnyDataSource, Entity extends AnyEntity>(
+  ...args: FindOptionsWhere<Source, Entity>[]
+): FindExpression<Source, Entity> {
   return {
     "@type": "FindExpression",
     kind: "or",
@@ -14,9 +14,9 @@ export function Or<Driver extends AnyDriver, Entity extends AnyEntity>(
   }
 }
 
-export function And<Driver extends AnyDriver, Entity extends AnyEntity>(
-  ...args: FindOptionsWhere<Driver, Entity>[]
-): FindExpression<Driver, Entity> {
+export function And<Source extends AnyDataSource, Entity extends AnyEntity>(
+  ...args: FindOptionsWhere<Source, Entity>[]
+): FindExpression<Source, Entity> {
   return {
     "@type": "FindExpression",
     kind: "and",
@@ -26,9 +26,9 @@ export function And<Driver extends AnyDriver, Entity extends AnyEntity>(
   }
 }
 
-export function Not<Driver extends AnyDriver, Entity extends AnyEntity>(
-  ...args: FindOptionsWhere<Driver, Entity>[]
-): FindExpression<Driver, Entity> {
+export function Not<Source extends AnyDataSource, Entity extends AnyEntity>(
+  ...args: FindOptionsWhere<Source, Entity>[]
+): FindExpression<Source, Entity> {
   return {
     "@type": "FindExpression",
     kind: "not",
@@ -38,9 +38,9 @@ export function Not<Driver extends AnyDriver, Entity extends AnyEntity>(
   }
 }
 
-export function Xor<Driver extends AnyDriver, Entity extends AnyEntity>(
-  ...args: FindOptionsWhere<Driver, Entity>[]
-): FindExpression<Driver, Entity> {
+export function Xor<Source extends AnyDataSource, Entity extends AnyEntity>(
+  ...args: FindOptionsWhere<Source, Entity>[]
+): FindExpression<Source, Entity> {
   return {
     "@type": "FindExpression",
     kind: "xor",

@@ -1,20 +1,20 @@
-import { AnyDriver } from "../driver"
+import { AnyDataSource } from "../data-source"
 import { AnyEntity } from "../entity"
 import { ColumnCompileType, EntityProps } from "./find-options-select"
 
 export type FindExpression<
-  Driver extends AnyDriver,
+  Source extends AnyDataSource,
   Entity extends AnyEntity
 > = {
   "@type": "FindExpression"
   kind: "not" | "or" | "and" | "xor"
-  driver: Driver
+  driver: Source
   entity: Entity
-  options: FindOptionsWhere<Driver, Entity>[]
+  options: FindOptionsWhere<Source, Entity>[]
 }
 
 export type FindOperator<
-  Driver extends AnyDriver,
+  Source extends AnyDataSource,
   Entity extends AnyEntity,
   ValueType
 > = {
@@ -36,7 +36,7 @@ export type FindOperator<
     // | "not"
     | "escaped"
     | "column"
-  driver: Driver
+  driver: Source
   entity: Entity
   valueType: ValueType
   value: any
@@ -46,35 +46,35 @@ export type FindOperator<
  * Schema for a EntitySelection, used to specify what properties of a Entity must be selected.
  */
 export type FindOptionsWhere<
-  Driver extends AnyDriver,
+  Source extends AnyDataSource,
   Entity extends AnyEntity
-> = FindExpression<Driver, Entity> | FindOperatorWhereOptions<Driver, Entity>
+> = FindExpression<Source, Entity> | FindOperatorWhereOptions<Source, Entity>
 
 export type FindOperatorWhereOptionsProperty<
-  Driver extends AnyDriver,
+  Source extends AnyDataSource,
   Entity extends AnyEntity,
   P extends keyof EntityProps<Entity>
   // Property extends EntityProps<Entity>[P]["property"],
 > = P extends keyof Entity["columns"]
   ?
       | ColumnCompileType<Entity, P>
-      | FindOperator<Driver, Entity, ColumnCompileType<Entity, P>>
-      | FindExpression<Driver, Entity>
+      | FindOperator<Source, Entity, ColumnCompileType<Entity, P>>
+      | FindExpression<Source, Entity>
   : P extends keyof Entity["embeds"]
-  ? FindOptionsWhere<Driver, Entity["embeds"][P]>
+  ? FindOptionsWhere<Source, Entity["embeds"][P]>
   : P extends keyof Entity["relations"]
   ? FindOptionsWhere<
-      Driver,
-      Driver["options"]["entities"][Entity["relations"][P]["reference"]]
+      Source,
+      Source["driver"]["options"]["entities"][Entity["relations"][P]["reference"]]
     >
   : never
 
 export type FindOperatorWhereOptions<
-  Driver extends AnyDriver,
+  Source extends AnyDataSource,
   Entity extends AnyEntity
 > = {
   [P in keyof EntityProps<Entity>]?: FindOperatorWhereOptionsProperty<
-    Driver,
+    Source,
     Entity,
     P
   >

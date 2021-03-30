@@ -1,12 +1,12 @@
-import { AnyDriver } from "../driver"
+import { AnyDataSource } from "../data-source"
 import { AnyEntity } from "../entity"
 import { FindOperator } from "./find-options-where"
 
 export function Any<
-  Driver extends AnyDriver,
+  Source extends AnyDataSource,
   Entity extends AnyEntity,
   ValueType
->(...values: ValueType[]): FindOperator<Driver, Entity, ValueType> {
+>(...values: ValueType[]): FindOperator<Source, Entity, ValueType> {
   return {
     "@type": "FindOperator",
     kind: "any",
@@ -18,13 +18,13 @@ export function Any<
 }
 
 export function Between<
-  Driver extends AnyDriver,
+  Source extends AnyDataSource,
   Entity extends AnyEntity,
   ValueType
 >(
   first: ValueType,
   second: ValueType,
-): FindOperator<Driver, Entity, ValueType> {
+): FindOperator<Source, Entity, ValueType> {
   return {
     "@type": "FindOperator",
     kind: "between",
@@ -36,10 +36,10 @@ export function Between<
 }
 
 export function Equal<
-  Driver extends AnyDriver,
+  Source extends AnyDataSource,
   Entity extends AnyEntity,
   ValueType
->(value: ValueType): FindOperator<Driver, Entity, ValueType> {
+>(value: ValueType): FindOperator<Source, Entity, ValueType> {
   return {
     "@type": "FindOperator",
     kind: "equal",
@@ -51,10 +51,10 @@ export function Equal<
 }
 
 export function Like<
-  Driver extends AnyDriver,
+  Source extends AnyDataSource,
   Entity extends AnyEntity,
   ValueType
->(value: string): FindOperator<Driver, Entity, ValueType> {
+>(value: string): FindOperator<Source, Entity, ValueType> {
   return {
     "@type": "FindOperator",
     kind: "like",
@@ -66,10 +66,10 @@ export function Like<
 }
 
 export function ILike<
-  Driver extends AnyDriver,
+  Source extends AnyDataSource,
   Entity extends AnyEntity,
   ValueType
->(value: string): FindOperator<Driver, Entity, ValueType> {
+>(value: string): FindOperator<Source, Entity, ValueType> {
   return {
     "@type": "FindOperator",
     kind: "ilike",
@@ -81,10 +81,10 @@ export function ILike<
 }
 
 export function In<
-  Driver extends AnyDriver,
+  Source extends AnyDataSource,
   Entity extends AnyEntity,
   ValueType
->(...values: ValueType[]): FindOperator<Driver, Entity, ValueType> {
+>(...values: ValueType[]): FindOperator<Source, Entity, ValueType> {
   return {
     "@type": "FindOperator",
     kind: "in",
@@ -96,10 +96,10 @@ export function In<
 }
 
 export function LessThan<
-  Driver extends AnyDriver,
+  Source extends AnyDataSource,
   Entity extends AnyEntity,
   ValueType
->(value: ValueType): FindOperator<Driver, Entity, ValueType> {
+>(value: ValueType): FindOperator<Source, Entity, ValueType> {
   return {
     "@type": "FindOperator",
     kind: "lessThan",
@@ -111,10 +111,10 @@ export function LessThan<
 }
 
 export function LessThanOrEqual<
-  Driver extends AnyDriver,
+  Source extends AnyDataSource,
   Entity extends AnyEntity,
   ValueType
->(value: ValueType): FindOperator<Driver, Entity, ValueType> {
+>(value: ValueType): FindOperator<Source, Entity, ValueType> {
   return {
     "@type": "FindOperator",
     kind: "lessThanOrEqual",
@@ -126,10 +126,10 @@ export function LessThanOrEqual<
 }
 
 export function MoreThan<
-  Driver extends AnyDriver,
+  Source extends AnyDataSource,
   Entity extends AnyEntity,
   ValueType
->(value: ValueType): FindOperator<Driver, Entity, ValueType> {
+>(value: ValueType): FindOperator<Source, Entity, ValueType> {
   return {
     "@type": "FindOperator",
     kind: "moreThan",
@@ -141,10 +141,10 @@ export function MoreThan<
 }
 
 export function MoreThanOrEqual<
-  Driver extends AnyDriver,
+  Source extends AnyDataSource,
   Entity extends AnyEntity,
   ValueType
->(value: ValueType): FindOperator<Driver, Entity, ValueType> {
+>(value: ValueType): FindOperator<Source, Entity, ValueType> {
   return {
     "@type": "FindOperator",
     kind: "moreThanOrEqual",
@@ -156,10 +156,10 @@ export function MoreThanOrEqual<
 }
 
 export function Raw<
-  Driver extends AnyDriver,
+  Source extends AnyDataSource,
   Entity extends AnyEntity,
   ValueType
->(value: string): FindOperator<Driver, Entity, ValueType> {
+>(value: string): FindOperator<Source, Entity, ValueType> {
   return {
     "@type": "FindOperator",
     kind: "raw",
@@ -171,10 +171,10 @@ export function Raw<
 }
 
 export function Escaped<
-  Driver extends AnyDriver,
+  Source extends AnyDataSource,
   Entity extends AnyEntity,
   ValueType
->(value: string): FindOperator<Driver, Entity, ValueType> {
+>(value: string): FindOperator<Source, Entity, ValueType> {
   return {
     "@type": "FindOperator",
     kind: "escaped",
@@ -186,13 +186,13 @@ export function Escaped<
 }
 
 export function Column<
-  Driver extends AnyDriver,
+  Source extends AnyDataSource,
   Entity extends AnyEntity,
   ValueType
 >(
   name: keyof Entity["columns"],
   // alias?: string
-): FindOperator<Driver, Entity, ValueType> {
+): FindOperator<Source, Entity, ValueType> {
   return {
     "@type": "FindOperator",
     kind: "column",

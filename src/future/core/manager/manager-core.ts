@@ -1,16 +1,20 @@
 import { PostgresRepository } from "../../postgres"
-import { AnyDriver, DriverEntities } from "../driver"
+import { AnyDataSource } from "../data-source"
+import { DriverEntities } from "../driver"
 
 export interface CoreManager {
   "@type": "Manager"
   // dataSource: DataSource<SourceOptions, this>
 }
 
-export interface CoreManagerWithRepository<Driver extends AnyDriver> {
-  repository<EntityName extends keyof Driver["options"]["entities"]>(
+export interface CoreManagerWithRepository<Source extends AnyDataSource> {
+  repository<EntityName extends keyof Source["driver"]["options"]["entities"]>(
     entity: EntityName,
-  ): PostgresRepository<Driver, Driver["options"]["entities"][EntityName]>
-  repository<Entity extends DriverEntities<Driver>>(
+  ): PostgresRepository<
+    Source,
+    Source["driver"]["options"]["entities"][EntityName]
+  >
+  repository<Entity extends DriverEntities<Source["driver"]>>(
     entity: Entity,
-  ): PostgresRepository<Driver, Entity>
+  ): PostgresRepository<Source, Entity>
 }

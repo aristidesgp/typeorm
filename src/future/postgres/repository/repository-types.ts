@@ -1,5 +1,5 @@
 import {
-  AnyDriver,
+  AnyDataSource,
   CoreRepository,
   CoreRepositoryWithFind,
   CoreRepositoryWithOptions,
@@ -10,9 +10,9 @@ import {
  * A single repository managing a particular entity.
  */
 export interface PostgresRepository<
-  Driver extends AnyDriver,
-  Entity extends DriverEntities<Driver>
+  Source extends AnyDataSource,
+  Entity extends DriverEntities<Source["driver"]>
 >
   extends CoreRepository,
-    CoreRepositoryWithFind<Driver, Entity>,
-    CoreRepositoryWithOptions<Driver, Entity> {}
+    CoreRepositoryWithFind<Source, Entity>,
+    CoreRepositoryWithOptions<Source, Entity> {}

@@ -1,5 +1,9 @@
-import { AnyDriver, CoreManager, CoreManagerWithRepository } from "../../core"
+import {
+  AnyDataSource,
+  CoreManager,
+  CoreManagerWithRepository,
+} from "../../core"
 
-export interface PostgresManager<Driver extends AnyDriver>
+export interface PostgresManager<Source extends AnyDataSource>
   extends CoreManager,
-    CoreManagerWithRepository<Driver> {}
+    CoreManagerWithRepository<Source> {}

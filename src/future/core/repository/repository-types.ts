@@ -1,4 +1,5 @@
-import { AnyDriver, DriverEntities } from "../driver"
+import { AnyDataSource } from "../data-source"
+import { DriverEntities } from "../driver"
 import { FindOptions, FindReturnType } from "../find-options"
 import { ForceEmptyTypeIfUndefined } from "../util"
 
@@ -13,13 +14,13 @@ export type CoreRepository = {
  *
  */
 export interface CoreRepositoryWithFind<
-  Driver extends AnyDriver,
-  Entity extends DriverEntities<Driver>
+  Source extends AnyDataSource,
+  Entity extends DriverEntities<Source["driver"]>
 > {
-  find<Options extends FindOptions<Driver, Entity>>(
+  find<Options extends FindOptions<Source, Entity>>(
     options: Options,
   ): FindReturnType<
-    Driver,
+    Source,
     Entity,
     ForceEmptyTypeIfUndefined<Options["select"]>,
     false
@@ -30,12 +31,12 @@ export interface CoreRepositoryWithFind<
  *
  */
 export interface CoreRepositoryWithOptions<
-  Driver extends AnyDriver,
-  Entity extends DriverEntities<Driver>
+  Source extends AnyDataSource,
+  Entity extends DriverEntities<Source["driver"]>
 > {
   options<
     FindEntity extends Entity,
-    Options extends FindOptions<Driver, Entity>
+    Options extends FindOptions<Source, Entity>
   >(
     options: Options,
   ): Options
