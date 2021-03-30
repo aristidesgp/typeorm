@@ -1,6 +1,6 @@
 import { AnyDataSource } from "../data-source"
-import { AnyEntity } from "../entity"
-import { ColumnCompileType, EntityProps } from "./find-options-select"
+import { AnyEntity, ColumnCompileType, ReferencedEntity } from "../entity"
+import { EntityProps } from "./find-options-select"
 
 export type FindExpression<
   Source extends AnyDataSource,
@@ -63,10 +63,7 @@ export type FindOperatorWhereOptionsProperty<
   : P extends keyof Entity["embeds"]
   ? FindOptionsWhere<Source, Entity["embeds"][P]>
   : P extends keyof Entity["relations"]
-  ? FindOptionsWhere<
-      Source,
-      Source["driver"]["options"]["entities"][Entity["relations"][P]["reference"]]
-    >
+  ? FindOptionsWhere<Source, ReferencedEntity<Source, Entity, P>>
   : never
 
 export type FindOperatorWhereOptions<

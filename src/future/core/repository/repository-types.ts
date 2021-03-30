@@ -18,11 +18,13 @@ export interface CoreRepositoryWithFind<
 > {
   find<Options extends FindOptions<Source, Entity>>(
     options: Options,
-  ): FindReturnType<
-    Source,
-    Entity,
-    ForceEmptyTypeIfUndefined<Options["select"]>,
-    false
+  ): Promise<
+    FindReturnType<
+      Source,
+      Entity,
+      ForceEmptyTypeIfUndefined<Options["select"]>,
+      false
+    >
   >
 }
 

@@ -1,3 +1,4 @@
+import { AnyDataSource } from "../data-source"
 import { AnyDriver } from "../driver"
 
 export type AnyEntity = CoreEntity<
@@ -31,6 +32,11 @@ export type EntityColumns<Driver extends AnyDriver> = {
   [key: string]: {
     type: keyof Driver["columnTypes"]
     nullable?: boolean
+    array?: boolean
+    transform?: {
+      from(value: any): any
+      to(value: any): any
+    }
   }
 }
 
@@ -69,3 +75,33 @@ export type EntityRelations = {
 export type EntityEmbeds<Driver extends AnyDriver> = {
   [key: string]: AnyEntity
 }
+
+/**
+ * Extracts entity that was referenced in a given entity relation.
+ * For example for ReferencedEntity<Any, User, "avatar"> returns "Photo" entity.
+ */
+export type ReferencedEntity<
+  Source extends AnyDataSource,
+  Entity extends AnyEntity,
+  Property extends keyof Entity["relations"]
+> = Source["driver"]["options"]["entities"][Entity["relations"][Property]["reference"]]
+
+/**
+ * Gets a real compile-time type of the column defined in the entity.
+ *
+ * todo: also need to consider transformers
+ */
+export type ColumnCompileType<
+  Entity extends AnyEntity,
+  Property extends keyof Entity["columns"]
+> = Entity["columns"][Property]["array"] extends true
+  ? Entity["columns"][Property]["nullable"] extends true
+    ?
+        | Entity["driver"]["columnTypes"][Entity["columns"][Property]["type"]]["type"][]
+        | null
+    : Entity["driver"]["columnTypes"][Entity["columns"][Property]["type"]]["type"]
+  : Entity["columns"][Property]["nullable"] extends true
+  ?
+      | Entity["driver"]["columnTypes"][Entity["columns"][Property]["type"]]["type"]
+      | null
+  : Entity["driver"]["columnTypes"][Entity["columns"][Property]["type"]]["type"]

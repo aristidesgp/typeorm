@@ -1,22 +1,41 @@
 import { AnyDataSource } from "../data-source"
-import { AnyEntity } from "../entity"
+import { AnyEntity, ColumnCompileType, ReferencedEntity } from "../entity"
 
 /**
- * Schema for a EntitySelection, used to specify what properties of a Entity must be selected.
+ * Schema for Selection, used for user to specify what he is going to "select" from the db.
+ * In selection he is able to specify columns, relations and embeds to select.
+ * Relations can be "selected completely" by simply specifying "true" to the whole object in the relation, e.g. { relation: true }.
+ * Its also worth noting if no columns where specified in the selection, all entity columns will be selected,
+ * e.g. for selection of user(id,name,photo,contacts) with selection set to { select: { photo: true } } -
+ * returned result will have - "id", "name" columns and "photo" relation selected.
+ *
+ * Usage example:
+ *
+ * .find({
+ *   select: {
+ *     id: true,
+ *     name: true,
+ *     photo: {
+ *       id: true,
+ *       filename: true,
+ *       album: true
+ *     },
+ *     profile: {
+ *       bio: true
+ *     }
+ *   }
+ * })
  */
 export type FindOptionsSelect<
   Source extends AnyDataSource,
   Entity extends AnyEntity
-> = /*{ "*"?: boolean } &*/ {
-  [P in keyof Entity["columns"]]?: boolean // P extends keyof Entity["columns"] ? boolean : never
+> = {
+  [P in keyof Entity["columns"]]?: boolean
 } &
   {
     [P in keyof Entity["relations"]]?:
       | boolean
-      | FindOptionsSelect<
-          Source,
-          Source["driver"]["options"]["entities"][Entity["relations"][P]["reference"]]
-        >
+      | FindOptionsSelect<Source, ReferencedEntity<Source, Entity, P>>
   } &
   {
     [P in keyof Entity["embeds"]]?: FindOptionsSelect<
@@ -43,18 +62,6 @@ export type EntityProps<Entity extends AnyEntity> = {
       property: P
     }
   }
-
-/**
- * todo: also need to consider transformers
- */
-export type ColumnCompileType<
-  Entity extends AnyEntity,
-  Property extends keyof Entity["columns"]
-> = Entity["columns"][Property]["nullable"] extends true
-  ?
-      | Entity["driver"]["columnTypes"][Entity["columns"][Property]["type"]]["type"]
-      | null
-  : Entity["driver"]["columnTypes"][Entity["columns"][Property]["type"]]["type"]
 
 export type FindReturnTypeProperty<
   Source extends AnyDataSource,
@@ -85,13 +92,13 @@ export type FindReturnTypeProperty<
           | "one-to-many" // Entity["model"]["type"][P] extends Array<infer U> ?
         ? FindReturnType<
             Source,
-            Source["driver"]["options"]["entities"][Entity["relations"][Property]["reference"]],
+            ReferencedEntity<Source, Entity, Property>,
             Selection[Property],
             false
           >[]
         : FindReturnType<
             Source,
-            Source["driver"]["options"]["entities"][Entity["relations"][Property]["reference"]],
+            ReferencedEntity<Source, Entity, Property>,
             Selection[Property],
             false
           >
@@ -100,13 +107,13 @@ export type FindReturnTypeProperty<
       ? Entity["relations"][P]["type"] extends "many-to-many" | "one-to-many" // Entity["model"]["type"][P] extends Array<infer U> ?
         ? FindReturnType<
             Source,
-            Source["driver"]["options"]["entities"][Entity["relations"][Property]["reference"]],
+            ReferencedEntity<Source, Entity, Property>,
             {},
             false
           >[]
         : FindReturnType<
             Source,
-            Source["driver"]["options"]["entities"][Entity["relations"][Property]["reference"]],
+            ReferencedEntity<Source, Entity, Property>,
             {},
             false
           >
