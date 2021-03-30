@@ -1,23 +1,14 @@
-import { AnyDataSource, DataSourceEntities } from "../data-source"
-import { FindOptions, FindReturnType } from "../find-options"
-import { ForceEmptyTypeIfUndefined } from "../util"
-
-/**
- * List of all repositories registered in the app.
- */
-export type RepositoryList<Source extends AnyDataSource> = {
-  [P in keyof Source["options"]["entities"]]: Repository<
-    Source,
-    Source["options"]["entities"][P]
-  >
-}
+// import { AnyDataSource, DriverEntities } from "../data-source"
+// import { FindOptions, FindReturnType } from "../find-options"
+// import { ForceEmptyTypeIfUndefined } from "../util"
 
 /**
  * A single repository managing a particular entity.
  */
-export type Repository<
+export type CoreRepository = {}
+/*<
   Source extends AnyDataSource,
-  Entity extends DataSourceEntities<Source>
+  Entity extends DriverEntities<Source>
 > = {
   find<
     FindEntity extends Entity,
@@ -37,4 +28,4 @@ export type Repository<
   >(
     options: Options,
   ): Options
-}
+}*/

@@ -1,13 +1,13 @@
-import { AnyDataSource } from "../data-source";
-import { ValueOf } from "../util";
-import { FindOptionsSelect } from "./find-options-select";
-import { FindOptionsWhere } from "./find-options-where";
+import { AnyDriver } from "../driver"
+import { ValueOf } from "../util"
+import { FindOptionsSelect } from "./find-options-select"
+import { FindOptionsWhere } from "./find-options-where"
 
 export type FindOptions<
-    Source extends AnyDataSource,
-    Entity extends ValueOf<Source["options"]["entities"]>
+  Driver extends AnyDriver,
+  Entity extends ValueOf<Driver["options"]["entities"]>
 > = {
-    select?: FindOptionsSelect<Source, Entity>;
-    where?: FindOptionsWhere<Source, Entity>;
-    // order?: FindOptionsOrder<Entity>
-};
+  select?: FindOptionsSelect<Driver, Entity>
+  where?: FindOptionsWhere<Driver, Entity>
+  // order?: FindOptionsOrder<Entity>
+}

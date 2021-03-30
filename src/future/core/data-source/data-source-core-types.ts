@@ -1,12 +1,8 @@
-import { Driver } from "../../../driver/Driver"
 import { Logger } from "../../../logger/Logger"
 import { EntityMetadata } from "../../../metadata/EntityMetadata"
 import { NamingStrategyInterface } from "../../../naming-strategy/NamingStrategyInterface"
 import { QueryRunner } from "../../../query-runner/QueryRunner"
-import { DriverType } from "../driver"
-import { EntityList } from "../entity"
-import { Manager } from "../manager"
-import { RepositoryList } from "../repository"
+import { AnyDriver } from "../driver"
 import { ValueOf } from "../util"
 import { DataSourceOptions } from "./data-source-options-types"
 
@@ -15,28 +11,19 @@ import { DataSourceOptions } from "./data-source-options-types"
  *
  * @see DataSource
  */
-export type AnyDataSource = DataSource<
-  DataSourceOptions<DriverType, EntityList>
-  >
+export type AnyDataSource = DataSource<AnyDriver>
 
 /**
  * DataSource is a main entry in the TypeORM-based application.
  * It is a main entry point to establish connections with a chosen database type and execute queries against it.
  * You can have multiple data sources connected to multiple databases in your application.
  */
-export type DataSource<
-  Options extends DataSourceOptions<DriverType, EntityList>
-  > = {
+export type DataSource<Driver extends AnyDriver> = {
   /**
    * Unique type identifier.
    * Can be used to check if object is an instance of DataSource.
    */
   "@type": "DataSource"
-
-  /**
-   * Data source options defined on creation.
-   */
-  options: Options
 
   /**
    * Indicates if connection with a data source was initialized or not.
@@ -50,9 +37,14 @@ export type DataSource<
   driver: Driver
 
   /**
+   * Options.
+   */
+  options: DataSourceOptions<Driver>
+
+  /**
    * Manager.
    */
-  manager: Manager<DataSource<Options>>
+  manager: Driver["manager"]
 
   /**
    * All entity metadatas that are registered for this connection.
@@ -70,11 +62,6 @@ export type DataSource<
   logger: Logger
 
   /**
-   * Access to the entity repositories.
-   */
-  repository: RepositoryList<DataSource<Options>>
-
-  /**
    * Initializes a data source connection.
    * This method should be called once on application bootstrap.
    * This method not necessarily creates database connection (depend on database type),
@@ -82,7 +69,7 @@ export type DataSource<
    *
    * Returns self.
    */
-  connect(): Promise<DataSource<Options>>
+  connect(): Promise<DataSource<Driver>>
 
   /**
    * Closes any opened connection with a database.
@@ -133,6 +120,6 @@ export type DataSource<
   //
 }
 
-export type DataSourceEntities<Source extends AnyDataSource> = ValueOf<
-  Source["options"]["entities"]
-  >
+export type DriverEntities<Driver extends AnyDriver> = ValueOf<
+  Driver["options"]["entities"]
+>

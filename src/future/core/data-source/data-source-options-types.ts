@@ -1,24 +1,7 @@
-import { DriverType } from "../driver"
-import { EntityList } from "../entity"
+import { AnyDriver } from "../driver"
 
-export type AnyDataSourceOptions = DataSourceOptions<DriverType, EntityList>
-
-export type DataSourceOptions<
-  ScopeDriverType extends DriverType,
-  Entities extends EntityList
-> = {
-  /**
-   * Driver type, e.g. postgres, mysql, sqlite, etc.
-   *
-   * @see DriverType
-   */
-  type: ScopeDriverType
-
-  /**
-   * List of entities to be used in this data source.
-   */
-  entities: Entities
-
+export type DataSourceOptions<Driver extends AnyDriver> = {
+  driver: Driver
   // subscribers
   // namingStrategy
   // logger

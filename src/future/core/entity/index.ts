@@ -1,20 +1,20 @@
-import { AnyDriverTypes, DriverTypes } from "../driver"
+import { AnyDriver } from "../driver"
 
 export type AnyEntity = Entity<
-  any,
-  EntityColumns<AnyDriverTypes>,
+  AnyDriver,
+  EntityColumns<AnyDriver>,
   EntityRelations,
-  EntityEmbeds<AnyDriverTypes>
+  EntityEmbeds<AnyDriver>
 >
 
 export type Entity<
-  GivenDriverTypes extends DriverTypes<any>,
-  Columns extends EntityColumns<AnyDriverTypes>,
+  Driver extends AnyDriver,
+  Columns extends EntityColumns<Driver>,
   Relations extends EntityRelations,
-  Embeds extends EntityEmbeds<AnyDriverTypes>
+  Embeds extends EntityEmbeds<Driver>
 > = {
   "@type": "Entity"
-  driverTypes: GivenDriverTypes
+  driver: Driver
   columns: Columns
   relations: Relations
   embeds: Embeds
@@ -27,9 +27,9 @@ export type EntityList = {
   [name: string]: AnyEntity
 }
 
-export type EntityColumns<DriverTypes extends AnyDriverTypes> = {
+export type EntityColumns<Driver extends AnyDriver> = {
   [key: string]: {
-    type: keyof DriverTypes["columnTypes"]
+    type: keyof Driver["columnTypes"]
     nullable?: boolean
   }
 }
@@ -66,6 +66,6 @@ export type EntityRelations = {
   [key: string]: EntityRelationItem
 }
 
-export type EntityEmbeds<DriverTypes extends AnyDriverTypes> = {
+export type EntityEmbeds<Driver extends AnyDriver> = {
   [key: string]: AnyEntity
 }
