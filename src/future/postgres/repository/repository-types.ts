@@ -3,7 +3,7 @@ import {
   CoreRepository,
   CoreRepositoryWithFind,
   CoreRepositoryWithOptions,
-  DriverEntities,
+  DataSourceEntity,
 } from "../../core"
 
 /**
@@ -11,8 +11,7 @@ import {
  */
 export interface PostgresRepository<
   Source extends AnyDataSource,
-  Entity extends DriverEntities<Source["driver"]>
->
-  extends CoreRepository,
+  Entity extends DataSourceEntity<Source>
+> extends CoreRepository,
     CoreRepositoryWithFind<Source, Entity>,
     CoreRepositoryWithOptions<Source, Entity> {}

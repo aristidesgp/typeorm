@@ -1,6 +1,5 @@
 import { PostgresRepository } from "../../postgres"
-import { AnyDataSource } from "../data-source"
-import { DriverEntities } from "../driver"
+import { AnyDataSource, DataSourceEntity } from "../data-source"
 
 export interface CoreManager {
   "@type": "Manager"
@@ -14,7 +13,7 @@ export interface CoreManagerWithRepository<Source extends AnyDataSource> {
     Source,
     Source["driver"]["options"]["entities"][EntityName]
   >
-  repository<Entity extends DriverEntities<Source["driver"]>>(
+  repository<Entity extends DataSourceEntity<Source>>(
     entity: Entity,
   ): PostgresRepository<Source, Entity>
 }

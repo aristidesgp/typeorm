@@ -1,6 +1,4 @@
 import { AnyEntityList } from "../entity"
-import { ValueOf } from "../util"
-import { AnyDriver } from "./driver-core-types"
 
 /**
  * Any DataSourceOptions. Helper type.
@@ -16,10 +14,3 @@ export interface BaseDriverOptions<Entities extends AnyEntityList> {
    */
   entities: Entities
 }
-
-/**
- * Entities registered in the Driver.
- */
-export type DriverEntities<Driver extends AnyDriver> = ValueOf<
-  Driver["options"]["entities"]
->

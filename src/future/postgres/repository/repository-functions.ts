@@ -1,9 +1,9 @@
-import { AnyDataSource, DriverEntities } from "../../core"
+import { AnyDataSource, DataSourceEntity } from "../../core"
 import { PostgresRepository } from "./repository-types"
 
 export function createPostgresRepository(): PostgresRepository<
   AnyDataSource,
-  DriverEntities<AnyDataSource["driver"]>
+  DataSourceEntity<AnyDataSource>
 > {
   return {
     "@type": "Repository",

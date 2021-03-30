@@ -1,8 +1,8 @@
 import { SimpleConsoleLogger } from "../../../logger/SimpleConsoleLogger"
 import { DefaultNamingStrategy } from "../../../naming-strategy/DefaultNamingStrategy"
 import { AnyDriver } from "../driver"
-import { DataSourceOptions } from "./data-source-options-types"
 import { CoreDataSource } from "./data-source-core-types"
+import { DataSourceOptions } from "./data-source-options-types"
 
 /**
  * Working with DataSource.

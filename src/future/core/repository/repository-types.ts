@@ -1,5 +1,4 @@
-import { AnyDataSource } from "../data-source"
-import { DriverEntities } from "../driver"
+import { AnyDataSource, DataSourceEntity } from "../data-source"
 import { FindOptions, FindReturnType } from "../find-options"
 import { ForceEmptyTypeIfUndefined } from "../util"
 
@@ -15,7 +14,7 @@ export type CoreRepository = {
  */
 export interface CoreRepositoryWithFind<
   Source extends AnyDataSource,
-  Entity extends DriverEntities<Source["driver"]>
+  Entity extends DataSourceEntity<Source>
 > {
   find<Options extends FindOptions<Source, Entity>>(
     options: Options,
@@ -32,7 +31,7 @@ export interface CoreRepositoryWithFind<
  */
 export interface CoreRepositoryWithOptions<
   Source extends AnyDataSource,
-  Entity extends DriverEntities<Source["driver"]>
+  Entity extends DataSourceEntity<Source>
 > {
   options<
     FindEntity extends Entity,
