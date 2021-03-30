@@ -1,13 +1,13 @@
 import { AnyDriver } from "../driver"
 
-export type AnyEntity = Entity<
+export type AnyEntity = CoreEntity<
   AnyDriver,
   EntityColumns<AnyDriver>,
   EntityRelations,
   EntityEmbeds<AnyDriver>
 >
 
-export type Entity<
+export type CoreEntity<
   Driver extends AnyDriver,
   Columns extends EntityColumns<Driver>,
   Relations extends EntityRelations,
@@ -23,7 +23,7 @@ export type Entity<
 /**
  * List of named entities.
  */
-export type EntityList = {
+export type AnyEntityList = {
   [name: string]: AnyEntity
 }
 

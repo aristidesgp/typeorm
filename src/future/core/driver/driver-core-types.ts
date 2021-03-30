@@ -7,7 +7,12 @@ import { AnyDriverOptions } from "./driver-options"
  * Any driver implementation.
  * Helper type.
  */
-export type AnyDriver = CoreDriver<any, CoreManager, any, any>
+export type AnyDriver = CoreDriver<
+  AnyDriverOptions,
+  CoreManager,
+  CoreQueryRunner,
+  any
+>
 
 /**
  *

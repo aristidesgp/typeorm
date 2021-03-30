@@ -1,5 +1,5 @@
 import {
-  Entity,
+  CoreEntity,
   EntityColumns,
   EntityEmbeds,
   EntityRelations,
@@ -15,7 +15,7 @@ export function entity<
   columns?: Columns
   relations?: Relations
   embeds?: Embeds
-}): Entity<
+}): CoreEntity<
   PostgresDriver<any>,
   ForceEmptyTypeIfUndefined<Columns>,
   ForceEmptyTypeIfUndefined<Relations>,

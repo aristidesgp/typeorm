@@ -1,34 +1,18 @@
 import {
   AnyDriver,
+  CoreRepository,
+  CoreRepositoryWithFind,
+  CoreRepositoryWithOptions,
   DriverEntities,
-  FindOptions,
-  FindReturnType,
-  ForceEmptyTypeIfUndefined,
 } from "../../core"
 
 /**
  * A single repository managing a particular entity.
  */
-export type PostgresRepository<
+export interface PostgresRepository<
   Driver extends AnyDriver,
   Entity extends DriverEntities<Driver>
-> = {
-  find<
-    FindEntity extends Entity,
-    Options extends FindOptions<Driver, FindEntity>
-  >(
-    options: Options,
-  ): FindReturnType<
-    Driver,
-    FindEntity,
-    ForceEmptyTypeIfUndefined<Options["select"]>,
-    false
-  >
-
-  options<
-    FindEntity extends Entity,
-    Options extends FindOptions<Driver, Entity>
-  >(
-    options: Options,
-  ): Options
-}
+>
+  extends CoreRepository,
+    CoreRepositoryWithFind<Driver, Entity>,
+    CoreRepositoryWithOptions<Driver, Entity> {}

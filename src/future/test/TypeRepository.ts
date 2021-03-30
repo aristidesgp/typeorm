@@ -1,4 +1,4 @@
-import { createDataSource } from "../core"
+import { DataSource } from "../core"
 import { entity, postgres } from "../postgres"
 
 export const AlbumEntity = entity({
@@ -90,8 +90,8 @@ export const UserEntity = entity({
 // usage example
 // -----------------------------------------------------------------
 
-const myDataSource = createDataSource({
-  driver: postgres({
+const myDataSource = DataSource.create({
+  type: postgres({
     username: "",
     password: "",
     database: "",
@@ -106,9 +106,20 @@ console.log(myDataSource)
 
 // const repo = myDataSource.manager.repository("UserEntity").
 
-const a = myDataSource.manager.repository("UserEntity").options({
+const a = myDataSource.manager.repository("UserEntity").find({
+  select: {
+    id: true,
+    name: true,
+    avatar: true,
+    profile: {
+      bio: true,
+    },
+  },
   where: {
-    name: "Das",
+    name: "Umed",
+    avatar: {
+      id: 1,
+    },
   },
 })
 

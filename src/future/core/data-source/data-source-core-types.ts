@@ -1,24 +1,22 @@
 import { Logger } from "../../../logger/Logger"
 import { EntityMetadata } from "../../../metadata/EntityMetadata"
 import { NamingStrategyInterface } from "../../../naming-strategy/NamingStrategyInterface"
-import { QueryRunner } from "../../../query-runner/QueryRunner"
 import { AnyDriver } from "../driver"
-import { ValueOf } from "../util"
 import { DataSourceOptions } from "./data-source-options-types"
 
 /**
  * Any DataSource. Helper type.
  *
- * @see DataSource
+ * @see CoreDataSource
  */
-export type AnyDataSource = DataSource<AnyDriver>
+export type AnyDataSource = CoreDataSource<AnyDriver>
 
 /**
  * DataSource is a main entry in the TypeORM-based application.
  * It is a main entry point to establish connections with a chosen database type and execute queries against it.
  * You can have multiple data sources connected to multiple databases in your application.
  */
-export type DataSource<Driver extends AnyDriver> = {
+export type CoreDataSource<Driver extends AnyDriver> = {
   /**
    * Unique type identifier.
    * Can be used to check if object is an instance of DataSource.
@@ -69,7 +67,7 @@ export type DataSource<Driver extends AnyDriver> = {
    *
    * Returns self.
    */
-  connect(): Promise<DataSource<Driver>>
+  connect(): Promise<CoreDataSource<Driver>>
 
   /**
    * Closes any opened connection with a database.
@@ -99,7 +97,7 @@ export type DataSource<Driver extends AnyDriver> = {
    * If you perform writes you must use master database,
    * if you perform reads you can use slave databases.
    */
-  createQueryRunner(): QueryRunner // todo: QueryRunner should be driver-specific
+  createQueryRunner(): Driver["queryRunner"]
 
   // subscribers -> needs a re-design, based on observables, maybe driver-specific
   // queryResultCache -> need design
@@ -119,7 +117,3 @@ export type DataSource<Driver extends AnyDriver> = {
   // createQueryBuilder -> deprecated, manager method should be used instead (reason: reduce confusion, too many ways to do same)
   //
 }
-
-export type DriverEntities<Driver extends AnyDriver> = ValueOf<
-  Driver["options"]["entities"]
->

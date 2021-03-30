@@ -1,7 +1,7 @@
 import { AnyDriver } from "../driver"
 
 export type DataSourceOptions<Driver extends AnyDriver> = {
-  driver: Driver
+  type: Driver
   // subscribers
   // namingStrategy
   // logger
