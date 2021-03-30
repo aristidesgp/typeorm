@@ -70,55 +70,48 @@ export type FindReturnTypeProperty<
   P extends keyof EntityProps<Entity>,
   Property extends EntityProps<Entity>[P]["property"],
   ParentPartiallySelected extends boolean
-> =
-  // if property is a column, just return it's type inferred from a driver column types defined in the entity
-  P extends keyof Entity["columns"]
-    ? ColumnCompileType<Entity, P>
-    : // if selected property is an embed, we just go recursively
-    P extends keyof Entity["embeds"]
-    ? FindReturnType<
-        Source,
-        Entity["embeds"][Property],
-        Selection[Property],
-        ParentPartiallySelected
-      >
-    : // if selected property is relation
-    P extends keyof Entity["relations"]
-    ? // relation selection can be defined two ways:
-      // 1. we can select some properties of the related object
-      Selection[Property] extends object
-      ? Entity["relations"][Property]["type"] extends
-          | "many-to-many"
-          | "one-to-many" // Entity["model"]["type"][P] extends Array<infer U> ?
-        ? FindReturnType<
-            Source,
-            ReferencedEntity<Source, Entity, Property>,
-            Selection[Property],
-            false
-          >[]
-        : FindReturnType<
-            Source,
-            ReferencedEntity<Source, Entity, Property>,
-            Selection[Property],
-            false
-          >
-      : // 2. we can select the whole related object (means its columns) by using relation: true
-      Selection[Property] extends true
-      ? Entity["relations"][P]["type"] extends "many-to-many" | "one-to-many" // Entity["model"]["type"][P] extends Array<infer U> ?
-        ? FindReturnType<
-            Source,
-            ReferencedEntity<Source, Entity, Property>,
-            {},
-            false
-          >[]
-        : FindReturnType<
-            Source,
-            ReferencedEntity<Source, Entity, Property>,
-            {},
-            false
-          >
-      : never
+> = P extends keyof Entity["columns"] // if property is a column, just return it's type inferred from a driver column types defined in the entity
+  ? ColumnCompileType<Entity, P>
+  : P extends keyof Entity["embeds"] // if selected property is an embed, we just go recursively
+  ? FindReturnType<
+      Source,
+      Entity["embeds"][Property],
+      Selection[Property],
+      ParentPartiallySelected
+    >
+  : P extends keyof Entity["relations"] // if selected property is relation
+  ? Selection[Property] extends object // relation selection can be defined two ways: // 1. we can select some properties of the related object
+    ? Entity["relations"][Property]["type"] extends
+        | "many-to-many"
+        | "one-to-many"
+      ? FindReturnType<
+          Source,
+          ReferencedEntity<Source, Entity, Property>,
+          Selection[Property],
+          false
+        >[]
+      : FindReturnType<
+          Source,
+          ReferencedEntity<Source, Entity, Property>,
+          Selection[Property],
+          false
+        >
+    : Selection[Property] extends true // 2. we can select the whole related object (means its columns) by using relation: true
+    ? Entity["relations"][P]["type"] extends "many-to-many" | "one-to-many" // Entity["model"]["type"][P] extends Array<infer U> ?
+      ? FindReturnType<
+          Source,
+          ReferencedEntity<Source, Entity, Property>,
+          {},
+          false
+        >[]
+      : FindReturnType<
+          Source,
+          ReferencedEntity<Source, Entity, Property>,
+          {},
+          false
+        >
     : never
+  : never
 
 export type OnlyColumnKeys<Selection, Entity extends AnyEntity> = {
   [P in keyof Selection]: Selection[P] extends true

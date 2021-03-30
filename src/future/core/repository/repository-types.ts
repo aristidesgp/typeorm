@@ -1,5 +1,10 @@
 import { AnyDataSource, DataSourceEntity } from "../data-source"
-import { FindOptions, FindReturnType } from "../find-options"
+import {
+  FindOptions,
+  FindOptionsSelect,
+  FindOptionsWhere,
+  FindReturnType,
+} from "../find-options"
 import { ForceEmptyTypeIfUndefined } from "../util"
 
 /**
@@ -35,10 +40,21 @@ export interface CoreRepositoryWithOptions<
   Source extends AnyDataSource,
   Entity extends DataSourceEntity<Source>
 > {
-  options<
-    FindEntity extends Entity,
-    Options extends FindOptions<Source, Entity>
-  >(
-    options: Options,
-  ): Options
+  findOptions: CoreRepositoryOptionsType<Source, Entity>
+}
+
+/**
+ * Function that produces FindOptions
+ */
+export type CoreRepositoryOptionsType<
+  Source extends AnyDataSource,
+  Entity extends DataSourceEntity<Source>
+> = {
+  <Options extends FindOptions<Source, Entity>>(options: Options): Options
+
+  select<Select extends FindOptionsSelect<Source, Entity>>(
+    select: Select,
+  ): Select
+
+  where<Where extends FindOptionsWhere<Source, Entity>>(where: Where): Where
 }

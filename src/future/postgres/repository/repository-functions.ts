@@ -5,13 +5,21 @@ export function createPostgresRepository(): PostgresRepository<
   AnyDataSource,
   DataSourceEntity<AnyDataSource>
 > {
+  function Options() {
+    return {} as any
+  }
+  Options.select = () => {
+    return {} as any
+  }
+  Options.where = () => {
+    return {} as any
+  }
+
   return {
     "@type": "Repository",
     find() {
       return {} as any
     },
-    options() {
-      return {} as any
-    },
+    findOptions: Options,
   }
 }

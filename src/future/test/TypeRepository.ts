@@ -109,7 +109,7 @@ console.log(myDataSource)
 async function test() {
   const a = await myDataSource.manager.repository("UserEntity").find({
     select: {
-      avatar: true,
+      ...UserWithAvatarEager,
     },
     where: {
       name: "Umed",
@@ -123,6 +123,16 @@ async function test() {
 }
 
 test()
+
+const UserWithAvatarEager = myDataSource.manager
+  .repository("UserEntity")
+  .findOptions.select({
+    avatar: true,
+    photos: true,
+    profile: {
+      educationPhotos: true,
+    },
+  })
 
 // const whereOptions: FindOperatorWhereOptions<typeof myDataSource, typeof UserEntity> = Or({
 //     avatar: {

@@ -9,4 +9,11 @@ export type FindOptions<
   select?: FindOptionsSelect<Source, Entity>
   where?: FindOptionsWhere<Source, Entity>
   // order?: FindOptionsOrder<Entity>
+  // joins?: FindOptionsJoins<Entity>
+  // transaction?: boolean
+  // withDeleted?: boolean
+  // lock?: FindOptionsLock
+  // cache?: FindOptionsCache
+  // take?: number
+  // skip?: number
 }
