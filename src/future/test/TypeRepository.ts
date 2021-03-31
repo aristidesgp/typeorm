@@ -119,7 +119,7 @@ async function test() {
     },
   })
 
-  console.log(a.profile.bio)
+  console.log(a!.photos[0].filename)
 }
 
 test()

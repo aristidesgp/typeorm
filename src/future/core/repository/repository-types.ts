@@ -1,6 +1,7 @@
 import { AnyDataSource, DataSourceEntity } from "../data-source"
 import {
   FindOptions,
+  FindOptionsOrder,
   FindOptionsSelect,
   FindOptionsWhere,
   FindReturnType,
@@ -23,14 +24,12 @@ export interface CoreRepositoryWithFind<
 > {
   find<Options extends FindOptions<Source, Entity>>(
     options: Options,
-  ): Promise<
-    FindReturnType<
-      Source,
-      Entity,
-      ForceEmptyTypeIfUndefined<Options["select"]>,
-      false
-    >
-  >
+  ): Promise<FindReturnType<
+    Source,
+    Entity,
+    ForceEmptyTypeIfUndefined<Options["select"]>,
+    false
+  > | null>
 }
 
 /**
@@ -57,4 +56,6 @@ export type CoreRepositoryOptionsType<
   ): Select
 
   where<Where extends FindOptionsWhere<Source, Entity>>(where: Where): Where
+
+  order<Order extends FindOptionsOrder<Source, Entity>>(order: Order): Order
 }

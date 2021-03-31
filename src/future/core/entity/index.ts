@@ -30,7 +30,7 @@ export type AnyEntityList = {
 
 export type EntityColumns<Driver extends AnyDriver> = {
   [key: string]: {
-    type: keyof Driver["columnTypes"]
+    type: keyof Driver["types"]["columnTypes"]
     nullable?: boolean
     array?: boolean
     transform?: {
@@ -97,11 +97,11 @@ export type ColumnCompileType<
 > = Entity["columns"][Property]["array"] extends true
   ? Entity["columns"][Property]["nullable"] extends true
     ?
-        | Entity["driver"]["columnTypes"][Entity["columns"][Property]["type"]]["type"][]
+        | Entity["driver"]["types"]["columnTypes"][Entity["columns"][Property]["type"]]["type"][]
         | null
-    : Entity["driver"]["columnTypes"][Entity["columns"][Property]["type"]]["type"]
+    : Entity["driver"]["types"]["columnTypes"][Entity["columns"][Property]["type"]]["type"]
   : Entity["columns"][Property]["nullable"] extends true
   ?
-      | Entity["driver"]["columnTypes"][Entity["columns"][Property]["type"]]["type"]
+      | Entity["driver"]["types"]["columnTypes"][Entity["columns"][Property]["type"]]["type"]
       | null
-  : Entity["driver"]["columnTypes"][Entity["columns"][Property]["type"]]["type"]
+  : Entity["driver"]["types"]["columnTypes"][Entity["columns"][Property]["type"]]["type"]

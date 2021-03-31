@@ -1,27 +1,24 @@
-/**
- * Value of order by in find options.
- */
-export type FindOptionsOrderByValue =
-    | "ASC"
-    | "DESC"
-    | "asc"
-    | "desc"
-    | 1
-    | -1
-    | {
-          direction?: "asc" | "desc" | "ASC" | "DESC";
-          nulls?: "first" | "last" | "FIRST" | "LAST";
-      };
+import { AnyDataSource, DataSourceEntity } from "../data-source"
+import { ReferencedEntity } from "../entity"
 
 /**
- * Order by find options.
+ * Ordering options in find options.
  */
-export type FindOptionsOrder<E> = {
-    [P in keyof E]?: E[P] extends (infer R)[]
-        ? FindOptionsOrder<R>
-        : E[P] extends Promise<infer R>
-        ? FindOptionsOrder<R>
-        : E[P] extends object
-        ? FindOptionsOrder<E[P]>
-        : FindOptionsOrderByValue;
-};
+export type FindOptionsOrder<
+  Source extends AnyDataSource,
+  Entity extends DataSourceEntity<Source>
+> = {
+  [P in keyof Entity["columns"]]?: Source["driver"]["types"]["orderTypes"]
+} &
+  {
+    [P in keyof Entity["relations"]]?: FindOptionsOrder<
+      Source,
+      ReferencedEntity<Source, Entity, P>
+    >
+  } &
+  {
+    [P in keyof Entity["embeds"]]?: FindOptionsOrder<
+      Source,
+      Entity["embeds"][P]
+    >
+  }

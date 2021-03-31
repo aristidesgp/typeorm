@@ -7,7 +7,7 @@ export function postgres<Options extends PostgresDriverOptions<any>>(
   options: Options,
 ): PostgresDriver<Options> {
   return {
-    columnTypes: null as any,
+    types: null as any,
     manager: null as any,
     queryRunner: null as any,
     options,

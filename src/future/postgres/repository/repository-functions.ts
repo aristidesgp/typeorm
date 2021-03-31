@@ -14,6 +14,9 @@ export function createPostgresRepository(): PostgresRepository<
   Options.where = () => {
     return {} as any
   }
+  Options.order = () => {
+    return {} as any
+  }
 
   return {
     "@type": "Repository",
