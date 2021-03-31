@@ -1,4 +1,5 @@
 import { AnyDataSource, DataSourceEntity } from "../data-source"
+import { EntityPrimaryColumnMixedValueMap } from "../entity"
 import {
   FindOptions,
   FindOptionsMany,
@@ -39,6 +40,22 @@ export interface CoreRepositoryWithFind<
   >
 
   /**
+   * Finds entities matching given ids.
+   * Optionally options can be applied.
+   */
+  findByIds<Options extends FindOptionsMany<Source, Entity>>(
+    id: EntityPrimaryColumnMixedValueMap<Entity>,
+    options?: Options,
+  ): Promise<
+    FindReturnType<
+      Source,
+      Entity,
+      ForceEmptyTypeIfUndefined<Options["select"]>,
+      false
+    >[]
+  >
+
+  /**
    * Finds first entity matching given find options.
    * If entity was not found in the database - it returns null.
    */
@@ -57,6 +74,38 @@ export interface CoreRepositoryWithFind<
    */
   findOneOrFail<Options extends FindOptions<Source, Entity>>(
     options: Options,
+  ): Promise<
+    FindReturnType<
+      Source,
+      Entity,
+      ForceEmptyTypeIfUndefined<Options["select"]>,
+      false
+    >
+  >
+
+  /**
+   * Finds entity matching given entity id.
+   * Optionally options can be applied.
+   * If entity was not found in the database - it returns null.
+   */
+  findOneById<Options extends FindOptions<Source, Entity>>(
+    id: EntityPrimaryColumnMixedValueMap<Entity>,
+    options?: Options,
+  ): Promise<FindReturnType<
+    Source,
+    Entity,
+    ForceEmptyTypeIfUndefined<Options["select"]>,
+    false
+  > | null>
+
+  /**
+   * Finds entity matching given entity id.
+   * Optionally options can be applied.
+   * If entity was not found in the database - it throws an Error.
+   */
+  findOneByIdOrFail<Options extends FindOptions<Source, Entity>>(
+    id: EntityPrimaryColumnMixedValueMap<Entity>,
+    options?: Options,
   ): Promise<
     FindReturnType<
       Source,

@@ -66,9 +66,11 @@ export const UserEntity = entity({
   columns: {
     id: {
       type: "int",
+      primary: true,
     },
     name: {
       type: "varchar",
+      // primary: true,
     },
   },
   relations: {
@@ -120,6 +122,9 @@ async function test() {
   })
 
   console.log(a.photos[0].filename)
+
+  const b = await myDataSource.manager.repository("UserEntity").findByIds(1)
+  console.log(b)
 }
 
 test()
