@@ -1,22 +1,8 @@
 import { AnyDataSource, DataSourceEntity } from "../data-source"
 import { EntityPrimaryColumnMixedValueMap } from "../entity"
-import {
-  FindOptions,
-  FindOptionsMany,
-  FindOptionsOrder,
-  FindOptionsSelect,
-  FindOptionsWhere,
-  FindReturnType,
-} from "../find-options"
+import { FindOptions, FindOptionsMany, FindReturnType } from "../find-options"
 import { FindOptionsCount } from "../find-options/find-options-count"
 import { ForceEmptyTypeIfUndefined } from "../util"
-
-/**
- * Core Repository interface.
- */
-export interface CoreRepository {
-  "@type": "Repository"
-}
 
 /**
  * Interface for repositories that implement find* methods.
@@ -140,45 +126,4 @@ export interface CoreRepositoryWithFind<
   count<Options extends FindOptionsCount<Source, Entity>>(
     options: Options,
   ): Promise<number>
-}
-
-/**
- * Interface for repositories that implement "findOptions" method.
- * "findOptions" method allows to build FindOptions object easily.
- */
-export interface CoreRepositoryWithOptions<
-  Source extends AnyDataSource,
-  Entity extends DataSourceEntity<Source>
-> {
-  findOptions: CoreRepositoryOptionsType<Source, Entity>
-}
-
-/**
- * Function that produces FindOptions
- */
-export type CoreRepositoryOptionsType<
-  Source extends AnyDataSource,
-  Entity extends DataSourceEntity<Source>
-> = {
-  /**
-   * Creates a FindOptionsMany object.
-   */
-  <Options extends FindOptionsMany<Source, Entity>>(options: Options): Options
-
-  /**
-   * Creates a FindOptionsSelect object.
-   */
-  select<Select extends FindOptionsSelect<Source, Entity>>(
-    select: Select,
-  ): Select
-
-  /**
-   * Creates a FindOptionsWhere object.
-   */
-  where<Where extends FindOptionsWhere<Source, Entity>>(where: Where): Where
-
-  /**
-   * Creates a FindOptionsOrder object.
-   */
-  order<Order extends FindOptionsOrder<Source, Entity>>(order: Order): Order
 }
