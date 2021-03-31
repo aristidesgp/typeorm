@@ -20,8 +20,20 @@ export function createPostgresRepository(): PostgresRepository<
 
   return {
     "@type": "Repository",
-    find() {
+    async find() {
       return {} as any
+    },
+    async findOne() {
+      return {} as any
+    },
+    async findOneOrFail() {
+      return {} as any
+    },
+    async findAndCount() {
+      return [] as any
+    },
+    async count() {
+      return 0
     },
     findOptions: Options,
   }

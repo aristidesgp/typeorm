@@ -107,7 +107,7 @@ console.log(myDataSource)
 // const repo = myDataSource.manager.repository("UserEntity").
 
 async function test() {
-  const a = await myDataSource.manager.repository("UserEntity").find({
+  const a = await myDataSource.manager.repository("UserEntity").findOneOrFail({
     select: {
       ...UserWithAvatarEager,
     },
@@ -119,7 +119,7 @@ async function test() {
     },
   })
 
-  console.log(a!.photos[0].filename)
+  console.log(a.photos[0].filename)
 }
 
 test()
