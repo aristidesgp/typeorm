@@ -1,16 +1,26 @@
 import { AnyDataSource, DataSourceEntity } from "../data-source"
 import { EntityPrimaryColumnMixedValueMap } from "../entity"
-import { FindOptions, FindOptionsMany, FindReturnType } from "../find-options"
+import {
+  FindOptions,
+  FindOptionsBuilder,
+  FindOptionsMany,
+  FindReturnType,
+} from "../find-options"
 import { FindOptionsCount } from "../find-options/find-options-count"
 import { ForceEmptyTypeIfUndefined } from "../util"
 
 /**
  * Interface for repositories that implement find* methods.
  */
-export interface CoreRepositoryWithFind<
+export interface RepositoryFindMethods<
   Source extends AnyDataSource,
   Entity extends DataSourceEntity<Source>
 > {
+  /**
+   * Helps to build a FindOptions object.
+   */
+  findOptions: FindOptionsBuilder<Source, Entity>
+
   /**
    * Finds entities matching given find options.
    */

@@ -15,4 +15,8 @@ export type PostgresDriverTypes = {
   columnTypes: PostgresColumnTypes
   orderTypes: PostgresOrderTypes
   lockTypes: ""
+  insertResult: any
+  updateResult: any
+  deleteResult: any
+  queryResult: any
 }

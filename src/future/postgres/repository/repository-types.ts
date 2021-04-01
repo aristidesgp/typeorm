@@ -1,9 +1,11 @@
 import {
   AnyDataSource,
-  CoreRepository,
-  CoreRepositoryWithFind,
-  CoreRepositoryWithOptions,
+  RepositoryBase,
+  RepositoryFindMethods,
   DataSourceEntity,
+  RepositoryBasicMethods,
+  RepositoryCommonRdbmsMethods,
+  RepositoryPersistenceMethods,
 } from "../../core"
 
 /**
@@ -12,6 +14,8 @@ import {
 export interface PostgresRepository<
   Source extends AnyDataSource,
   Entity extends DataSourceEntity<Source>
-> extends CoreRepository,
-    CoreRepositoryWithFind<Source, Entity>,
-    CoreRepositoryWithOptions<Source, Entity> {}
+> extends RepositoryBase,
+    RepositoryBasicMethods<Source, Entity>,
+    RepositoryCommonRdbmsMethods<Source, Entity>,
+    RepositoryFindMethods<Source, Entity>,
+    RepositoryPersistenceMethods<Source, Entity> {}

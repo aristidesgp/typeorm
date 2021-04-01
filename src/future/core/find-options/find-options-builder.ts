@@ -1,30 +1,14 @@
 import { AnyDataSource, DataSourceEntity } from "../data-source"
-import {
-  FindOptionsMany,
-  FindOptionsOrder,
-  FindOptionsSelect,
-  FindOptionsWhere,
-} from "../find-options"
-
-/**
- * Interface for repositories that implement "findOptions" method.
- * "findOptions" method allows to build FindOptions object easily.
- */
-export interface CoreRepositoryWithOptions<
-  Source extends AnyDataSource,
-  Entity extends DataSourceEntity<Source>
-> {
-  /**
-   * Helps to build a FindOptions object.
-   */
-  findOptions: CoreRepositoryOptionsType<Source, Entity>
-}
+import { FindOptionsMany } from "./find-options-many"
+import { FindOptionsOrder } from "./find-options-order"
+import { FindOptionsSelect } from "./find-options-select"
+import { FindOptionsWhere } from "./find-options-where"
 
 /**
  * Function type that produces FindOptions.
  * This function also contains functions that help to build FindOptions sub-objects.
  */
-export type CoreRepositoryOptionsType<
+export type FindOptionsBuilder<
   Source extends AnyDataSource,
   Entity extends DataSourceEntity<Source>
 > = {
