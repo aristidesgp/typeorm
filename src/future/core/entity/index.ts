@@ -1,6 +1,7 @@
+import { DeepPartial } from "../../../common/DeepPartial"
 import { AnyDataSource } from "../data-source"
 import { AnyDriver } from "../driver"
-import { EntityProps } from "../find-options"
+import { EntityProps, FindReturnType } from "../find-options"
 import { MoreThanOneElement, ValueOf } from "../util"
 
 export type AnyEntity = CoreEntity<
@@ -114,6 +115,8 @@ export type ColumnCompileType<
  *
  * For example for { id: { type: "varchar", primary: true }, name: { "varchar", primary: true}, age: { type: "int" }}
  * This function will return "id" | "name" type.
+ *
+ * todo: add support for primaries in embeds
  */
 export type EntityPrimaryColumnNames<Entity extends AnyEntity> = {
   [P in keyof Entity["columns"]]: Entity["columns"][P]["primary"] extends true
@@ -136,6 +139,7 @@ export type EntityPrimaryColumnNames<Entity extends AnyEntity> = {
  *  - for { id: { type: "varchar", primary: true }, name: { "varchar" }, age: { type: "int" }}
  *    value will be: string
  *
+ * todo: add support for primaries in embeds
  */
 export type EntityPrimaryColumnMixedValueMap<
   Entity extends AnyEntity
@@ -144,6 +148,24 @@ export type EntityPrimaryColumnMixedValueMap<
   : {
       [P in EntityPrimaryColumnNames<Entity>]: ColumnCompileType<Entity, P>
     }
+
+/**
+ * Primary columns and their values of the given entity.
+ * Unlike *mixed* it doesn't flatten object if there is only one primary column in the entity.
+ *
+ * Examples:
+ *
+ *  - for { id: { type: "varchar", primary: true }, name: { "varchar", primary: true }, age: { type: "int" } }
+ *    value will be: { id: string, name: string }
+ *
+ *  - for { id: { type: "varchar", primary: true }, name: { "varchar" }, age: { type: "int" } }
+ *    value will be: { id: string }
+ *
+ * todo: add support for primaries in embeds
+ */
+export type EntityPrimaryColumnValueMap<Entity extends AnyEntity> = {
+  [P in EntityPrimaryColumnNames<Entity>]: ColumnCompileType<Entity, P>
+}
 
 /**
  * Extracts all entity columns and columns from its embeds into a single string literal type.
@@ -164,3 +186,19 @@ export type EntityColumnPaths<
       : never
   }
 >
+
+/**
+ * Type signature of a given entity.
+ */
+export type EntityModel<
+  Source extends AnyDataSource,
+  Entity extends AnyEntity
+> = FindReturnType<Source, Entity, {}, false>
+
+/**
+ * Partially type signature of a given entity.
+ */
+export type EntityModelPartial<
+  Source extends AnyDataSource,
+  Entity extends AnyEntity
+> = DeepPartial<FindReturnType<Source, Entity, {}, false>>

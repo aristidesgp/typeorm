@@ -1,4 +1,5 @@
-import { DataSource } from "../core"
+import { DataSource, EntityPrimaryColumnValueMap } from "../core"
+import { SelectAll } from "../core/selection"
 import { entity, postgres } from "../postgres"
 
 export const AlbumEntity = entity({
@@ -111,6 +112,7 @@ console.log(myDataSource)
 async function test() {
   const a = await myDataSource.manager.repository("UserEntity").findOneOrFail({
     select: {
+      id: true,
       ...UserWithAvatarEager,
     },
     where: {
@@ -124,11 +126,40 @@ async function test() {
   console.log(a.photos[0].filename)
 
   const b = await myDataSource.manager.repository("UserEntity").findByIds(1)
+  console.log(b)
 
   await myDataSource.manager
     .repository("UserEntity")
     .increment({ id: 1 }, "profile.maritalStatus", 1)
-  console.log(b)
+
+  const c = myDataSource.manager.repository("UserEntity").create({
+    name: "Olim",
+    profile: {
+      bio: "soset",
+    },
+  })
+  console.log(c)
+
+  const id = myDataSource.manager.repository("UserEntity").getId(c)
+  console.log(id)
+
+  const x: SelectAll<EntityPrimaryColumnValueMap<typeof UserEntity>> = {
+    id: true,
+  }
+  console.log(x)
+
+  const d = myDataSource.manager.repository("UserEntity").merge(
+    {
+      id: 1,
+    },
+    c,
+    {
+      profile: {
+        kids: 1,
+      },
+    },
+  )
+  console.log(d)
 }
 
 test()

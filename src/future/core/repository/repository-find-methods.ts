@@ -7,7 +7,7 @@ import {
   FindReturnType,
 } from "../find-options"
 import { FindOptionsCount } from "../find-options/find-options-count"
-import { ForceEmptyTypeIfUndefined } from "../util"
+import { ForceCast } from "../util"
 
 /**
  * Interface for repositories that implement find* methods.
@@ -27,12 +27,7 @@ export interface RepositoryFindMethods<
   find<Options extends FindOptionsMany<Source, Entity>>(
     options: Options,
   ): Promise<
-    FindReturnType<
-      Source,
-      Entity,
-      ForceEmptyTypeIfUndefined<Options["select"]>,
-      false
-    >[]
+    FindReturnType<Source, Entity, ForceCast<Options["select"], {}>, false>[]
   >
 
   /**
@@ -43,12 +38,7 @@ export interface RepositoryFindMethods<
     id: EntityPrimaryColumnMixedValueMap<Entity>,
     options?: Options,
   ): Promise<
-    FindReturnType<
-      Source,
-      Entity,
-      ForceEmptyTypeIfUndefined<Options["select"]>,
-      false
-    >[]
+    FindReturnType<Source, Entity, ForceCast<Options["select"], {}>, false>[]
   >
 
   /**
@@ -60,7 +50,7 @@ export interface RepositoryFindMethods<
   ): Promise<FindReturnType<
     Source,
     Entity,
-    ForceEmptyTypeIfUndefined<Options["select"]>,
+    ForceCast<Options["select"], {}>,
     false
   > | null>
 
@@ -71,12 +61,7 @@ export interface RepositoryFindMethods<
   findOneOrFail<Options extends FindOptions<Source, Entity>>(
     options: Options,
   ): Promise<
-    FindReturnType<
-      Source,
-      Entity,
-      ForceEmptyTypeIfUndefined<Options["select"]>,
-      false
-    >
+    FindReturnType<Source, Entity, ForceCast<Options["select"], {}>, false>
   >
 
   /**
@@ -90,7 +75,7 @@ export interface RepositoryFindMethods<
   ): Promise<FindReturnType<
     Source,
     Entity,
-    ForceEmptyTypeIfUndefined<Options["select"]>,
+    ForceCast<Options["select"], {}>,
     false
   > | null>
 
@@ -103,12 +88,7 @@ export interface RepositoryFindMethods<
     id: EntityPrimaryColumnMixedValueMap<Entity>,
     options?: Options,
   ): Promise<
-    FindReturnType<
-      Source,
-      Entity,
-      ForceEmptyTypeIfUndefined<Options["select"]>,
-      false
-    >
+    FindReturnType<Source, Entity, ForceCast<Options["select"], {}>, false>
   >
 
   /**
@@ -120,12 +100,7 @@ export interface RepositoryFindMethods<
     options: Options,
   ): Promise<
     [
-      FindReturnType<
-        Source,
-        Entity,
-        ForceEmptyTypeIfUndefined<Options["select"]>,
-        false
-      >[],
+      FindReturnType<Source, Entity, ForceCast<Options["select"], {}>, false>[],
       number,
     ]
   >

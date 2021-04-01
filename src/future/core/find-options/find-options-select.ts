@@ -66,7 +66,7 @@ export type EntityProps<Entity extends AnyEntity> = {
 export type FindReturnTypeProperty<
   Source extends AnyDataSource,
   Entity extends AnyEntity,
-  Selection extends FindOptionsSelect<Source, Entity>, // | undefined,
+  Selection, // if something went wrong use it: extends FindOptionsSelect<Source, Entity>,
   P extends keyof EntityProps<Entity>,
   Property extends EntityProps<Entity>[P]["property"],
   ParentPartiallySelected extends boolean
@@ -158,7 +158,7 @@ export type EntitySelectionAllColumns<
 export type FindReturnType<
   Source extends AnyDataSource,
   Entity extends AnyEntity,
-  Selection extends FindOptionsSelect<Source, Entity>, // | undefined,
+  Selection, // if something went wrong use it: extends FindOptionsSelect<Source, Entity>,
   ParentPartiallySelected extends boolean
 > =
   // this case is possible in embed, when parent selected set of columns,

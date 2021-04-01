@@ -1,10 +1,11 @@
 /**
- * Returns empty type (e.g. {}) if given T is undefined.
- *
- * todo: maybe better to do ForceCast<T, Forced>
+ * Force casts given T to CastTo if T is undefined.
  */
-export type ForceEmptyTypeIfUndefined<T> = T extends undefined ? {} : T
+export type ForceCast<T, CastTo> = T extends undefined ? CastTo : T
 
+/**
+ * Extracts all values of a given object T.
+ */
 export type ValueOf<T> = T[keyof T]
 
 /**
@@ -14,3 +15,17 @@ export type ValueOf<T> = T[keyof T]
 export type MoreThanOneElement<T extends string> = {
   [P in T]: Exclude<T, P> extends never ? never : P
 }[T]
+
+/**
+ * This magic type makes intellisense to output
+ */
+export type FlatTypeHint<T> = true extends false ? never : T
+
+/**
+ * Converts union type to intersection.
+ */
+export type UnionToIntersection<U> = (
+  U extends any ? (k: U) => void : never
+) extends (k: infer I) => void
+  ? I
+  : never
