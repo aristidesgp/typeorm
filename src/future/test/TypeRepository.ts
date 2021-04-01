@@ -124,6 +124,10 @@ async function test() {
   console.log(a.photos[0].filename)
 
   const b = await myDataSource.manager.repository("UserEntity").findByIds(1)
+
+  await myDataSource.manager
+    .repository("UserEntity")
+    .increment({ id: 1 }, "profile.maritalStatus", 1)
   console.log(b)
 }
 

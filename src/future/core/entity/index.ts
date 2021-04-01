@@ -1,6 +1,7 @@
 import { AnyDataSource } from "../data-source"
 import { AnyDriver } from "../driver"
-import { MoreThanOneElement } from "../util"
+import { EntityProps } from "../find-options"
+import { MoreThanOneElement, ValueOf } from "../util"
 
 export type AnyEntity = CoreEntity<
   AnyDriver,
@@ -143,3 +144,23 @@ export type EntityPrimaryColumnMixedValueMap<
   : {
       [P in EntityPrimaryColumnNames<Entity>]: ColumnCompileType<Entity, P>
     }
+
+/**
+ * Extracts all entity columns and columns from its embeds into a single string literal type.
+ * Example: for { id, name, profile: { bio, age, photos }} it will return a following type:
+ * "id" | "name" | "profile.bio" | "profile.age"
+ */
+export type EntityColumnPaths<
+  Entity extends AnyEntity,
+  Parent extends string = "",
+  Deepness extends string = "."
+> = ValueOf<
+  {
+    [P in keyof EntityProps<Entity>]?: P extends string &
+      keyof Entity["columns"]
+      ? `${Parent}${P}`
+      : P extends string & keyof Entity["embeds"]
+      ? EntityColumnPaths<Entity["embeds"][P], `${Parent}${P}.`, `${Deepness}.`>
+      : never
+  }
+>

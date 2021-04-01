@@ -33,3 +33,19 @@ export type CoreDriver<
     queryRunner(dataSource: AnyDataSource): QueryRunner
   }
 }
+
+export type QueryResult<
+  Source extends AnyDataSource
+> = Source["driver"]["types"]["queryResult"]
+
+export type InsertResult<
+  Source extends AnyDataSource
+> = Source["driver"]["types"]["insertResult"]
+
+export type UpdateResult<
+  Source extends AnyDataSource
+> = Source["driver"]["types"]["updateResult"]
+
+export type DeleteResult<
+  Source extends AnyDataSource
+> = Source["driver"]["types"]["deleteResult"]
