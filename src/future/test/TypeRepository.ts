@@ -151,10 +151,18 @@ const myDataSource = DataSource.create({
       AlbumEntity,
       CarEntity,
     },
+    repositories: {
+      // UserRepository,
+    },
   }),
 })
 console.log(myDataSource)
 
+export const UserRepository = myDataSource.manager.repository(UserEntity, {
+  async loadAllUsers() {
+    return []
+  },
+})
 // const repo = myDataSource.manager.repository("UserEntity").
 
 async function test() {
@@ -245,6 +253,17 @@ async function test() {
 
   const id2 = await myDataSource.manager.getId(CarEntity, {})
   console.log(id2.info.vin)
+
+  const users = await UserRepository.find({})
+  console.log(users)
+
+  const allUsers = await UserRepository.loadAllUsers()
+  console.log(allUsers)
+
+  // myDataSource.manager.reposi
+  // .transaction(async (manager) => {
+  //   console.log(manager)
+  // })
 }
 
 test()
