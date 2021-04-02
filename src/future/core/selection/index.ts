@@ -1,4 +1,4 @@
-import { FlatTypeHint } from "../util"
+import { FlatTypeHint, NonNever } from "../util"
 
 /**
  * "Selects" all properties of the given T.
@@ -7,11 +7,13 @@ import { FlatTypeHint } from "../util"
  * Recursive.
  */
 export type SelectAll<T> = FlatTypeHint<
-  {
-    [P in keyof T]: T[P] extends Array<infer U>
-      ? Array<SelectAll<U>>
-      : T[P] extends ReadonlyArray<infer U>
-      ? ReadonlyArray<SelectAll<U>>
-      : true
-  }
+  NonNever<
+    {
+      [P in keyof T]: T[P] extends string | number | boolean
+        ? true
+        : keyof SelectAll<T[P]> extends ""
+        ? never
+        : SelectAll<T[P]> // : true
+    }
+  >
 >

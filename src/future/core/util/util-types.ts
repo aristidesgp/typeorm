@@ -29,3 +29,11 @@ export type UnionToIntersection<U> = (
 ) extends (k: infer I) => void
   ? I
   : never
+
+/**
+ * Removes "never" properties from a given object.
+ */
+export type NonNever<T extends {}> = Pick<
+  T,
+  { [K in keyof T]: T[K] extends never ? never : K }[keyof T]
+>

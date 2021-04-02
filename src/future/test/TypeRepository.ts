@@ -23,6 +23,7 @@ export const AlbumEntity = entity({
 export const PhotoEntity = entity({
   columns: {
     id: {
+      primary: true,
       type: "int",
     },
     filename: {
@@ -93,6 +94,48 @@ export const UserEntity = entity({
   },
 })
 
+export const CarInfoEmbed = entity({
+  columns: {
+    vin: {
+      primary: true,
+      type: "varchar",
+    },
+    torque: {
+      type: "int",
+    },
+    year: {
+      type: "int",
+      default: 2021,
+    },
+  },
+})
+
+export const CarEntity = entity({
+  columns: {
+    id: {
+      type: "int",
+      primary: true,
+    },
+    name: {
+      type: "varchar",
+      // primary: true,
+    },
+    status: {
+      type: "varchar",
+      default: "production",
+    },
+  },
+  relations: {
+    photo: {
+      type: "many-to-one",
+      reference: "PhotoEntity" as const,
+    },
+  },
+  embeds: {
+    info: CarInfoEmbed,
+  },
+})
+
 // -----------------------------------------------------------------
 // usage example
 // -----------------------------------------------------------------
@@ -106,6 +149,7 @@ const myDataSource = DataSource.create({
       UserEntity,
       PhotoEntity,
       AlbumEntity,
+      CarEntity,
     },
   }),
 })
@@ -174,6 +218,25 @@ async function test() {
     name: "Umed",
   })
   console.log(f)
+
+  const g = await myDataSource.manager.save(CarEntity, {
+    name: "ModelZ",
+  })
+  console.log(g)
+
+  const a1 = await myDataSource.manager.findOneByIdOrFail(PhotoEntity, 1)
+  console.log(a1)
+
+  const a2 = await myDataSource.manager.findOneByIdOrFail(UserEntity, 1)
+  console.log(a2)
+
+  const a3 = await myDataSource.manager.findOneByIdOrFail(CarEntity, {
+    id: 1,
+    info: {
+      vin: "wow",
+    },
+  })
+  console.log(a3)
 }
 
 test()

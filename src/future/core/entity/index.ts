@@ -2,7 +2,7 @@ import { DeepPartial } from "../../../common/DeepPartial"
 import { AnyDataSource, DataSourceEntity } from "../data-source"
 import { AnyDriver } from "../driver"
 import { EntityProps, FindReturnType } from "../find-options"
-import { MoreThanOneElement, ValueOf } from "../util"
+import { MoreThanOneElement, NonNever, ValueOf } from "../util"
 
 export type AnyEntity = CoreEntity<
   AnyDriver,
@@ -126,23 +126,6 @@ export type EntityColumnNamesWithPrimary<Entity extends AnyEntity> = {
 }[string & keyof Entity["columns"]]
 
 /**
- * For a given entity returns column names with "default" set to some value.
- *
- * For example for { id: { type: "varchar", primary: true }, name: { "varchar", primary: true}, age: { type: "int" }}
- * This function will return "id" | "name" type.
- *
- * todo: add support for defaults in embeds
- */
-export type EntityColumnNamesWithDefault<Entity extends AnyEntity> = {
-  [P in keyof Entity["columns"]]: Entity["columns"][P]["default"] extends
-    | string
-    | number
-    | boolean
-    ? P
-    : never
-}[string & keyof Entity["columns"]]
-
-/**
  * Mixed value map consist of primary columns and their values of the given entity.
  * It is *mixed* because if entity has only one primary column,
  * its type will be directly equal to this primary column type.
@@ -161,11 +144,9 @@ export type EntityColumnNamesWithDefault<Entity extends AnyEntity> = {
  */
 export type EntityPrimaryColumnMixedValueMap<
   Entity extends AnyEntity
-> = MoreThanOneElement<EntityColumnNamesWithPrimary<Entity>> extends never
-  ? ColumnCompileType<Entity, EntityColumnNamesWithPrimary<Entity>>
-  : {
-      [P in EntityColumnNamesWithPrimary<Entity>]: ColumnCompileType<Entity, P>
-    }
+> = MoreThanOneElement<EntityPrimaryColumnPaths<Entity>> extends never
+  ? ColumnCompileType<Entity, EntityPrimaryColumnPaths<Entity>> // todo: it wouldn't work if there is only one primary and it is inside embed
+  : EntityPrimaryColumnValueMap<Entity>
 
 /**
  * Returns columns value map with "primary" set to true.
@@ -179,12 +160,18 @@ export type EntityPrimaryColumnMixedValueMap<
  *
  *  - for { id: { type: "varchar", primary: true }, name: { "varchar" }, age: { type: "int" } }
  *    value will be: { id: string }
- *
- * todo: add support for primaries in embeds
  */
-export type EntityPrimaryColumnValueMap<Entity extends AnyEntity> = {
-  [P in EntityColumnNamesWithPrimary<Entity>]: ColumnCompileType<Entity, P>
-}
+export type EntityPrimaryColumnValueMap<Entity extends AnyEntity> = NonNever<
+  {
+    [P in keyof EntityProps<Entity>]: P extends keyof Entity["columns"]
+      ? Entity["columns"][P]["primary"] extends true
+        ? ColumnCompileType<Entity, P>
+        : never
+      : P extends keyof Entity["embeds"]
+      ? EntityPrimaryColumnValueMap<Entity["embeds"][P]>
+      : never
+  }
+>
 
 /**
  * Returns columns value map with "default" value set.
@@ -198,12 +185,18 @@ export type EntityPrimaryColumnValueMap<Entity extends AnyEntity> = {
  *
  *  - for { id: { type: "varchar", primary: true }, name: { "varchar" }, age: { type: "int" } }
  *    value will be: { id: string }
- *
- * todo: add support for defaults in embeds
  */
-export type EntityDefaultColumnValueMap<Entity extends AnyEntity> = {
-  [P in EntityColumnNamesWithDefault<Entity>]: ColumnCompileType<Entity, P>
-}
+export type EntityDefaultColumnValueMap<Entity extends AnyEntity> = NonNever<
+  {
+    [P in keyof EntityProps<Entity>]: P extends keyof Entity["columns"]
+      ? Entity["columns"][P]["default"] extends string | number | boolean
+        ? ColumnCompileType<Entity, P>
+        : never
+      : P extends keyof Entity["embeds"]
+      ? EntityDefaultColumnValueMap<Entity["embeds"][P]>
+      : never
+  }
+>
 
 /**
  * Extracts all entity columns and columns from its embeds into a single string literal type.
@@ -224,6 +217,33 @@ export type EntityColumnPaths<
       : never
   }
 >
+
+/**
+ * Extracts all entity primary columns and primary columns from its embeds into a single string literal type.
+ * Example: for { id1, name, profile: { id2, bio, age, photos }} it will return a following type:
+ * "id" | "profile.id2"
+ */
+export type EntityPrimaryColumnPaths<
+  Entity extends AnyEntity,
+  Parent extends string = "",
+  Deepness extends string = "."
+> = string &
+  ValueOf<
+    {
+      [P in keyof EntityProps<Entity>]?: P extends string &
+        keyof Entity["columns"]
+        ? Entity["columns"][P]["primary"] extends true
+          ? `${Parent}${P}`
+          : never
+        : P extends string & keyof Entity["embeds"]
+        ? EntityPrimaryColumnPaths<
+            Entity["embeds"][P],
+            `${Parent}${P}.`,
+            `${Deepness}.`
+          >
+        : never
+    }
+  >
 
 /**
  * Type signature of a given entity.
