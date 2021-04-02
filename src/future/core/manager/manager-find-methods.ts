@@ -1,5 +1,9 @@
-import { AnyDataSource, DataSourceEntity } from "../data-source"
-import { EntityPrimaryColumnMixedValueMap } from "../entity"
+import { AnyDataSource } from "../data-source"
+import {
+  EntityPointer,
+  EntityPrimaryColumnMixedValueMap,
+  EntityReference,
+} from "../entity"
 import {
   FindOptions,
   FindOptionsBuilder,
@@ -10,21 +14,28 @@ import { FindOptionsCount } from "../find-options/find-options-count"
 import { ForceCast } from "../util"
 
 /**
- * Interface for repositories that implement find* methods.
+ * Interface for managers that implement find* methods.
  */
-export interface RepositoryFindMethods<
-  Source extends AnyDataSource,
-  Entity extends DataSourceEntity<Source>
-> {
+export interface ManagerFindMethods<Source extends AnyDataSource> {
   /**
    * Helps to build a FindOptions object.
    */
-  findOptions: FindOptionsBuilder<Source, Entity>
+  findOptions<
+    EntityRef extends EntityReference<Source>,
+    Entity extends EntityPointer<Source, EntityRef>
+  >(
+    entityRef: EntityRef,
+  ): FindOptionsBuilder<Source, Entity>
 
   /**
    * Finds entities matching given find options.
    */
-  find<Options extends FindOptionsMany<Source, Entity>>(
+  find<
+    EntityRef extends EntityReference<Source>,
+    Entity extends EntityPointer<Source, EntityRef>,
+    Options extends FindOptionsMany<Source, Entity>
+  >(
+    entityRef: EntityRef,
     options: Options,
   ): Promise<
     FindReturnType<Source, Entity, ForceCast<Options["select"], {}>, false>[]
@@ -34,7 +45,12 @@ export interface RepositoryFindMethods<
    * Finds entities matching given ids.
    * Optionally find options can be applied.
    */
-  findByIds<Options extends FindOptionsMany<Source, Entity>>(
+  findByIds<
+    EntityRef extends EntityReference<Source>,
+    Entity extends EntityPointer<Source, EntityRef>,
+    Options extends FindOptionsMany<Source, Entity>
+  >(
+    entityRef: EntityRef,
     id: EntityPrimaryColumnMixedValueMap<Entity>,
     options?: Options,
   ): Promise<
@@ -45,7 +61,12 @@ export interface RepositoryFindMethods<
    * Finds first entity matching given find options.
    * If entity was not found in the database - it returns null.
    */
-  findOne<Options extends FindOptions<Source, Entity>>(
+  findOne<
+    EntityRef extends EntityReference<Source>,
+    Entity extends EntityPointer<Source, EntityRef>,
+    Options extends FindOptions<Source, Entity>
+  >(
+    entityRef: EntityRef,
     options: Options,
   ): Promise<FindReturnType<
     Source,
@@ -58,7 +79,12 @@ export interface RepositoryFindMethods<
    * Finds first entity matching given find options.
    * If entity was not found in the database - it throws an Error.
    */
-  findOneOrFail<Options extends FindOptions<Source, Entity>>(
+  findOneOrFail<
+    EntityRef extends EntityReference<Source>,
+    Entity extends EntityPointer<Source, EntityRef>,
+    Options extends FindOptions<Source, Entity>
+  >(
+    entityRef: EntityRef,
     options: Options,
   ): Promise<
     FindReturnType<Source, Entity, ForceCast<Options["select"], {}>, false>
@@ -69,7 +95,12 @@ export interface RepositoryFindMethods<
    * Optionally options can be applied.
    * If entity was not found in the database - it returns null.
    */
-  findOneById<Options extends FindOptions<Source, Entity>>(
+  findOneById<
+    EntityRef extends EntityReference<Source>,
+    Entity extends EntityPointer<Source, EntityRef>,
+    Options extends FindOptions<Source, Entity>
+  >(
+    entityRef: EntityRef,
     id: EntityPrimaryColumnMixedValueMap<Entity>,
     options?: Options,
   ): Promise<FindReturnType<
@@ -84,7 +115,12 @@ export interface RepositoryFindMethods<
    * Optionally options can be applied.
    * If entity was not found in the database - it throws an Error.
    */
-  findOneByIdOrFail<Options extends FindOptions<Source, Entity>>(
+  findOneByIdOrFail<
+    EntityRef extends EntityReference<Source>,
+    Entity extends EntityPointer<Source, EntityRef>,
+    Options extends FindOptions<Source, Entity>
+  >(
+    entityRef: EntityRef,
     id: EntityPrimaryColumnMixedValueMap<Entity>,
     options?: Options,
   ): Promise<
@@ -96,7 +132,12 @@ export interface RepositoryFindMethods<
    * Also counts all entities matching given conditions,
    * but ignores pagination settings ("skip" and "take" options).
    */
-  findAndCount<Options extends FindOptions<Source, Entity>>(
+  findAndCount<
+    EntityRef extends EntityReference<Source>,
+    Entity extends EntityPointer<Source, EntityRef>,
+    Options extends FindOptions<Source, Entity>
+  >(
+    entityRef: EntityRef,
     options: Options,
   ): Promise<
     [
@@ -108,7 +149,12 @@ export interface RepositoryFindMethods<
   /**
    * Counts entities matching given find options.
    */
-  count<Options extends FindOptionsCount<Source, Entity>>(
+  count<
+    EntityRef extends EntityReference<Source>,
+    Entity extends EntityPointer<Source, EntityRef>,
+    Options extends FindOptionsCount<Source, Entity>
+  >(
+    entityRef: EntityRef,
     options: Options,
   ): Promise<number>
 }

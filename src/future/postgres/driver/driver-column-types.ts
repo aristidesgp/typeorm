@@ -11,6 +11,12 @@ export type PostgresOrderTypes =
       nulls?: "first" | "last"
     }
 
+export type PostgresIsolationLevels =
+  | "READ UNCOMMITTED"
+  | "READ COMMITTED"
+  | "REPEATABLE READ"
+  | "SERIALIZABLE"
+
 export type PostgresDriverTypes = {
   columnTypes: PostgresColumnTypes
   orderTypes: PostgresOrderTypes
@@ -19,4 +25,5 @@ export type PostgresDriverTypes = {
   updateResult: any
   deleteResult: any
   queryResult: any
+  isolationLevels: PostgresIsolationLevels
 }

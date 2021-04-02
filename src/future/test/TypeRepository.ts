@@ -73,6 +73,10 @@ export const UserEntity = entity({
       type: "varchar",
       // primary: true,
     },
+    status: {
+      type: "varchar",
+      default: "user",
+    },
   },
   relations: {
     avatar: {
@@ -160,6 +164,16 @@ async function test() {
     },
   )
   console.log(d)
+
+  const e = myDataSource.manager.create(PhotoEntity, {
+    filename: "Umed",
+  })
+  console.log(e)
+
+  const f = await myDataSource.manager.save(UserEntity, {
+    name: "Umed",
+  })
+  console.log(f)
 }
 
 test()

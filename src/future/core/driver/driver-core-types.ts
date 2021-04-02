@@ -1,5 +1,5 @@
 import { AnyDataSource } from "../data-source"
-import { CoreManager } from "../manager"
+import { ManagerBase } from "../manager"
 import { CoreQueryRunner } from "../query-runner"
 import { DriverTypes } from "./driver-column-types"
 import { AnyDriverOptions } from "./driver-options"
@@ -10,7 +10,7 @@ import { AnyDriverOptions } from "./driver-options"
  */
 export type AnyDriver = CoreDriver<
   AnyDriverOptions,
-  CoreManager,
+  ManagerBase,
   CoreQueryRunner,
   any
 >
@@ -20,7 +20,7 @@ export type AnyDriver = CoreDriver<
  */
 export type CoreDriver<
   Options extends AnyDriverOptions,
-  Manager extends CoreManager,
+  Manager extends ManagerBase,
   QueryRunner extends CoreQueryRunner,
   Types extends DriverTypes
 > = {
@@ -49,3 +49,7 @@ export type UpdateResult<
 export type DeleteResult<
   Source extends AnyDataSource
 > = Source["driver"]["types"]["deleteResult"]
+
+export type IsolationLevels<
+  Source extends AnyDataSource
+> = Source["driver"]["types"]["isolationLevels"]

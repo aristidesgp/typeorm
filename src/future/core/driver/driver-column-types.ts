@@ -15,4 +15,5 @@ export type DriverTypes = {
   updateResult: any
   deleteResult: any
   queryResult: any
+  isolationLevels: any
 }

@@ -6,7 +6,9 @@ import {
   RepositoryBasicMethods,
   RepositoryCommonRdbmsMethods,
   RepositoryPersistenceMethods,
+  RepositoryTreeMethods,
 } from "../../core"
+import { Releasable } from "../../core/connection"
 
 /**
  * A single repository managing a particular entity.
@@ -18,4 +20,6 @@ export interface PostgresRepository<
     RepositoryBasicMethods<Source, Entity>,
     RepositoryCommonRdbmsMethods<Source, Entity>,
     RepositoryFindMethods<Source, Entity>,
-    RepositoryPersistenceMethods<Source, Entity> {}
+    RepositoryPersistenceMethods<Source, Entity>,
+    RepositoryTreeMethods<Source, Entity>,
+    Releasable {}

@@ -20,6 +20,7 @@ export function createPostgresRepository(): PostgresRepository<
 
   return {
     "@type": "Repository",
+    findOptions: Options,
     hasId() {
       return {} as any
     },
@@ -83,6 +84,8 @@ export function createPostgresRepository(): PostgresRepository<
     async count() {
       return 0
     },
-    findOptions: Options,
+    async release() {
+      return null as any
+    },
   }
 }
