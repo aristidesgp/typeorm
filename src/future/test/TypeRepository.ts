@@ -237,6 +237,14 @@ async function test() {
     },
   })
   console.log(a3)
+
+  const id1 = await myDataSource.manager.getId(PhotoEntity, {
+    filename: ":wow",
+  })
+  console.log(id1)
+
+  const id2 = await myDataSource.manager.getId(CarEntity, {})
+  console.log(id2.info.vin)
 }
 
 test()

@@ -1,7 +1,5 @@
 import { AnyDataSource, DataSourceEntity } from "../data-source"
-import { EntityModelPartial, EntityPrimaryColumnValueMap } from "../entity"
-import { FindReturnType } from "../find-options"
-import { SelectAll } from "../selection"
+import { EntityModelPartial, EntityPrimaryColumnMixedValueMap } from "../entity"
 import { UnionToIntersection } from "../util"
 
 /**
@@ -24,12 +22,7 @@ export interface RepositoryBasicMethods<
    */
   getId<Model extends EntityModelPartial<Source, Entity>>(
     model: Model,
-  ): FindReturnType<
-    Source,
-    Entity,
-    SelectAll<EntityPrimaryColumnValueMap<Entity>>,
-    false
-  >
+  ): EntityPrimaryColumnMixedValueMap<Entity>
 
   /**
    * Creates a new entity instance.
