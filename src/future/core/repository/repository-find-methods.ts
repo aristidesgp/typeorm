@@ -5,8 +5,8 @@ import {
   FindOptionsBuilder,
   FindOptionsMany,
   FindReturnType,
-} from "../find-options"
-import { FindOptionsCount } from "../find-options/find-options-count"
+} from "../options/find-options"
+import { FindOptionsCount } from "../options/find-options/find-options-count"
 import { ForceCast } from "../util"
 
 /**

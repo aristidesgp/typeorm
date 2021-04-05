@@ -10,7 +10,7 @@ import {
   UnarchiveOptions,
   UpdateByOptions,
   UpdateOptions,
-} from "../persistence-options"
+} from "../options/persistence-options"
 
 /**
  * Interface for repositories that implement persistence / alteration operations.

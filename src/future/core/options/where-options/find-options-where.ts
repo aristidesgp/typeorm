@@ -1,6 +1,6 @@
-import { AnyDataSource } from "../data-source"
-import { AnyEntity, ColumnCompileType, ReferencedEntity } from "../entity"
-import { EntityProps } from "./find-options-select"
+import { AnyDataSource } from "../../data-source"
+import { AnyEntity, ColumnCompileType, ReferencedEntity } from "../../entity"
+import { EntityProps } from "../find-options/find-options-select"
 
 export type FindExpression<
   Source extends AnyDataSource,

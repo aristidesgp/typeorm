@@ -3,7 +3,7 @@ import { QueryRunner } from "../../../query-runner/QueryRunner"
 import { AnyDataSource } from "../data-source"
 import { IsolationLevels, QueryResult, UpdateResult } from "../driver"
 import { EntityColumnPaths, EntityPointer, EntityReference } from "../entity"
-import { FindOptionsWhere } from "../find-options"
+import { FindOptionsWhere } from "../options/find-options"
 
 /**
  * Interface for managers that implement common RDBMS methods.

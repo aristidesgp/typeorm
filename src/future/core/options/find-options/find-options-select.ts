@@ -1,5 +1,5 @@
-import { AnyDataSource } from "../data-source"
-import { AnyEntity, ColumnCompileType, ReferencedEntity } from "../entity"
+import { AnyDataSource } from "../../data-source"
+import { AnyEntity, ColumnCompileType, ReferencedEntity } from "../../entity"
 
 /**
  * Schema for Selection, used for user to specify what he is going to "select" from the db.

@@ -1,6 +1,9 @@
-import { AnyDataSource } from "../data-source"
-import { AnyEntity } from "../entity"
-import { FindExpression, FindOptionsWhere } from "./find-options-where"
+import { AnyDataSource } from "../../data-source"
+import { AnyEntity } from "../../entity"
+import {
+  FindExpression,
+  FindOptionsWhere,
+} from "../where-options/find-options-where"
 
 export function Or<Source extends AnyDataSource, Entity extends AnyEntity>(
   ...args: FindOptionsWhere<Source, Entity>[]

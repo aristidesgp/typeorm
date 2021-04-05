@@ -1,4 +1,4 @@
-import { AnyDataSource, DataSourceEntity } from "../data-source"
+import { AnyDataSource, DataSourceEntity } from "../../data-source"
 import { FindOptionsWhere } from "../find-options"
 
 /**
@@ -18,7 +18,7 @@ export type UpdateOptions<
 > = Source["driver"]["types"]["updateOptions"]
 
 /**
- * Entity update options.
+ * Entity update by options.
  */
 export type UpdateByOptions<
   Source extends AnyDataSource,

@@ -1,4 +1,4 @@
-import { AnyDataSource, DataSourceEntity } from "../data-source"
+import { AnyDataSource, DataSourceEntity } from "../../data-source"
 import { FindOptions } from "./find-options-one"
 
 /**

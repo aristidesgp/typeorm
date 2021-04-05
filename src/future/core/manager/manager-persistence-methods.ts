@@ -15,7 +15,7 @@ import {
   UnarchiveOptions,
   UpdateByOptions,
   UpdateOptions,
-} from "../persistence-options"
+} from "../options/persistence-options"
 
 /**
  * Interface for managers that implement persistence / alteration operations.

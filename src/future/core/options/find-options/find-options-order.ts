@@ -1,5 +1,5 @@
-import { AnyDataSource, DataSourceEntity } from "../data-source"
-import { ReferencedEntity } from "../entity"
+import { AnyDataSource, DataSourceEntity } from "../../data-source"
+import { ReferencedEntity } from "../../entity"
 
 /**
  * Ordering options in find options.

@@ -1,8 +1,8 @@
-import { AnyDataSource, DataSourceEntity } from "../data-source"
+import { AnyDataSource, DataSourceEntity } from "../../data-source"
 import { FindOptionsMany } from "./find-options-many"
 import { FindOptionsOrder } from "./find-options-order"
 import { FindOptionsSelect } from "./find-options-select"
-import { FindOptionsWhere } from "./find-options-where"
+import { FindOptionsWhere } from "../where-options/find-options-where"
 
 /**
  * Function type that produces FindOptions.

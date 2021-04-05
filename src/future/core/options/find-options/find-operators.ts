@@ -1,6 +1,6 @@
-import { AnyDataSource } from "../data-source"
-import { AnyEntity } from "../entity"
-import { FindOperator } from "./find-options-where"
+import { AnyDataSource } from "../../data-source"
+import { AnyEntity } from "../../entity"
+import { FindOperator } from "../where-options/find-options-where"
 
 export function Any<
   Source extends AnyDataSource,

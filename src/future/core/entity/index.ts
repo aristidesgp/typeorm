@@ -1,7 +1,7 @@
 import { DeepPartial } from "../../../common/DeepPartial"
 import { AnyDataSource, DataSourceEntity } from "../data-source"
 import { AnyDriver } from "../driver"
-import { EntityProps, FindReturnType } from "../find-options"
+import { EntityProps, FindReturnType } from "../options/find-options"
 import { SelectAll } from "../selection"
 import { MoreThanOneElement, NonNever, ValueOf } from "../util"
 

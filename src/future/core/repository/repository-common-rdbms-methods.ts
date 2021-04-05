@@ -3,7 +3,7 @@ import { QueryRunner } from "../../../query-runner/QueryRunner"
 import { AnyDataSource, DataSourceEntity } from "../data-source"
 import { QueryResult, UpdateResult } from "../driver"
 import { EntityColumnPaths } from "../entity"
-import { FindOptionsWhere } from "../find-options"
+import { FindOptionsWhere } from "../options/find-options"
 
 /**
  * Interface for repositories that implement common RDBMS methods.
