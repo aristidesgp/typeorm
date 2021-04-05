@@ -36,6 +36,7 @@ export type EntityColumns<Driver extends AnyDriver> = {
   [key: string]: {
     primary?: boolean
     type: keyof Driver["types"]["columnTypes"]
+    generated?: boolean
     nullable?: boolean
     array?: boolean
     default?: any
@@ -173,6 +174,29 @@ export type EntityPrimaryColumnValueMap<Entity extends AnyEntity> = NonNever<
       : never
   }
 >
+/**
+ * Returns columns value map with "generated" set to true.
+ *
+ * Columns value map is an object where every column name is followed by a computed column type.
+ * Examples:
+ *
+ *  - for { id: { type: "varchar", primary: true }, name: { "varchar", primary: true }, age: { type: "int" } }
+ *    value will be: { id: string, name: string }
+ *
+ *  - for { id: { type: "varchar", primary: true }, name: { "varchar" }, age: { type: "int" } }
+ *    value will be: { id: string }
+ */
+export type EntityGeneratedColumnValueMap<Entity extends AnyEntity> = NonNever<
+  {
+    [P in keyof EntityProps<Entity>]: P extends keyof Entity["columns"]
+      ? Entity["columns"][P]["generated"] extends true
+        ? ColumnCompileType<Entity, P>
+        : never
+      : P extends keyof Entity["embeds"]
+      ? EntityGeneratedColumnValueMap<Entity["embeds"][P]>
+      : never
+  }
+>
 
 /**
  * Returns columns value map with "default" value set.
@@ -284,7 +308,7 @@ export type EntityPointer<
   : never
 
 /**
- * Merges primary columns, default columns into given partial entity model.
+ * Merges generated columns, default columns into given partial entity model.
  */
 export type EntityModelJustInserted<
   Source extends AnyDataSource,
@@ -295,7 +319,8 @@ export type EntityModelJustInserted<
     Source,
     Entity,
     SelectAll<
-      EntityPrimaryColumnValueMap<Entity> & EntityDefaultColumnValueMap<Entity>
+      EntityGeneratedColumnValueMap<Entity> &
+        EntityDefaultColumnValueMap<Entity>
     >,
     false
   >

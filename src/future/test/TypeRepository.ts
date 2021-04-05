@@ -69,6 +69,7 @@ export const UserEntity = entity({
     id: {
       type: "int",
       primary: true,
+      generated: true,
     },
     name: {
       type: "varchar",
@@ -226,7 +227,7 @@ async function test() {
   const f = await myDataSource.manager.repository(UserEntity).insert({
     name: "Umed",
   })
-  console.log(f)
+  console.log(f.id)
 
   const g = await myDataSource.manager.insert(CarEntity, {
     name: "ModelZ",
