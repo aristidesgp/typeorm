@@ -10,7 +10,7 @@ import { AnyDriverOptions } from "./driver-options"
  */
 export type AnyDriver = CoreDriver<
   AnyDriverOptions,
-  ManagerBase,
+  ManagerBase<any>,
   CoreQueryRunner,
   any
 >
@@ -20,7 +20,7 @@ export type AnyDriver = CoreDriver<
  */
 export type CoreDriver<
   Options extends AnyDriverOptions,
-  Manager extends ManagerBase,
+  Manager extends ManagerBase<any>,
   QueryRunner extends CoreQueryRunner,
   Types extends DriverTypes
 > = {

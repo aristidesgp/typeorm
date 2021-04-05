@@ -16,7 +16,7 @@ import { Releasable } from "../../core/connection"
 export interface PostgresRepository<
   Source extends AnyDataSource,
   Entity extends DataSourceEntity<Source>
-> extends RepositoryBase,
+> extends RepositoryBase<Source, Entity>,
     RepositoryBasicMethods<Source, Entity>,
     RepositoryCommonRdbmsMethods<Source, Entity>,
     RepositoryFindMethods<Source, Entity>,

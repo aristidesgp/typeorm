@@ -21,6 +21,10 @@ export function createPostgresRepository(): PostgresRepository<
   return {
     "@type": "Repository",
     findOptions: Options,
+    dataSource: null as any,
+    metadata: null as any,
+    entity: null as any,
+    queryRunner: null as any,
     hasId() {
       return {} as any
     },

@@ -11,7 +11,7 @@ export interface RepositoryBasicMethods<
 > {
   /**
    * Checks if entity has an id.
-   * If entity has composite ids, it will check them all.
+   * If entity has multiple ids, it will check them all.
    */
   hasId(model: EntityModelPartial<Source, Entity>): boolean
 

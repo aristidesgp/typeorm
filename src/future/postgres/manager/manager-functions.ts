@@ -20,6 +20,8 @@ export function createPostgresManager(
   return {
     "@type": "Manager",
     findOptions: Options,
+    dataSource: dataSource,
+    queryRunner: null as any,
     repository(entity: any) {
       return {} as any
     },

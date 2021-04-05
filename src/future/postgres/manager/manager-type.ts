@@ -11,7 +11,7 @@ import {
 import { Releasable } from "../../core/connection"
 
 export interface PostgresManager<Source extends AnyDataSource>
-  extends ManagerBase,
+  extends ManagerBase<Source>,
     ManagerBasicMethods<Source>,
     ManagerCommonRdbmsMethods<Source>,
     ManagerFindMethods<Source>,
