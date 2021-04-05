@@ -1,81 +1,189 @@
-import { RemoveOptions } from "../../../repository/RemoveOptions"
-import { SaveOptions } from "../../../repository/SaveOptions"
 import { AnyDataSource } from "../data-source"
 import {
-  EntityDefaultColumnValueMap,
+  EntityModelJustInserted,
   EntityModelPartial,
   EntityPointer,
-  EntityPrimaryColumnValueMap,
   EntityReference,
 } from "../entity"
-import { FindReturnType } from "../find-options"
-import { SelectAll } from "../selection"
+import {
+  ArchiveByOptions,
+  ArchiveOptions,
+  DeleteByOptions,
+  DeleteOptions,
+  InsertOptions,
+  UnarchiveByOptions,
+  UnarchiveOptions,
+  UpdateByOptions,
+  UpdateOptions,
+} from "../persistence-options"
 
 /**
  * Interface for managers that implement persistence / alteration operations.
  */
 export interface ManagerPersistenceMethods<Source extends AnyDataSource> {
   /**
-   * Saves one or many given entities in the database.
-   * If entity does not exist in the database then inserts, otherwise updates.
+   * Inserts a new entity into the database.
+   * Database error will be thrown if entity already exists in the database.
+   * Returns a copy of the model with the default / primary column values.
    */
-  save<
+  insert<
     EntityRef extends EntityReference<Source>,
     Entity extends EntityPointer<Source, EntityRef>,
     Model extends EntityModelPartial<Source, Entity>
   >(
     entity: EntityRef,
     model: Model,
-    options?: SaveOptions,
-  ): Promise<
-    Model &
-      FindReturnType<
-        Source,
-        Entity,
-        SelectAll<
-          EntityPrimaryColumnValueMap<Entity> &
-            EntityDefaultColumnValueMap<Entity>
-        >,
-        false
-      >
-  >
+    options?: InsertOptions<Source, Entity>,
+  ): Promise<EntityModelJustInserted<Source, Entity, Model>>
 
   /**
-   * Removes one or many given entities from the database.
+   * Inserts entities in bulk.
+   * Database error will be thrown if any of entity exist in the database.
    */
-  remove<
+  insert<
+    EntityRef extends EntityReference<Source>,
+    Entity extends EntityPointer<Source, EntityRef>,
+    Model extends EntityModelPartial<Source, Entity>
+  >(
+    entity: EntityRef,
+    models: Model[],
+    options?: InsertOptions<Source, Entity>,
+  ): Promise<void> // [...EntityModelJustInserted<Source, Entity, Model>[]]
+
+  /**
+   * Updates entity in the database.
+   * If entity does not exist in the database - error will be thrown.
+   */
+  update<
     EntityRef extends EntityReference<Source>,
     Entity extends EntityPointer<Source, EntityRef>,
     Model extends EntityModelPartial<Source, Entity>
   >(
     entity: EntityRef,
     model: Model,
-    options?: RemoveOptions,
+    options?: UpdateOptions<Source, Entity>,
   ): Promise<void>
 
   /**
-   * Marks given one or many entities as "soft deleted".
+   * Updates entities in the database by a given options.
+   * If entity does not exist in the database - error will be thrown.
    */
-  softRemove<
+  updateBy<
     EntityRef extends EntityReference<Source>,
-    Entity extends EntityPointer<Source, EntityRef>,
-    Model extends EntityModelPartial<Source, Entity>
+    Entity extends EntityPointer<Source, EntityRef>
   >(
     entity: EntityRef,
-    model: Model,
-    options?: SaveOptions,
+    options: UpdateByOptions<Source, Entity>,
   ): Promise<void>
 
   /**
-   * Recovers given one or many entities previously removed by "softRemove" operation.
+   * Removes a given entity from the database.
    */
-  recover<
+  delete<
     EntityRef extends EntityReference<Source>,
     Entity extends EntityPointer<Source, EntityRef>,
     Model extends EntityModelPartial<Source, Entity>
   >(
     entity: EntityRef,
     model: Model,
-    options?: SaveOptions,
+    options?: DeleteOptions<Source, Entity>,
+  ): Promise<void>
+
+  /**
+   * Removes given entities from the database.
+   */
+  delete<
+    EntityRef extends EntityReference<Source>,
+    Entity extends EntityPointer<Source, EntityRef>,
+    Model extends EntityModelPartial<Source, Entity>
+  >(
+    entity: EntityRef,
+    models: Model[],
+    options?: DeleteOptions<Source, Entity>,
+  ): Promise<void>
+
+  /**
+   * Removes entities by a given options.
+   */
+  deleteBy<
+    EntityRef extends EntityReference<Source>,
+    Entity extends EntityPointer<Source, EntityRef>
+  >(
+    entity: EntityRef,
+    options: DeleteByOptions<Source, Entity>,
+  ): Promise<void>
+
+  /**
+   * Marks given entity as "soft deleted".
+   */
+  archive<
+    EntityRef extends EntityReference<Source>,
+    Entity extends EntityPointer<Source, EntityRef>,
+    Model extends EntityModelPartial<Source, Entity>
+  >(
+    entity: EntityRef,
+    model: Model,
+    options?: ArchiveOptions<Source, Entity>,
+  ): Promise<void>
+
+  /**
+   * Marks given entities as "soft deleted".
+   */
+  archive<
+    EntityRef extends EntityReference<Source>,
+    Entity extends EntityPointer<Source, EntityRef>,
+    Model extends EntityModelPartial<Source, Entity>
+  >(
+    entity: EntityRef,
+    models: Model[],
+    options?: ArchiveOptions<Source, Entity>,
+  ): Promise<void>
+
+  /**
+   * Marks given entities as "soft deleted" by a given options.
+   */
+  archiveBy<
+    EntityRef extends EntityReference<Source>,
+    Entity extends EntityPointer<Source, EntityRef>
+  >(
+    entity: EntityRef,
+    options: ArchiveByOptions<Source, Entity>,
+  ): Promise<void>
+
+  /**
+   * Unarchives given entity previously archived (e.g. restore "soft-removed" entity).
+   */
+  unarchive<
+    EntityRef extends EntityReference<Source>,
+    Entity extends EntityPointer<Source, EntityRef>,
+    Model extends EntityModelPartial<Source, Entity>
+  >(
+    entity: EntityRef,
+    model: Model,
+    options?: UnarchiveOptions<Source, Entity>,
+  ): Promise<void>
+
+  /**
+   * Unarchives given entities previously archived (e.g. restore "soft-removed" entity).
+   */
+  unarchive<
+    EntityRef extends EntityReference<Source>,
+    Entity extends EntityPointer<Source, EntityRef>,
+    Model extends EntityModelPartial<Source, Entity>
+  >(
+    entity: EntityRef,
+    models: Model[],
+    options?: UnarchiveOptions<Source, Entity>,
+  ): Promise<void>
+
+  /**
+   * Unarchives given entities by a given options.
+   */
+  unarchiveBy<
+    EntityRef extends EntityReference<Source>,
+    Entity extends EntityPointer<Source, EntityRef>
+  >(
+    entity: EntityRef,
+    options: UnarchiveByOptions<Source, Entity>,
   ): Promise<void>
 }

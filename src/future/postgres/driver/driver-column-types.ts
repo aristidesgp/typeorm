@@ -1,3 +1,9 @@
+import {
+  PersistenceWithChunkOptions,
+  PersistenceWithListenersOptions,
+  PersistenceWithTransactionOptions,
+} from "../../core/persistence-options"
+
 export interface PostgresColumnTypes {
   int: { type: number }
   varchar: { type: string }
@@ -26,4 +32,49 @@ export type PostgresDriverTypes = {
   deleteResult: any
   queryResult: any
   isolationLevels: PostgresIsolationLevels
+  insertOptions: PostgresInsertOptions
+  updateOptions: PostgresUpdateOptions
+  updateByOptions: PostgresUpdateByOptions
+  deleteOptions: PostgresDeleteOptions
+  deleteByOptions: PostgresDeleteByOptions
+  archiveOptions: PostgresArchiveOptions
+  archiveByOptions: PostgresArchiveByOptions
+  unarchiveOptions: PostgresUnarchiveOptions
+  unarchiveByOptions: PostgresUnarchiveByOptions
 }
+
+export type PostgresInsertOptions = PersistenceWithTransactionOptions &
+  PersistenceWithChunkOptions &
+  PersistenceWithListenersOptions
+
+export type PostgresUpdateOptions = PersistenceWithTransactionOptions &
+  PersistenceWithChunkOptions &
+  PersistenceWithListenersOptions
+
+export type PostgresUpdateByOptions = PersistenceWithTransactionOptions &
+  PersistenceWithChunkOptions &
+  PersistenceWithListenersOptions
+
+export type PostgresDeleteOptions = PersistenceWithTransactionOptions &
+  PersistenceWithChunkOptions &
+  PersistenceWithListenersOptions
+
+export type PostgresDeleteByOptions = PersistenceWithTransactionOptions &
+  PersistenceWithChunkOptions &
+  PersistenceWithListenersOptions
+
+export type PostgresArchiveOptions = PersistenceWithTransactionOptions &
+  PersistenceWithChunkOptions &
+  PersistenceWithListenersOptions
+
+export type PostgresArchiveByOptions = PersistenceWithTransactionOptions &
+  PersistenceWithChunkOptions &
+  PersistenceWithListenersOptions
+
+export type PostgresUnarchiveOptions = PersistenceWithTransactionOptions &
+  PersistenceWithChunkOptions &
+  PersistenceWithListenersOptions
+
+export type PostgresUnarchiveByOptions = PersistenceWithTransactionOptions &
+  PersistenceWithChunkOptions &
+  PersistenceWithListenersOptions

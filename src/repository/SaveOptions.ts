@@ -11,7 +11,7 @@ export interface SaveOptions {
 
     /**
      * Indicates if listeners and subscribers are called for this operation.
-     * By default they are enabled, you can disable them by setting { listeners: false } in save/remove options.
+     * By default they are enabled.
      */
     listeners?: boolean;
 

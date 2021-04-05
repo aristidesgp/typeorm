@@ -2,6 +2,7 @@ import { DeepPartial } from "../../../common/DeepPartial"
 import { AnyDataSource, DataSourceEntity } from "../data-source"
 import { AnyDriver } from "../driver"
 import { EntityProps, FindReturnType } from "../find-options"
+import { SelectAll } from "../selection"
 import { MoreThanOneElement, NonNever, ValueOf } from "../util"
 
 export type AnyEntity = CoreEntity<
@@ -281,3 +282,20 @@ export type EntityPointer<
   : Reference extends DataSourceEntity<Source>
   ? Reference
   : never
+
+/**
+ * Merges primary columns, default columns into given partial entity model.
+ */
+export type EntityModelJustInserted<
+  Source extends AnyDataSource,
+  Entity extends DataSourceEntity<Source>,
+  Model extends EntityModelPartial<Source, Entity>
+> = Model &
+  FindReturnType<
+    Source,
+    Entity,
+    SelectAll<
+      EntityPrimaryColumnValueMap<Entity> & EntityDefaultColumnValueMap<Entity>
+    >,
+    false
+  >

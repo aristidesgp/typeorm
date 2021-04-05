@@ -53,16 +53,31 @@ export function createPostgresManager(
     async decrement() {
       return {} as any
     },
-    async save() {
+    async insert() {
       return {} as any
     },
-    async remove() {
+    async update() {
       return {} as any
     },
-    async softRemove() {
+    async updateBy() {
       return {} as any
     },
-    async recover() {
+    async delete() {
+      return {} as any
+    },
+    async deleteBy() {
+      return {} as any
+    },
+    async archive() {
+      return {} as any
+    },
+    async archiveBy() {
+      return {} as any
+    },
+    async unarchive() {
+      return {} as any
+    },
+    async unarchiveBy() {
       return {} as any
     },
     async find() {

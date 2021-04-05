@@ -74,6 +74,10 @@ export const UserEntity = entity({
       type: "varchar",
       // primary: true,
     },
+    secondName: {
+      type: "varchar",
+      // primary: true,
+    },
     status: {
       type: "varchar",
       default: "user",
@@ -151,9 +155,6 @@ const myDataSource = DataSource.create({
       AlbumEntity,
       CarEntity,
     },
-    repositories: {
-      // UserRepository,
-    },
   }),
 })
 console.log(myDataSource)
@@ -222,12 +223,12 @@ async function test() {
   })
   console.log(e)
 
-  const f = await myDataSource.manager.save(UserEntity, {
+  const f = await myDataSource.manager.repository(UserEntity).insert({
     name: "Umed",
   })
   console.log(f)
 
-  const g = await myDataSource.manager.save(CarEntity, {
+  const g = await myDataSource.manager.insert(CarEntity, {
     name: "ModelZ",
   })
   console.log(g)

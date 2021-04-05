@@ -16,4 +16,13 @@ export type DriverTypes = {
   deleteResult: any
   queryResult: any
   isolationLevels: any
+  insertOptions: {}
+  updateOptions: {}
+  updateByOptions: {}
+  deleteOptions: {}
+  deleteByOptions: {}
+  archiveOptions: {}
+  archiveByOptions: {}
+  unarchiveOptions: {}
+  unarchiveByOptions: {}
 }

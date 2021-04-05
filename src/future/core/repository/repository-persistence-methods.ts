@@ -1,64 +1,118 @@
-import { RemoveOptions } from "../../../repository/RemoveOptions"
-import { SaveOptions } from "../../../repository/SaveOptions"
 import { AnyDataSource, DataSourceEntity } from "../data-source"
+import { EntityModelJustInserted, EntityModelPartial } from "../entity"
 import {
-  EntityDefaultColumnValueMap,
-  EntityModelPartial,
-  EntityPrimaryColumnValueMap,
-} from "../entity"
-import { FindReturnType } from "../find-options"
-import { SelectAll } from "../selection"
+  ArchiveByOptions,
+  ArchiveOptions,
+  DeleteByOptions,
+  DeleteOptions,
+  InsertOptions,
+  UnarchiveByOptions,
+  UnarchiveOptions,
+  UpdateByOptions,
+  UpdateOptions,
+} from "../persistence-options"
 
 /**
  * Interface for repositories that implement persistence / alteration operations.
- *
- * todo: check if we can implement proper typing for save(models), remove(models), etc.
  */
 export interface RepositoryPersistenceMethods<
   Source extends AnyDataSource,
   Entity extends DataSourceEntity<Source>
 > {
   /**
-   * Saves one or many given entities in the database.
-   * If entity does not exist in the database then inserts, otherwise updates.
+   * Inserts a new entity into the database.
+   * Database error will be thrown if entity already exists in the database.
+   * Returns a copy of the model with the default / primary column values.
    */
-  save<Model extends EntityModelPartial<Source, Entity>>(
+  insert<Model extends EntityModelPartial<Source, Entity>>(
     model: Model,
-    options?: SaveOptions,
-  ): Promise<
-    Model &
-      FindReturnType<
-        Source,
-        Entity,
-        SelectAll<
-          EntityPrimaryColumnValueMap<Entity> &
-            EntityDefaultColumnValueMap<Entity>
-        >,
-        false
-      >
-  >
+    options?: InsertOptions<Source, Entity>,
+  ): Promise<EntityModelJustInserted<Source, Entity, Model>>
 
   /**
-   * Removes one or many given entities from the database.
+   * Inserts entities in bulk.
+   * Database error will be thrown if any of entity exist in the database.
    */
-  remove<Model extends EntityModelPartial<Source, Entity>>(
+  insert<Model extends EntityModelPartial<Source, Entity>>(
+    models: Model[],
+    options?: InsertOptions<Source, Entity>,
+  ): Promise<void> // [...EntityModelJustInserted<Source, Entity, Model>[]]
+
+  /**
+   * Updates entity in the database.
+   * If entity does not exist in the database - error will be thrown.
+   */
+  update<Model extends EntityModelPartial<Source, Entity>>(
     model: Model,
-    options?: RemoveOptions,
+    options?: UpdateOptions<Source, Entity>,
   ): Promise<void>
 
   /**
-   * Marks given one or many entities as "soft deleted".
+   * Updates entities in the database by a given options.
+   * If entity does not exist in the database - error will be thrown.
    */
-  softRemove<Model extends EntityModelPartial<Source, Entity>>(
+  updateBy(options: UpdateByOptions<Source, Entity>): Promise<void>
+
+  /**
+   * Removes a given entity from the database.
+   */
+  delete<Model extends EntityModelPartial<Source, Entity>>(
     model: Model,
-    options?: SaveOptions,
+    options?: DeleteOptions<Source, Entity>,
   ): Promise<void>
 
   /**
-   * Recovers given one or many entities previously removed by "softRemove" operation.
+   * Removes given entities from the database.
    */
-  recover<Model extends EntityModelPartial<Source, Entity>>(
-    model: Model,
-    options?: SaveOptions,
+  delete<Model extends EntityModelPartial<Source, Entity>>(
+    models: Model[],
+    options?: DeleteOptions<Source, Entity>,
   ): Promise<void>
+
+  /**
+   * Removes entities by a given options.
+   */
+  deleteBy(options: DeleteByOptions<Source, Entity>): Promise<void>
+
+  /**
+   * Marks given entity as "soft deleted".
+   */
+  archive<Model extends EntityModelPartial<Source, Entity>>(
+    model: Model,
+    options?: ArchiveOptions<Source, Entity>,
+  ): Promise<void>
+
+  /**
+   * Marks given entities as "soft deleted".
+   */
+  archive<Model extends EntityModelPartial<Source, Entity>>(
+    models: Model[],
+    options?: ArchiveOptions<Source, Entity>,
+  ): Promise<void>
+
+  /**
+   * Marks given entities as "soft deleted" by a given options.
+   */
+  archiveBy(options: ArchiveByOptions<Source, Entity>): Promise<void>
+
+  /**
+   * Unarchives given entity previously archived (e.g. restore "soft-removed" entity).
+   */
+  unarchive<Model extends EntityModelPartial<Source, Entity>>(
+    model: Model,
+    options?: UnarchiveOptions<Source, Entity>,
+  ): Promise<void>
+
+  /**
+   * Unarchives given entities previously archived (e.g. restore "soft-removed" entity).
+   */
+  unarchive<Model extends EntityModelPartial<Source, Entity>>(
+    models: Model[],
+    options?: UnarchiveOptions<Source, Entity>,
+  ): Promise<void>
+
+  /**
+   * Unarchives given entities by a given options.
+   */
+  unarchiveBy(options: UnarchiveByOptions<Source, Entity>): Promise<void>
 }
