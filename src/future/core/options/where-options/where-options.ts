@@ -1,24 +1,28 @@
 import { AnyDataSource } from "../../data-source"
-import { AnyEntity, ColumnCompileType, ReferencedEntity } from "../../entity"
-import { EntityProps } from "../find-options/find-options-select"
+import {
+  AnyEntity,
+  ColumnCompileType,
+  EntityProps,
+  ReferencedEntity,
+} from "../../entity"
 
-export type FindExpression<
+export type WhereExpression<
   Source extends AnyDataSource,
   Entity extends AnyEntity
 > = {
-  "@type": "FindExpression"
+  "@type": "WhereExpression"
   kind: "not" | "or" | "and" | "xor"
   driver: Source
   entity: Entity
-  options: FindOptionsWhere<Source, Entity>[]
+  options: WhereOptions<Source, Entity>[]
 }
 
-export type FindOperator<
+export type WhereOperator<
   Source extends AnyDataSource,
   Entity extends AnyEntity,
   ValueType
 > = {
-  "@type": "FindOperator"
+  "@type": "WhereOperator"
   kind:
     | "any"
     | "between"
@@ -45,12 +49,12 @@ export type FindOperator<
 /**
  * Schema for a EntitySelection, used to specify what properties of a Entity must be selected.
  */
-export type FindOptionsWhere<
+export type WhereOptions<
   Source extends AnyDataSource,
   Entity extends AnyEntity
-> = FindExpression<Source, Entity> | FindOperatorWhereOptions<Source, Entity>
+> = WhereExpression<Source, Entity> | WhereOperatorOptions<Source, Entity>
 
-export type FindOperatorWhereOptionsProperty<
+export type WhereOptionsOperatorProperty<
   Source extends AnyDataSource,
   Entity extends AnyEntity,
   P extends keyof EntityProps<Entity>
@@ -58,19 +62,19 @@ export type FindOperatorWhereOptionsProperty<
 > = P extends keyof Entity["columns"]
   ?
       | ColumnCompileType<Entity, P>
-      | FindOperator<Source, Entity, ColumnCompileType<Entity, P>>
-      | FindExpression<Source, Entity>
+      | WhereOperator<Source, Entity, ColumnCompileType<Entity, P>>
+      | WhereExpression<Source, Entity>
   : P extends keyof Entity["embeds"]
-  ? FindOptionsWhere<Source, Entity["embeds"][P]>
+  ? WhereOptions<Source, Entity["embeds"][P]>
   : P extends keyof Entity["relations"]
-  ? FindOptionsWhere<Source, ReferencedEntity<Source, Entity, P>>
+  ? WhereOptions<Source, ReferencedEntity<Source, Entity, P>>
   : never
 
-export type FindOperatorWhereOptions<
+export type WhereOperatorOptions<
   Source extends AnyDataSource,
   Entity extends AnyEntity
 > = {
-  [P in keyof EntityProps<Entity>]?: FindOperatorWhereOptionsProperty<
+  [P in keyof EntityProps<Entity>]?: WhereOptionsOperatorProperty<
     Source,
     Entity,
     P

@@ -1,6 +1,6 @@
 import { AnyDataSource, DataSourceEntity } from "../../data-source"
 import { FindOptionsCache } from "./find-options-cache"
-import { FindOptionsWhere } from "../where-options/find-options-where"
+import { WhereOptions } from "../where-options"
 
 /**
  * Defines a special criteria to find specific entity.
@@ -12,7 +12,7 @@ export interface FindOptionsCount<
   /**
    * Conditions applied to a query on what needs to be selected from the database.
    */
-  where?: FindOptionsWhere<Source, Entity>
+  where?: WhereOptions<Source, Entity>
 
   /**
    * Indicates what locking mode should be used.

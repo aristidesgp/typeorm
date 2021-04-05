@@ -3,7 +3,7 @@ import { QueryRunner } from "../../../query-runner/QueryRunner"
 import { AnyDataSource, DataSourceEntity } from "../data-source"
 import { QueryResult, UpdateResult } from "../driver"
 import { EntityColumnPaths } from "../entity"
-import { FindOptionsWhere } from "../options/find-options"
+import { WhereOptions } from "../options"
 
 /**
  * Interface for repositories that implement common RDBMS methods.
@@ -37,7 +37,7 @@ export interface RepositoryCommonRdbmsMethods<
    * Increments some column by provided value of the entities matched given conditions.
    */
   increment(
-    where: FindOptionsWhere<Source, Entity>,
+    where: WhereOptions<Source, Entity>,
     columnPath: EntityColumnPaths<Entity>,
     value: number,
   ): Promise<UpdateResult<Source>>
@@ -46,7 +46,7 @@ export interface RepositoryCommonRdbmsMethods<
    * Decrements some column by provided value of the entities matched given conditions.
    */
   decrement(
-    where: FindOptionsWhere<Source, Entity>,
+    where: WhereOptions<Source, Entity>,
     columnPath: EntityColumnPaths<Entity>,
     value: number,
   ): Promise<UpdateResult<Source>>

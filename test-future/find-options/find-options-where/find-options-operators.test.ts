@@ -2,7 +2,7 @@ import {
   And,
   Any,
   DataSource,
-  FindOptionsWhere,
+  WhereOptions,
   Or,
 } from "../../../src/future/core"
 import { postgres } from "../../../src/future/postgres"
@@ -24,17 +24,14 @@ describe("find-options > operators", () => {
   describe("Any()", () => {
     test("check if column type is correct", () => {
       //@ts-ignore
-      const correct: FindOptionsWhere<
-        typeof myDataSource,
-        typeof UserEntity
-      > = Or({
+      const correct: WhereOptions<typeof myDataSource, typeof UserEntity> = Or({
         id: Any(1),
         name: Any("1"),
         active: Any(true),
         // phones: ["true", "asd"], TODO
       })
       //@ts-ignore
-      const incorrect: FindOptionsWhere<
+      const incorrect: WhereOptions<
         typeof myDataSource,
         typeof UserEntity
       > = Or({
@@ -49,17 +46,16 @@ describe("find-options > operators", () => {
 
     test("check if relation column type is correct", () => {
       //@ts-ignore
-      const correct: FindOptionsWhere<
-        typeof myDataSource,
-        typeof UserEntity
-      > = And({
-        avatar: Or({
-          id: Any(1),
-          filename: Any("1"),
-        }),
-      })
+      const correct: WhereOptions<typeof myDataSource, typeof UserEntity> = And(
+        {
+          avatar: Or({
+            id: Any(1),
+            filename: Any("1"),
+          }),
+        },
+      )
       //@ts-ignore
-      const correct2: FindOptionsWhere<
+      const correct2: WhereOptions<
         typeof myDataSource,
         typeof UserEntity
       > = And({
@@ -70,7 +66,7 @@ describe("find-options > operators", () => {
       })
 
       //@ts-ignore
-      const incorrect: FindOptionsWhere<
+      const incorrect: WhereOptions<
         typeof myDataSource,
         typeof UserEntity
       > = And({
@@ -85,19 +81,18 @@ describe("find-options > operators", () => {
 
     test("check if embed column type is correct", () => {
       //@ts-ignore
-      const correct: FindOptionsWhere<
-        typeof myDataSource,
-        typeof UserEntity
-      > = And({
-        profile: Or({
-          bio: Any("1"),
-          adult: Any(true),
-          kids: Any(1),
-        }),
-      })
+      const correct: WhereOptions<typeof myDataSource, typeof UserEntity> = And(
+        {
+          profile: Or({
+            bio: Any("1"),
+            adult: Any(true),
+            kids: Any(1),
+          }),
+        },
+      )
 
       //@ts-ignore
-      const incorrect: FindOptionsWhere<
+      const incorrect: WhereOptions<
         typeof myDataSource,
         typeof UserEntity
       > = And({

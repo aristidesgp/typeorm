@@ -1,5 +1,5 @@
 import { AnyDataSource, DataSourceEntity } from "../../data-source"
-import { FindOptionsWhere } from "../find-options"
+import { WhereOptions } from "../where-options"
 
 /**
  * Entity insert options.
@@ -24,7 +24,7 @@ export type UpdateByOptions<
   Source extends AnyDataSource,
   Entity extends DataSourceEntity<Source>
 > = {
-  where: FindOptionsWhere<Source, Entity>
+  where: WhereOptions<Source, Entity>
 } & Source["driver"]["types"]["updateByOptions"]
 
 /**
@@ -42,7 +42,7 @@ export type DeleteByOptions<
   Source extends AnyDataSource,
   Entity extends DataSourceEntity<Source>
 > = {
-  where: FindOptionsWhere<Source, Entity>
+  where: WhereOptions<Source, Entity>
 } & Source["driver"]["types"]["deleteByOptions"]
 
 /**
@@ -60,7 +60,7 @@ export type ArchiveByOptions<
   Source extends AnyDataSource,
   Entity extends DataSourceEntity<Source>
 > = {
-  where: FindOptionsWhere<Source, Entity>
+  where: WhereOptions<Source, Entity>
 } & Source["driver"]["types"]["archiveByOptions"]
 
 /**
@@ -78,5 +78,5 @@ export type UnarchiveByOptions<
   Source extends AnyDataSource,
   Entity extends DataSourceEntity<Source>
 > = {
-  where: FindOptionsWhere<Source, Entity>
+  where: WhereOptions<Source, Entity>
 } & Source["driver"]["types"]["unarchiveByOptions"]

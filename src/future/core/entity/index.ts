@@ -1,7 +1,7 @@
 import { DeepPartial } from "../../../common/DeepPartial"
 import { AnyDataSource, DataSourceEntity } from "../data-source"
 import { AnyDriver } from "../driver"
-import { EntityProps, FindReturnType } from "../options/find-options"
+import { FindReturnType } from "../options/find-options"
 import { SelectAll } from "../selection"
 import { MoreThanOneElement, NonNever, ValueOf } from "../util"
 
@@ -324,3 +324,22 @@ export type EntityModelJustInserted<
     >,
     false
   >
+
+export type EntityProps<Entity extends AnyEntity> = {
+  [P in keyof Entity["columns"]]: {
+    type: "column"
+    property: P
+  }
+} &
+  {
+    [P in keyof Entity["relations"]]: {
+      type: "relation"
+      property: P
+    }
+  } &
+  {
+    [P in keyof Entity["embeds"]]: {
+      type: "embed"
+      property: P
+    }
+  }

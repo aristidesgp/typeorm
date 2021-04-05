@@ -1,5 +1,10 @@
 import { AnyDataSource } from "../../data-source"
-import { AnyEntity, ColumnCompileType, ReferencedEntity } from "../../entity"
+import {
+  AnyEntity,
+  ColumnCompileType,
+  EntityProps,
+  ReferencedEntity,
+} from "../../entity"
 
 /**
  * Schema for Selection, used for user to specify what he is going to "select" from the db.
@@ -42,25 +47,6 @@ export type FindOptionsSelect<
       Source,
       Entity["embeds"][P]
     >
-  }
-
-export type EntityProps<Entity extends AnyEntity> = {
-  [P in keyof Entity["columns"]]: {
-    type: "column"
-    property: P
-  }
-} &
-  {
-    [P in keyof Entity["relations"]]: {
-      type: "relation"
-      property: P
-    }
-  } &
-  {
-    [P in keyof Entity["embeds"]]: {
-      type: "embed"
-      property: P
-    }
   }
 
 export type FindReturnTypeProperty<

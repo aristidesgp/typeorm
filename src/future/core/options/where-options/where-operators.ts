@@ -1,14 +1,14 @@
 import { AnyDataSource } from "../../data-source"
 import { AnyEntity } from "../../entity"
-import { FindOperator } from "../where-options/find-options-where"
+import { WhereOperator } from "./index"
 
 export function Any<
   Source extends AnyDataSource,
   Entity extends AnyEntity,
   ValueType
->(...values: ValueType[]): FindOperator<Source, Entity, ValueType> {
+>(...values: ValueType[]): WhereOperator<Source, Entity, ValueType> {
   return {
-    "@type": "FindOperator",
+    "@type": "WhereOperator",
     kind: "any",
     driver: null as any,
     entity: null as any,
@@ -24,9 +24,9 @@ export function Between<
 >(
   first: ValueType,
   second: ValueType,
-): FindOperator<Source, Entity, ValueType> {
+): WhereOperator<Source, Entity, ValueType> {
   return {
-    "@type": "FindOperator",
+    "@type": "WhereOperator",
     kind: "between",
     driver: null as any,
     entity: null as any,
@@ -39,9 +39,9 @@ export function Equal<
   Source extends AnyDataSource,
   Entity extends AnyEntity,
   ValueType
->(value: ValueType): FindOperator<Source, Entity, ValueType> {
+>(value: ValueType): WhereOperator<Source, Entity, ValueType> {
   return {
-    "@type": "FindOperator",
+    "@type": "WhereOperator",
     kind: "equal",
     driver: null as any,
     entity: null as any,
@@ -54,9 +54,9 @@ export function Like<
   Source extends AnyDataSource,
   Entity extends AnyEntity,
   ValueType
->(value: string): FindOperator<Source, Entity, ValueType> {
+>(value: string): WhereOperator<Source, Entity, ValueType> {
   return {
-    "@type": "FindOperator",
+    "@type": "WhereOperator",
     kind: "like",
     driver: null as any,
     entity: null as any,
@@ -69,9 +69,9 @@ export function ILike<
   Source extends AnyDataSource,
   Entity extends AnyEntity,
   ValueType
->(value: string): FindOperator<Source, Entity, ValueType> {
+>(value: string): WhereOperator<Source, Entity, ValueType> {
   return {
-    "@type": "FindOperator",
+    "@type": "WhereOperator",
     kind: "ilike",
     driver: null as any,
     entity: null as any,
@@ -84,9 +84,9 @@ export function In<
   Source extends AnyDataSource,
   Entity extends AnyEntity,
   ValueType
->(...values: ValueType[]): FindOperator<Source, Entity, ValueType> {
+>(...values: ValueType[]): WhereOperator<Source, Entity, ValueType> {
   return {
-    "@type": "FindOperator",
+    "@type": "WhereOperator",
     kind: "in",
     driver: null as any,
     entity: null as any,
@@ -99,9 +99,9 @@ export function LessThan<
   Source extends AnyDataSource,
   Entity extends AnyEntity,
   ValueType
->(value: ValueType): FindOperator<Source, Entity, ValueType> {
+>(value: ValueType): WhereOperator<Source, Entity, ValueType> {
   return {
-    "@type": "FindOperator",
+    "@type": "WhereOperator",
     kind: "lessThan",
     driver: null as any,
     entity: null as any,
@@ -114,9 +114,9 @@ export function LessThanOrEqual<
   Source extends AnyDataSource,
   Entity extends AnyEntity,
   ValueType
->(value: ValueType): FindOperator<Source, Entity, ValueType> {
+>(value: ValueType): WhereOperator<Source, Entity, ValueType> {
   return {
-    "@type": "FindOperator",
+    "@type": "WhereOperator",
     kind: "lessThanOrEqual",
     driver: null as any,
     entity: null as any,
@@ -129,9 +129,9 @@ export function MoreThan<
   Source extends AnyDataSource,
   Entity extends AnyEntity,
   ValueType
->(value: ValueType): FindOperator<Source, Entity, ValueType> {
+>(value: ValueType): WhereOperator<Source, Entity, ValueType> {
   return {
-    "@type": "FindOperator",
+    "@type": "WhereOperator",
     kind: "moreThan",
     driver: null as any,
     entity: null as any,
@@ -144,9 +144,9 @@ export function MoreThanOrEqual<
   Source extends AnyDataSource,
   Entity extends AnyEntity,
   ValueType
->(value: ValueType): FindOperator<Source, Entity, ValueType> {
+>(value: ValueType): WhereOperator<Source, Entity, ValueType> {
   return {
-    "@type": "FindOperator",
+    "@type": "WhereOperator",
     kind: "moreThanOrEqual",
     driver: null as any,
     entity: null as any,
@@ -159,9 +159,9 @@ export function Raw<
   Source extends AnyDataSource,
   Entity extends AnyEntity,
   ValueType
->(value: string): FindOperator<Source, Entity, ValueType> {
+>(value: string): WhereOperator<Source, Entity, ValueType> {
   return {
-    "@type": "FindOperator",
+    "@type": "WhereOperator",
     kind: "raw",
     driver: null as any,
     entity: null as any,
@@ -174,9 +174,9 @@ export function Escaped<
   Source extends AnyDataSource,
   Entity extends AnyEntity,
   ValueType
->(value: string): FindOperator<Source, Entity, ValueType> {
+>(value: string): WhereOperator<Source, Entity, ValueType> {
   return {
-    "@type": "FindOperator",
+    "@type": "WhereOperator",
     kind: "escaped",
     driver: null as any,
     entity: null as any,
@@ -192,9 +192,9 @@ export function Column<
 >(
   name: keyof Entity["columns"],
   // alias?: string
-): FindOperator<Source, Entity, ValueType> {
+): WhereOperator<Source, Entity, ValueType> {
   return {
-    "@type": "FindOperator",
+    "@type": "WhereOperator",
     kind: "column",
     driver: null as any,
     entity: null as any,

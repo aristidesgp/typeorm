@@ -2,7 +2,7 @@ import { AnyDataSource, DataSourceEntity } from "../../data-source"
 import { FindOptionsCache } from "./find-options-cache"
 import { FindOptionsOrder } from "./find-options-order"
 import { FindOptionsSelect } from "./find-options-select"
-import { FindOptionsWhere } from "../where-options/find-options-where"
+import { WhereOptions } from "../where-options"
 
 /**
  * Defines a special criteria to find specific entity.
@@ -19,7 +19,7 @@ export interface FindOptions<
   /**
    * Conditions applied to a query on what needs to be selected from the database.
    */
-  where?: FindOptionsWhere<Source, Entity>
+  where?: WhereOptions<Source, Entity>
 
   /**
    * Order options applied to a query.

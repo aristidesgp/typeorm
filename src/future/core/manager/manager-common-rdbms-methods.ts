@@ -3,7 +3,7 @@ import { QueryRunner } from "../../../query-runner/QueryRunner"
 import { AnyDataSource } from "../data-source"
 import { IsolationLevels, QueryResult, UpdateResult } from "../driver"
 import { EntityColumnPaths, EntityPointer, EntityReference } from "../entity"
-import { FindOptionsWhere } from "../options/find-options"
+import { WhereOptions } from "../options"
 
 /**
  * Interface for managers that implement common RDBMS methods.
@@ -64,7 +64,7 @@ export interface ManagerCommonRdbmsMethods<Source extends AnyDataSource> {
     Entity extends EntityPointer<Source, EntityRef>
   >(
     entity: EntityRef,
-    where: FindOptionsWhere<Source, Entity>,
+    where: WhereOptions<Source, Entity>,
     columnPath: EntityColumnPaths<Entity>,
     value: number,
   ): Promise<UpdateResult<Source>>
@@ -77,7 +77,7 @@ export interface ManagerCommonRdbmsMethods<Source extends AnyDataSource> {
     Entity extends EntityPointer<Source, EntityRef>
   >(
     entity: EntityRef,
-    where: FindOptionsWhere<Source, Entity>,
+    where: WhereOptions<Source, Entity>,
     columnPath: EntityColumnPaths<Entity>,
     value: number,
   ): Promise<UpdateResult<Source>>

@@ -1,15 +1,12 @@
 import { AnyDataSource } from "../../data-source"
 import { AnyEntity } from "../../entity"
-import {
-  FindExpression,
-  FindOptionsWhere,
-} from "../where-options/find-options-where"
+import { WhereExpression, WhereOptions } from "./where-options"
 
 export function Or<Source extends AnyDataSource, Entity extends AnyEntity>(
-  ...args: FindOptionsWhere<Source, Entity>[]
-): FindExpression<Source, Entity> {
+  ...args: WhereOptions<Source, Entity>[]
+): WhereExpression<Source, Entity> {
   return {
-    "@type": "FindExpression",
+    "@type": "WhereExpression",
     kind: "or",
     driver: null as any,
     entity: null as any,
@@ -18,10 +15,10 @@ export function Or<Source extends AnyDataSource, Entity extends AnyEntity>(
 }
 
 export function And<Source extends AnyDataSource, Entity extends AnyEntity>(
-  ...args: FindOptionsWhere<Source, Entity>[]
-): FindExpression<Source, Entity> {
+  ...args: WhereOptions<Source, Entity>[]
+): WhereExpression<Source, Entity> {
   return {
-    "@type": "FindExpression",
+    "@type": "WhereExpression",
     kind: "and",
     driver: null as any,
     entity: null as any,
@@ -30,10 +27,10 @@ export function And<Source extends AnyDataSource, Entity extends AnyEntity>(
 }
 
 export function Not<Source extends AnyDataSource, Entity extends AnyEntity>(
-  ...args: FindOptionsWhere<Source, Entity>[]
-): FindExpression<Source, Entity> {
+  ...args: WhereOptions<Source, Entity>[]
+): WhereExpression<Source, Entity> {
   return {
-    "@type": "FindExpression",
+    "@type": "WhereExpression",
     kind: "not",
     driver: null as any,
     entity: null as any,
@@ -42,10 +39,10 @@ export function Not<Source extends AnyDataSource, Entity extends AnyEntity>(
 }
 
 export function Xor<Source extends AnyDataSource, Entity extends AnyEntity>(
-  ...args: FindOptionsWhere<Source, Entity>[]
-): FindExpression<Source, Entity> {
+  ...args: WhereOptions<Source, Entity>[]
+): WhereExpression<Source, Entity> {
   return {
-    "@type": "FindExpression",
+    "@type": "WhereExpression",
     kind: "xor",
     driver: null as any,
     entity: null as any,
