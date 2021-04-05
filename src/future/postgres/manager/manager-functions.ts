@@ -85,13 +85,22 @@ export function createPostgresManager(
     async find() {
       return {} as any
     },
+    async findBy() {
+      return {} as any
+    },
     async findByIds() {
       return {} as any
     },
     async findOne() {
       return {} as any
     },
+    async findOneBy() {
+      return {} as any
+    },
     async findOneOrFail() {
+      return {} as any
+    },
+    async findOneByOrFail() {
       return {} as any
     },
     async findOneById() {
@@ -103,7 +112,13 @@ export function createPostgresManager(
     async findAndCount() {
       return [] as any
     },
+    async findAndCountBy() {
+      return [] as any
+    },
     async count() {
+      return 0
+    },
+    async countBy() {
       return 0
     },
     async release() {

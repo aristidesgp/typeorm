@@ -168,18 +168,20 @@ export const UserRepository = myDataSource.manager.repository(UserEntity, {
 // const repo = myDataSource.manager.repository("UserEntity").
 
 async function test() {
-  const a = await myDataSource.manager.repository("UserEntity").findOneOrFail({
-    select: {
-      id: true,
-      ...UserWithAvatarEager,
-    },
-    where: {
-      name: "Umed",
-      avatar: {
-        id: 1,
+  const a = await myDataSource.manager
+    .repository("UserEntity")
+    .findOneByOrFail({
+      select: {
+        id: true,
+        ...UserWithAvatarEager,
       },
-    },
-  })
+      where: {
+        name: "Umed",
+        avatar: {
+          id: 1,
+        },
+      },
+    })
 
   console.log(a.photos[0].filename)
 

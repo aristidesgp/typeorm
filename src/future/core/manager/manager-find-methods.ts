@@ -9,7 +9,8 @@ import {
   FindOptionsBuilder,
   FindOptionsMany,
   FindReturnType,
-} from "../options/find-options"
+  WhereOptions,
+} from "../options"
 import { FindOptionsCount } from "../options/find-options/find-options-count"
 import { ForceCast } from "../util"
 
@@ -28,9 +29,21 @@ export interface ManagerFindMethods<Source extends AnyDataSource> {
   ): FindOptionsBuilder<Source, Entity>
 
   /**
-   * Finds entities matching given find options.
+   * Finds entities by a given criteria.
    */
   find<
+    EntityRef extends EntityReference<Source>,
+    Entity extends EntityPointer<Source, EntityRef>,
+    Where extends WhereOptions<Source, Entity>
+  >(
+    entityRef: EntityRef,
+    where: Where,
+  ): Promise<FindReturnType<Source, Entity, {}, false>[]>
+
+  /**
+   * Finds entities by a given find options.
+   */
+  findBy<
     EntityRef extends EntityReference<Source>,
     Entity extends EntityPointer<Source, EntityRef>,
     Options extends FindOptionsMany<Source, Entity>
@@ -58,10 +71,23 @@ export interface ManagerFindMethods<Source extends AnyDataSource> {
   >
 
   /**
-   * Finds first entity matching given find options.
+   * Finds first entity by a given where criteria.
    * If entity was not found in the database - it returns null.
    */
   findOne<
+    EntityRef extends EntityReference<Source>,
+    Entity extends EntityPointer<Source, EntityRef>,
+    Where extends WhereOptions<Source, Entity>
+  >(
+    entityRef: EntityRef,
+    where: Where,
+  ): Promise<FindReturnType<Source, Entity, {}, false> | null>
+
+  /**
+   * Finds first entity matching given find options.
+   * If entity was not found in the database - it returns null.
+   */
+  findOneBy<
     EntityRef extends EntityReference<Source>,
     Entity extends EntityPointer<Source, EntityRef>,
     Options extends FindOptions<Source, Entity>
@@ -76,10 +102,23 @@ export interface ManagerFindMethods<Source extends AnyDataSource> {
   > | null>
 
   /**
-   * Finds first entity matching given find options.
+   * Finds first entity matching given where criteria.
    * If entity was not found in the database - it throws an Error.
    */
   findOneOrFail<
+    EntityRef extends EntityReference<Source>,
+    Entity extends EntityPointer<Source, EntityRef>,
+    Where extends WhereOptions<Source, Entity>
+  >(
+    entityRef: EntityRef,
+    where: Where,
+  ): Promise<FindReturnType<Source, Entity, {}, false>>
+
+  /**
+   * Finds first entity matching given find options.
+   * If entity was not found in the database - it throws an Error.
+   */
+  findOneByOrFail<
     EntityRef extends EntityReference<Source>,
     Entity extends EntityPointer<Source, EntityRef>,
     Options extends FindOptions<Source, Entity>
@@ -128,11 +167,25 @@ export interface ManagerFindMethods<Source extends AnyDataSource> {
   >
 
   /**
-   * Counts entities matching given find options.
+   * Counts entities matching given where criteria.
    * Also counts all entities matching given conditions,
    * but ignores pagination settings ("skip" and "take" options).
    */
   findAndCount<
+    EntityRef extends EntityReference<Source>,
+    Entity extends EntityPointer<Source, EntityRef>,
+    Where extends WhereOptions<Source, Entity>
+  >(
+    entityRef: EntityRef,
+    where: Where,
+  ): Promise<[FindReturnType<Source, Entity, {}, false>[], number]>
+
+  /**
+   * Counts entities matching given find options.
+   * Also counts all entities matching given conditions,
+   * but ignores pagination settings ("skip" and "take" options).
+   */
+  findAndCountBy<
     EntityRef extends EntityReference<Source>,
     Entity extends EntityPointer<Source, EntityRef>,
     Options extends FindOptions<Source, Entity>
@@ -147,9 +200,21 @@ export interface ManagerFindMethods<Source extends AnyDataSource> {
   >
 
   /**
-   * Counts entities matching given find options.
+   * Counts entities matching given where criteria.
    */
   count<
+    EntityRef extends EntityReference<Source>,
+    Entity extends EntityPointer<Source, EntityRef>,
+    Where extends WhereOptions<Source, Entity>
+  >(
+    entityRef: EntityRef,
+    where: Where,
+  ): Promise<number>
+
+  /**
+   * Counts entities matching given count options.
+   */
+  countBy<
     EntityRef extends EntityReference<Source>,
     Entity extends EntityPointer<Source, EntityRef>,
     Options extends FindOptionsCount<Source, Entity>
