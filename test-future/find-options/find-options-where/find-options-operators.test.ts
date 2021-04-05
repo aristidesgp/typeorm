@@ -1,29 +1,29 @@
 import {
   And,
   Any,
-  DataSource,
   WhereOptions,
   Or,
+  DataSource,
 } from "../../../src/future/core"
-import { postgres } from "../../../src/future/postgres"
-import { AlbumEntity } from "../../entity/Album"
-import { PhotoEntity } from "../../entity/Photo"
-import { UserEntity } from "../../entity/User"
+import { Postgres } from "../../../src/future/postgres"
+import { UserEntity, PhotoEntity, AlbumEntity } from "../../entity/User"
 
 describe("find-options > operators", () => {
   const myDataSource = DataSource.create({
-    type: postgres({
-      entities: {
-        UserEntity,
-        PhotoEntity,
-        AlbumEntity,
-      },
+    type: Postgres({
+      database: "",
+      username: "",
+      password: "",
+      entities: Postgres.entities({
+        UserEntity: UserEntity(),
+        PhotoEntity: PhotoEntity(),
+        AlbumEntity: AlbumEntity(),
+      }),
     }),
   })
 
   describe("Any()", () => {
     test("check if column type is correct", () => {
-      //@ts-ignore
       const correct: WhereOptions<typeof myDataSource, typeof UserEntity> = Or({
         id: Any(1),
         name: Any("1"),

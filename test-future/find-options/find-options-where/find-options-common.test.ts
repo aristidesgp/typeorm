@@ -1,79 +1,88 @@
-import { WhereOptions } from "../../../src/future/core"
-import { postgres } from "../../../src/future/postgres"
-import { AlbumEntity } from "../../entity/Album"
-import { PhotoEntity } from "../../entity/Photo"
-import { UserEntity } from "../../entity/User"
 import { DataSource } from "../../../src/future/core"
+import { Postgres } from "../../../src/future/postgres"
+import { UserEntity, PhotoEntity, AlbumEntity } from "../../entity/User"
 
 describe("find-options > common cases", () => {
   const myDataSource = DataSource.create({
-    type: postgres({
-      entities: {
-        UserEntity,
-        PhotoEntity,
-        AlbumEntity,
-      },
+    type: Postgres({
+      database: "",
+      username: "",
+      password: "",
+      entities: Postgres.entities({
+        UserEntity: UserEntity(),
+        PhotoEntity: PhotoEntity(),
+        AlbumEntity: AlbumEntity(),
+      }),
     }),
   })
 
+  test("where in find cannot accept incorrect values", () => {
+    myDataSource.manager.repository(UserEntity).findOptions.where({
+      //@ts-expect-error
+      id: "1",
+    })
+  })
+
   test("check if column type is correct", () => {
-    //@ts-ignore
-    const correct: WhereOptions<typeof myDataSource, typeof UserEntity> = {
+    myDataSource.manager.repository(UserEntity).findOptions.where({
       id: 1,
       name: "1",
       active: true,
-      // phones: ["true", "asd"], TODO
-    }
-    //@ts-ignore
-    const incorrect: WhereOptions<typeof myDataSource, typeof UserEntity> = {
+    })
+
+    myDataSource.manager.repository(UserEntity).findOptions.where({
       //@ts-expect-error
       id: "1",
       //@ts-expect-error
       name: 1,
       //@ts-expect-error
       active: 1,
-    }
+    })
   })
 
   test("check if relation column type is correct", () => {
-    //@ts-ignore
-    const correct: WhereOptions<typeof myDataSource, typeof UserEntity> = {
+    myDataSource.manager.repository(UserEntity).findOptions.where({
       avatar: {
         id: 1,
         filename: "1",
       },
-    }
-    //@ts-ignore
-    const correct2: WhereOptions<typeof myDataSource, typeof UserEntity> = {
+    })
+
+    myDataSource.manager.repository(UserEntity).findOptions.where({
       avatar: {
         id: 1,
         filename: null,
       },
-    }
+    })
 
-    //@ts-ignore
-    const incorrect: WhereOptions<typeof myDataSource, typeof UserEntity> = {
+    myDataSource.manager.repository(UserEntity).findOptions.where({
+      avatar: {
+        //@ts-expect-error
+        id: null,
+        filename: null,
+      },
+    })
+
+    myDataSource.manager.repository(UserEntity).findOptions.where({
       avatar: {
         //@ts-expect-error
         id: "1",
         //@ts-expect-error
         filename: 1,
       },
-    }
+    })
   })
 
   test("check if embed column type is correct", () => {
-    //@ts-ignore
-    const correct: WhereOptions<typeof myDataSource, typeof UserEntity> = {
+    myDataSource.manager.repository(UserEntity).findOptions.where({
       profile: {
         bio: "1",
         adult: true,
         kids: 1,
       },
-    }
+    })
 
-    //@ts-ignore
-    const incorrect: WhereOptions<typeof myDataSource, typeof UserEntity> = {
+    myDataSource.manager.repository(UserEntity).findOptions.where({
       profile: {
         //@ts-expect-error
         bio: 1,
@@ -82,6 +91,49 @@ describe("find-options > common cases", () => {
         //@ts-expect-error
         kids: "1",
       },
-    }
+    })
+
+    myDataSource.manager.repository(UserEntity).findOptions.where({
+      profile: {
+        //@ts-expect-error
+        bio: null,
+        //@ts-expect-error
+        adult: null,
+        //@ts-expect-error
+        kids: null,
+      },
+    })
+  })
+
+  test("check if embed relation column type is correct", () => {
+    myDataSource.manager.repository(UserEntity).findOptions.where({
+      profile: {
+        educationPhotos: {
+          id: 1,
+          filename: null,
+        },
+      },
+    })
+
+    myDataSource.manager.repository(UserEntity).findOptions.where({
+      profile: {
+        educationPhotos: {
+          //@ts-expect-error
+          id: null,
+          filename: null,
+        },
+      },
+    })
+
+    myDataSource.manager.repository(UserEntity).findOptions.where({
+      profile: {
+        educationPhotos: {
+          //@ts-expect-error
+          id: "1",
+          //@ts-expect-error
+          filename: 1,
+        },
+      },
+    })
   })
 })

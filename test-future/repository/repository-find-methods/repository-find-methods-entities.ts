@@ -1,4 +1,4 @@
-import { Postgres } from "../../src/future/postgres"
+import { Postgres } from "../../../src/future/postgres"
 
 export enum Role {
   Admin,
@@ -17,7 +17,8 @@ export function EducationEmbed() {
     },
     relations: {
       campusPhotos: {
-        type: "many-to-many",
+        type: "one-to-many",
+        inverse: "",
         reference: PhotoEntity,
       },
     },
@@ -36,7 +37,8 @@ export function ExpirienceEmbed() {
     },
     relations: {
       organizationPhotos: {
-        type: "many-to-many",
+        type: "one-to-many",
+        inverse: "",
         reference: PhotoEntity,
       },
     },
@@ -120,11 +122,12 @@ export function UserEntity() {
     relations: {
       avatar: {
         type: "many-to-one",
-        reference: PhotoEntity,
+        reference: PhotoEntity(),
       },
       photos: {
-        type: "many-to-many",
-        reference: PhotoEntity,
+        type: "one-to-many",
+        inverse: "",
+        reference: PhotoEntity(),
       },
     },
     embeds: {
@@ -157,7 +160,8 @@ export function WorkerEntity() {
         reference: PhotoEntity,
       },
       photos: {
-        type: "many-to-many",
+        type: "one-to-many",
+        inverse: "",
         reference: PhotoEntity,
       },
     },
