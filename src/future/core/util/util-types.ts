@@ -1,7 +1,12 @@
 /**
  * Force casts given T to CastTo if T is undefined.
  */
-export type ForceCast<T, CastTo> = T extends undefined ? CastTo : T
+export type ForceCastIfUndefined<T, CastTo> = T extends undefined ? CastTo : T
+
+/**
+ * Force casts given T to CastTo if T has no keys.
+ */
+export type ForceCastIfNoKeys<T, CastTo> = keyof T extends "" ? CastTo : T
 
 /**
  * Extracts all values of a given object T.
@@ -37,3 +42,14 @@ export type NonNever<T extends {}> = Pick<
   T,
   { [K in keyof T]: T[K] extends never ? never : K }[keyof T]
 >
+
+/**
+ * Makes all undefined properties of the object undefined AND optional.
+ * It means all non-optional undefined properties of a given object will become optional.
+ */
+export type UndefinedToOptional<T> = {
+  [K in keyof T as undefined extends T[K] ? K : never]?: T[K]
+} &
+  {
+    [K in keyof T as undefined extends T[K] ? never : K]: T[K]
+  }

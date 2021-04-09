@@ -1,9 +1,5 @@
 import { AnyDataSource } from "../data-source"
-import {
-  EntityPointer,
-  EntityPrimaryColumnMixedValueMap,
-  EntityReference,
-} from "../entity"
+import { EntityPointer, EntityReference } from "../entity"
 import {
   FindOptions,
   FindOptionsBuilder,
@@ -12,7 +8,7 @@ import {
   WhereOptions,
 } from "../options"
 import { FindOptionsCount } from "../options/find-options/find-options-count"
-import { ForceCast } from "../util"
+import { ForceCastIfUndefined } from "../util"
 
 /**
  * Interface for managers that implement find* methods.
@@ -51,23 +47,12 @@ export interface ManagerFindMethods<Source extends AnyDataSource> {
     entityRef: EntityRef,
     options: Options,
   ): Promise<
-    FindReturnType<Source, Entity, ForceCast<Options["select"], {}>, false>[]
-  >
-
-  /**
-   * Finds entities matching given ids.
-   * Optionally find options can be applied.
-   */
-  findByIds<
-    EntityRef extends EntityReference<Source>,
-    Entity extends EntityPointer<Source, EntityRef>,
-    Options extends FindOptionsMany<Source, Entity>
-  >(
-    entityRef: EntityRef,
-    id: EntityPrimaryColumnMixedValueMap<Entity>,
-    options?: Options,
-  ): Promise<
-    FindReturnType<Source, Entity, ForceCast<Options["select"], {}>, false>[]
+    FindReturnType<
+      Source,
+      Entity,
+      ForceCastIfUndefined<Options["select"], {}>,
+      false
+    >[]
   >
 
   /**
@@ -97,7 +82,7 @@ export interface ManagerFindMethods<Source extends AnyDataSource> {
   ): Promise<FindReturnType<
     Source,
     Entity,
-    ForceCast<Options["select"], {}>,
+    ForceCastIfUndefined<Options["select"], {}>,
     false
   > | null>
 
@@ -126,44 +111,12 @@ export interface ManagerFindMethods<Source extends AnyDataSource> {
     entityRef: EntityRef,
     options: Options,
   ): Promise<
-    FindReturnType<Source, Entity, ForceCast<Options["select"], {}>, false>
-  >
-
-  /**
-   * Finds entity matching given entity id.
-   * Optionally options can be applied.
-   * If entity was not found in the database - it returns null.
-   */
-  findOneById<
-    EntityRef extends EntityReference<Source>,
-    Entity extends EntityPointer<Source, EntityRef>,
-    Options extends FindOptions<Source, Entity>
-  >(
-    entityRef: EntityRef,
-    id: EntityPrimaryColumnMixedValueMap<Entity>,
-    options?: Options,
-  ): Promise<FindReturnType<
-    Source,
-    Entity,
-    ForceCast<Options["select"], {}>,
-    false
-  > | null>
-
-  /**
-   * Finds entity matching given entity id.
-   * Optionally options can be applied.
-   * If entity was not found in the database - it throws an Error.
-   */
-  findOneByIdOrFail<
-    EntityRef extends EntityReference<Source>,
-    Entity extends EntityPointer<Source, EntityRef>,
-    Options extends FindOptions<Source, Entity>
-  >(
-    entityRef: EntityRef,
-    id: EntityPrimaryColumnMixedValueMap<Entity>,
-    options?: Options,
-  ): Promise<
-    FindReturnType<Source, Entity, ForceCast<Options["select"], {}>, false>
+    FindReturnType<
+      Source,
+      Entity,
+      ForceCastIfUndefined<Options["select"], {}>,
+      false
+    >
   >
 
   /**
@@ -194,7 +147,12 @@ export interface ManagerFindMethods<Source extends AnyDataSource> {
     options: Options,
   ): Promise<
     [
-      FindReturnType<Source, Entity, ForceCast<Options["select"], {}>, false>[],
+      FindReturnType<
+        Source,
+        Entity,
+        ForceCastIfUndefined<Options["select"], {}>,
+        false
+      >[],
       number,
     ]
   >

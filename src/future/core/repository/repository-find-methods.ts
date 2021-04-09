@@ -1,5 +1,4 @@
 import { AnyDataSource, DataSourceEntity } from "../data-source"
-import { EntityPrimaryColumnMixedValueMap } from "../entity"
 import {
   FindOptions,
   FindOptionsBuilder,
@@ -8,7 +7,7 @@ import {
   WhereOptions,
 } from "../options"
 import { FindOptionsCount } from "../options/find-options/find-options-count"
-import { ForceCast } from "../util"
+import { ForceCastIfUndefined } from "../util"
 
 /**
  * Interface for repositories that implement find* methods.
@@ -35,18 +34,12 @@ export interface RepositoryFindMethods<
   findBy<Options extends FindOptionsMany<Source, Entity>>(
     options: Options,
   ): Promise<
-    FindReturnType<Source, Entity, ForceCast<Options["select"], {}>, false>[]
-  >
-
-  /**
-   * Finds entities matching given ids.
-   * Optionally find options can be applied.
-   */
-  findByIds<Options extends FindOptionsMany<Source, Entity>>(
-    id: EntityPrimaryColumnMixedValueMap<Entity>,
-    options?: Options,
-  ): Promise<
-    FindReturnType<Source, Entity, ForceCast<Options["select"], {}>, false>[]
+    FindReturnType<
+      Source,
+      Entity,
+      ForceCastIfUndefined<Options["select"], {}>,
+      false
+    >[]
   >
 
   /**
@@ -66,7 +59,7 @@ export interface RepositoryFindMethods<
   ): Promise<FindReturnType<
     Source,
     Entity,
-    ForceCast<Options["select"], {}>,
+    ForceCastIfUndefined<Options["select"], {}>,
     false
   > | null>
 
@@ -85,34 +78,12 @@ export interface RepositoryFindMethods<
   findOneByOrFail<Options extends FindOptions<Source, Entity>>(
     options: Options,
   ): Promise<
-    FindReturnType<Source, Entity, ForceCast<Options["select"], {}>, false>
-  >
-
-  /**
-   * Finds entity matching given entity id.
-   * Optionally options can be applied.
-   * If entity was not found in the database - it returns null.
-   */
-  findOneById<Options extends FindOptions<Source, Entity>>(
-    id: EntityPrimaryColumnMixedValueMap<Entity>,
-    options?: Options,
-  ): Promise<FindReturnType<
-    Source,
-    Entity,
-    ForceCast<Options["select"], {}>,
-    false
-  > | null>
-
-  /**
-   * Finds entity matching given entity id.
-   * Optionally options can be applied.
-   * If entity was not found in the database - it throws an Error.
-   */
-  findOneByIdOrFail<Options extends FindOptions<Source, Entity>>(
-    id: EntityPrimaryColumnMixedValueMap<Entity>,
-    options?: Options,
-  ): Promise<
-    FindReturnType<Source, Entity, ForceCast<Options["select"], {}>, false>
+    FindReturnType<
+      Source,
+      Entity,
+      ForceCastIfUndefined<Options["select"], {}>,
+      false
+    >
   >
 
   /**
@@ -133,7 +104,12 @@ export interface RepositoryFindMethods<
     options: Options,
   ): Promise<
     [
-      FindReturnType<Source, Entity, ForceCast<Options["select"], {}>, false>[],
+      FindReturnType<
+        Source,
+        Entity,
+        ForceCastIfUndefined<Options["select"], {}>,
+        false
+      >[],
       number,
     ]
   >

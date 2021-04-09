@@ -1,10 +1,5 @@
 import { AnyDataSource } from "../data-source"
-import {
-  EntityModelPartial,
-  EntityPointer,
-  EntityPrimaryColumnMixedValueMap,
-  EntityReference,
-} from "../entity"
+import { EntityModelPartial, EntityPointer, EntityPrimariesValueMap, EntityReference } from "../entity"
 import { UnionToIntersection } from "../util"
 
 /**
@@ -38,7 +33,7 @@ export interface ManagerBasicMethods<Source extends AnyDataSource> {
   >(
     entity: EntityRef,
     model: Model,
-  ): EntityPrimaryColumnMixedValueMap<Entity>
+  ): EntityPrimariesValueMap<Entity>
 
   /**
    * Creates a new entity instance.

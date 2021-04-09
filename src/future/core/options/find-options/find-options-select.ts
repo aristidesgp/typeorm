@@ -57,7 +57,7 @@ export type FindReturnTypeProperty<
   Property extends EntityProps<Entity>[P]["property"],
   ParentPartiallySelected extends boolean
 > = P extends keyof Entity["columns"] // if property is a column, just return it's type inferred from a driver column types defined in the entity
-  ? ColumnCompileType<Entity, P>
+  ? ColumnCompileType<Entity["driver"], Entity["columns"][P]>
   : P extends keyof Entity["embeds"] // if selected property is an embed, we just go recursively
   ? FindReturnType<
       Source,

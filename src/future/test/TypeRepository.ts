@@ -1,5 +1,4 @@
-import { DataSource, EntityPrimaryColumnValueMap } from "../core"
-import { SelectAll } from "../core/selection"
+import { DataSource } from "../core"
 import { entity, postgres } from "../postgres"
 
 export const AlbumEntity = entity({
@@ -42,17 +41,23 @@ export const PhotoEntity = entity({
 
 export const ProfileEmbed = entity({
   columns: {
+    passportId: {
+      type: "varchar",
+      // primary: true,
+    },
     bio: {
       type: "varchar",
     },
     maritalStatus: {
       type: "varchar",
+      nullable: true,
     },
     adult: {
       type: "boolean",
     },
     kids: {
       type: "int",
+      default: 0,
     },
   },
   relations: {
@@ -185,8 +190,23 @@ async function test() {
 
   console.log(a.photos[0].filename)
 
-  const b = await myDataSource.manager.repository("UserEntity").findByIds(1)
-  console.log(b)
+  // type bbb = EntityPrimariesValueMap<
+  //   typeof UserEntity["driver"],
+  //   typeof UserEntity["columns"],
+  //   typeof UserEntity["embeds"]
+  // >
+  // type ccc = typeof UserEntity["primariesValueMap"]
+  // type aaaa = EntityPrimariesPaths<bbb>
+  //
+  // type axax = EntityPrimariesMixed<
+  //   typeof UserEntity,
+  //   EntityPrimariesValueMap<typeof UserEntity>
+  // >
+  // const x: axax = {}
+  // console.log(x)
+
+  // const b = await myDataSource.manager.repository("UserEntity").findByIds(1)
+  // console.log(b)
 
   await myDataSource.manager
     .repository("UserEntity")
@@ -203,10 +223,10 @@ async function test() {
   const id = myDataSource.manager.repository("UserEntity").getId(c)
   console.log(id)
 
-  const x: SelectAll<EntityPrimaryColumnValueMap<typeof UserEntity>> = {
-    id: true,
-  }
-  console.log(x)
+  // const x: SelectAll<EntityPrimaryColumnValueMap<typeof UserEntity>> = {
+  //   id: true,
+  // }
+  // console.log(x)
 
   const d = myDataSource.manager.repository("UserEntity").merge(
     {
@@ -227,28 +247,36 @@ async function test() {
   console.log(e)
 
   const f = await myDataSource.manager.repository(UserEntity).insert({
-    name: "Umed",
+    name: "hello",
+    secondName: "wow",
+    profile: {
+      passportId: "",
+      bio: "",
+      adult: false,
+      maritalStatus: "hm",
+      kids: 1,
+    },
   })
-  console.log(f.id)
+  console.log(f)
 
   const g = await myDataSource.manager.insert(CarEntity, {
     name: "ModelZ",
   })
   console.log(g)
 
-  const a1 = await myDataSource.manager.findOneByIdOrFail(PhotoEntity, 1)
-  console.log(a1)
-
-  const a2 = await myDataSource.manager.findOneByIdOrFail(UserEntity, 1)
-  console.log(a2)
-
-  const a3 = await myDataSource.manager.findOneByIdOrFail(CarEntity, {
-    id: 1,
-    info: {
-      vin: "wow",
-    },
-  })
-  console.log(a3)
+  // const a1 = await myDataSource.manager.findOneByIdOrFail(PhotoEntity, 1)
+  // console.log(a1)
+  //
+  // const a2 = await myDataSource.manager.findByIds(UserEntity, 1)
+  // console.log(a2)
+  //
+  // const a3 = await myDataSource.manager.findOneByIdOrFail(CarEntity, {
+  //   id: 1,
+  //   info: {
+  //     vin: "wow",
+  //   },
+  // })
+  // console.log(a3)
 
   const id1 = await myDataSource.manager.getId(PhotoEntity, {
     filename: ":wow",
@@ -257,6 +285,9 @@ async function test() {
 
   const id2 = await myDataSource.manager.getId(CarEntity, {})
   console.log(id2.info.vin)
+
+  // const id3 = await myDataSource.manager.getId(UserEntity, {})
+  // console.log(id3.profile.passportId)
 
   const users = await UserRepository.find({})
   console.log(users)

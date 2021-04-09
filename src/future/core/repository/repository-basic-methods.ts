@@ -1,5 +1,5 @@
 import { AnyDataSource, DataSourceEntity } from "../data-source"
-import { EntityModelPartial, EntityPrimaryColumnMixedValueMap } from "../entity"
+import { EntityModelPartial, EntityPrimariesValueMap } from "../entity"
 import { UnionToIntersection } from "../util"
 
 /**
@@ -22,7 +22,7 @@ export interface RepositoryBasicMethods<
    */
   getId<Model extends EntityModelPartial<Source, Entity>>(
     model: Model,
-  ): EntityPrimaryColumnMixedValueMap<Entity>
+  ): EntityPrimariesValueMap<Entity>
 
   /**
    * Creates a new entity instance.

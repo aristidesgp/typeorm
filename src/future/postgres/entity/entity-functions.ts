@@ -3,7 +3,7 @@ import {
   EntityColumns,
   EntityEmbeds,
   EntityRelations,
-  ForceCast,
+  ForceCastIfUndefined,
 } from "../../core"
 import { PostgresDriver } from "../driver"
 
@@ -17,9 +17,9 @@ export function entity<
   embeds?: Embeds
 }): CoreEntity<
   PostgresDriver<any>,
-  ForceCast<Columns, {}>,
-  ForceCast<Relations, {}>,
-  ForceCast<Embeds, {}>
+  ForceCastIfUndefined<Columns, {}>,
+  ForceCastIfUndefined<Relations, {}>,
+  ForceCastIfUndefined<Embeds, {}>
 > {
   return undefined as any
 }

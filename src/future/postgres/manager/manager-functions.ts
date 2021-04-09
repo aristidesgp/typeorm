@@ -88,9 +88,6 @@ export function createPostgresManager(
     async findBy() {
       return {} as any
     },
-    async findByIds() {
-      return {} as any
-    },
     async findOne() {
       return {} as any
     },
@@ -101,12 +98,6 @@ export function createPostgresManager(
       return {} as any
     },
     async findOneByOrFail() {
-      return {} as any
-    },
-    async findOneById() {
-      return {} as any
-    },
-    async findOneByIdOrFail() {
       return {} as any
     },
     async findAndCount() {

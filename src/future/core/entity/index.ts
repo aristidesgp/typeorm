@@ -1,9 +1,15 @@
 import { DeepPartial } from "../../../common/DeepPartial"
 import { AnyDataSource, DataSourceEntity } from "../data-source"
 import { AnyDriver } from "../driver"
-import { FindReturnType } from "../options/find-options"
+import { FindReturnType } from "../options"
 import { SelectAll } from "../selection"
-import { MoreThanOneElement, NonNever, ValueOf } from "../util"
+import {
+  FlatTypeHint,
+  ForceCastIfNoKeys,
+  NonNever,
+  UndefinedToOptional,
+  ValueOf,
+} from "../util"
 
 export type AnyEntity = CoreEntity<
   AnyDriver,
@@ -12,12 +18,12 @@ export type AnyEntity = CoreEntity<
   EntityEmbeds<AnyDriver>
 >
 
-export type CoreEntity<
+export interface CoreEntity<
   Driver extends AnyDriver,
   Columns extends EntityColumns<Driver>,
   Relations extends EntityRelations,
   Embeds extends EntityEmbeds<Driver>
-> = {
+> {
   "@type": "Entity"
   driver: Driver
   columns: Columns
@@ -32,19 +38,21 @@ export type AnyEntityList = {
   [name: string]: AnyEntity
 }
 
-export type EntityColumns<Driver extends AnyDriver> = {
-  [key: string]: {
-    primary?: boolean
-    type: keyof Driver["types"]["columnTypes"]
-    generated?: boolean
-    nullable?: boolean
-    array?: boolean
-    default?: any
-    transform?: {
-      from(value: any): any
-      to(value: any): any
-    }
+export type EntityColumn<Driver extends AnyDriver> = {
+  primary?: boolean
+  type: keyof Driver["types"]["columnTypes"]
+  generated?: boolean
+  nullable?: boolean
+  array?: boolean
+  default?: any
+  transform?: {
+    from(value: any): any
+    to(value: any): any
   }
+}
+
+export type EntityColumns<Driver extends AnyDriver> = {
+  [key: string]: EntityColumn<Driver>
 }
 
 export type EntityRelationTypes =
@@ -99,19 +107,15 @@ export type ReferencedEntity<
  * todo: also need to consider transformers
  */
 export type ColumnCompileType<
-  Entity extends AnyEntity,
-  Property extends keyof Entity["columns"]
-> = Entity["columns"][Property]["array"] extends true
-  ? Entity["columns"][Property]["nullable"] extends true
-    ?
-        | Entity["driver"]["types"]["columnTypes"][Entity["columns"][Property]["type"]]["type"][]
-        | null
-    : Entity["driver"]["types"]["columnTypes"][Entity["columns"][Property]["type"]]["type"]
-  : Entity["columns"][Property]["nullable"] extends true
-  ?
-      | Entity["driver"]["types"]["columnTypes"][Entity["columns"][Property]["type"]]["type"]
-      | null
-  : Entity["driver"]["types"]["columnTypes"][Entity["columns"][Property]["type"]]["type"]
+  Driver extends AnyDriver,
+  Column extends EntityColumn<Driver>
+> = Column["array"] extends true
+  ? Column["nullable"] extends true
+    ? Driver["types"]["columnTypes"][Column["type"]]["type"][] | null
+    : Driver["types"]["columnTypes"][Column["type"]]["type"]
+  : Column["nullable"] extends true
+  ? Driver["types"]["columnTypes"][Column["type"]]["type"] | null
+  : Driver["types"]["columnTypes"][Column["type"]]["type"]
 
 /**
  * For a given entity returns column names with "primary" set to true.
@@ -128,53 +132,6 @@ export type EntityColumnNamesWithPrimary<Entity extends AnyEntity> = {
 }[string & keyof Entity["columns"]]
 
 /**
- * Mixed value map consist of primary columns and their values of the given entity.
- * It is *mixed* because if entity has only one primary column,
- * its type will be directly equal to this primary column type.
- * But if entity has multiple primary columns, its type will be equal to the object consist
- * of these properties and their values.
- *
- * Examples:
- *
- *  - for { id: { type: "varchar", primary: true }, name: { "varchar", primary: true }, age: { type: "int" }}
- *    value will be: { id: string, name: string }
- *
- *  - for { id: { type: "varchar", primary: true }, name: { "varchar" }, age: { type: "int" }}
- *    value will be: string
- *
- * todo: add support for primaries in embeds
- */
-export type EntityPrimaryColumnMixedValueMap<
-  Entity extends AnyEntity
-> = MoreThanOneElement<EntityPrimaryColumnPaths<Entity>> extends never
-  ? ColumnCompileType<Entity, EntityPrimaryColumnPaths<Entity>> // todo: it wouldn't work if there is only one primary and it is inside embed
-  : EntityPrimaryColumnValueMap<Entity>
-
-/**
- * Returns columns value map with "primary" set to true.
- * Unlike *mixed* it doesn't flatten object if there is only one primary column in the entity.
- *
- * Columns value map is an object where every column name is followed by a computed column type.
- * Examples:
- *
- *  - for { id: { type: "varchar", primary: true }, name: { "varchar", primary: true }, age: { type: "int" } }
- *    value will be: { id: string, name: string }
- *
- *  - for { id: { type: "varchar", primary: true }, name: { "varchar" }, age: { type: "int" } }
- *    value will be: { id: string }
- */
-export type EntityPrimaryColumnValueMap<Entity extends AnyEntity> = NonNever<
-  {
-    [P in keyof EntityProps<Entity>]: P extends keyof Entity["columns"]
-      ? Entity["columns"][P]["primary"] extends true
-        ? ColumnCompileType<Entity, P>
-        : never
-      : P extends keyof Entity["embeds"]
-      ? EntityPrimaryColumnValueMap<Entity["embeds"][P]>
-      : never
-  }
->
-/**
  * Returns columns value map with "generated" set to true.
  *
  * Columns value map is an object where every column name is followed by a computed column type.
@@ -190,7 +147,7 @@ export type EntityGeneratedColumnValueMap<Entity extends AnyEntity> = NonNever<
   {
     [P in keyof EntityProps<Entity>]: P extends keyof Entity["columns"]
       ? Entity["columns"][P]["generated"] extends true
-        ? ColumnCompileType<Entity, P>
+        ? ColumnCompileType<Entity["driver"], Entity["columns"][P]>
         : never
       : P extends keyof Entity["embeds"]
       ? EntityGeneratedColumnValueMap<Entity["embeds"][P]>
@@ -200,7 +157,6 @@ export type EntityGeneratedColumnValueMap<Entity extends AnyEntity> = NonNever<
 
 /**
  * Returns columns value map with "default" value set.
- * Unlike *mixed* it doesn't flatten object if there is only one primary column in the entity.
  *
  * Columns value map is an object where every column name is followed by a computed column type.
  * Examples:
@@ -215,7 +171,7 @@ export type EntityDefaultColumnValueMap<Entity extends AnyEntity> = NonNever<
   {
     [P in keyof EntityProps<Entity>]: P extends keyof Entity["columns"]
       ? Entity["columns"][P]["default"] extends string | number | boolean
-        ? ColumnCompileType<Entity, P>
+        ? ColumnCompileType<Entity["driver"], Entity["columns"][P]>
         : never
       : P extends keyof Entity["embeds"]
       ? EntityDefaultColumnValueMap<Entity["embeds"][P]>
@@ -246,29 +202,118 @@ export type EntityColumnPaths<
 /**
  * Extracts all entity primary columns and primary columns from its embeds into a single string literal type.
  * Example: for { id1, name, profile: { id2, bio, age, photos }} it will return a following type:
- * "id" | "profile.id2"
+ * "id" | "profile." | "profile.id2".
+ *
+ * There is a reason why "profile." is added - to prevent cases when entity has only ONE id and it is inside embed.
+ * In such cases adding "profile." means for MoreThanOneElement<T> that there are more than one "id" inside entity,
+ * however there is actually one, its just inside embed. This "hack" is used in order for
+ * EntityPrimariesMixed to work.
  */
-export type EntityPrimaryColumnPaths<
-  Entity extends AnyEntity,
+export type EntityPrimariesPaths<
+  ValueMap, //  extends AnyEntity,
   Parent extends string = "",
   Deepness extends string = "."
 > = string &
   ValueOf<
     {
-      [P in keyof EntityProps<Entity>]?: P extends string &
-        keyof Entity["columns"]
-        ? Entity["columns"][P]["primary"] extends true
-          ? `${Parent}${P}`
-          : never
-        : P extends string & keyof Entity["embeds"]
-        ? EntityPrimaryColumnPaths<
-            Entity["embeds"][P],
-            `${Parent}${P}.`,
-            `${Deepness}.`
-          >
-        : never
+      [P in string & keyof ValueMap]: ValueMap[P] extends
+        | number
+        | string
+        | boolean
+        ? `${Parent}${P}`
+        :
+            | `${Parent}${P}.`
+            | EntityPrimariesPaths<
+                ValueMap[P],
+                `${Parent}${P}.`,
+                `${Deepness}.`
+              >
     }
   >
+
+/**
+ * Returns a type of value map of entity primary columns.
+ * Returns "never" if no primary keys found in entity.
+ *
+ * Examples:
+ * - { id1 } it will return a following type:
+ *   { id1: number }
+ * - { id1, id2 } it will return a following type:
+ *   { id1: number, id2: string }
+ * - { id1, name, profile: { id2, bio, age, photos }} it will return a following type:
+ *   { id1: number, { profile: { id2: string }}}
+ * - { name, profile: { bio, age, photos }} it will return a following type:
+ *   never
+ *
+ * Implementation notes:
+ *  - we use ForceCastIfNoKeys to return "never" if object was empty
+ *  - we use FlatTypeHint to return "clean type" for type hinting purpose
+ *  - we use EntityPrimaryColumnValueMapAsCondition helper to simply code a bit
+ */
+export type EntityPrimariesValueMap<
+  Entity extends AnyEntity,
+  Deepness extends string = "."
+> = ForceCastIfNoKeys<
+  FlatTypeHint<
+    {
+      [P in EntityColumnAndEmbedNames<Entity> as EntityPrimariesValueMapAsCondition<
+        Entity,
+        P
+      > extends true
+        ? P
+        : never]: P extends keyof Entity["columns"]
+        ? ColumnCompileType<Entity["driver"], Entity["columns"][P]>
+        : P extends keyof Entity["embeds"]
+        ? EntityPrimariesValueMap<Entity["embeds"][P], `${Deepness}.`>
+        : never
+    }
+  >,
+  never
+>
+
+/**
+ * Returns all column names and embed names for a given entity.
+ * Helper type.
+ */
+export type EntityColumnAndEmbedNames<
+  Entity extends AnyEntity
+> = keyof (Entity["columns"] & Entity["embeds"])
+
+/**
+ * Returns all primary column names of a given entity.
+ * Returns only primary column names of a "first" level of entity - only from columns.
+ * Does not return primary column names from the entity embeds.
+ */
+export type EntityColumnsPrimaryNames<Entity extends AnyEntity> = keyof {
+  [P in keyof Entity["columns"] as Entity["columns"][P]["primary"] extends true
+    ? P
+    : never]: true
+}
+
+/**
+ * Helper type for a EntityPrimariesValueMap type.
+ * For a given Key (entity column name OR entity embed name)
+ * returns if entity column name is primary OR if entity embed name contains a primary.
+ *
+ * Implementation notes:
+ *  - Deepness is used because otherwise compiler goes recursive and becomes slow
+ *  - check for EntityColumnsPrimaryNames is used to exclude empty embeds without primaries
+ */
+export type EntityPrimariesValueMapAsCondition<
+  Entity extends AnyEntity,
+  Key extends EntityColumnAndEmbedNames<Entity>,
+  Deepness extends string = "."
+> = Key extends keyof Entity["columns"]
+  ? Entity["columns"][Key]["primary"] extends true
+    ? true
+    : false
+  : Key extends keyof Entity["embeds"]
+  ? Deepness extends ".........."
+    ? false
+    : EntityColumnsPrimaryNames<Entity["embeds"][Key]> extends ""
+    ? false
+    : true
+  : false
 
 /**
  * Type signature of a given entity.
@@ -286,6 +331,57 @@ export type EntityModelPartial<
   Entity extends AnyEntity
 > = DeepPartial<FindReturnType<Source, Entity, {}, false>>
 
+export type EntityModelForInsertColumn<
+  Column extends EntityColumn<AnyDriver>,
+  Type
+> = Column["default"] extends string | number | boolean
+  ? Type | undefined
+  : Column["generated"] extends true
+  ? Type | undefined
+  : Column["nullable"] extends true
+  ? Type | undefined
+  : Type
+
+/**
+ * Partially type signature of a given entity.
+ */
+export type EntityModelForInsert<
+  Source extends AnyDataSource,
+  Entity extends AnyEntity
+> = NonNever<
+  UndefinedToOptional<
+    {
+      [P in keyof EntityProps<Entity>]: P extends keyof Entity["columns"]
+        ? EntityModelForInsertColumn<
+            Entity["columns"][P],
+            ColumnCompileType<Source["driver"], Entity["columns"][P]>
+          >
+        : P extends keyof Entity["embeds"]
+        ? EntityModelForInsert<Source, Entity["embeds"][P]>
+        : P extends keyof Entity["embeds"]
+        ? EntityModelForInsert<Source, Entity["embeds"][P]>
+        : never
+    }
+  >
+>
+
+/**
+ * Merges generated columns, default columns into given partial entity model.
+ */
+export type EntityModelJustInserted<
+  Source extends AnyDataSource,
+  Entity extends DataSourceEntity<Source>,
+  Model //  extends EntityModelPartial<Source, Entity>
+> = Model &
+  FindReturnType<
+    Source,
+    Entity,
+    SelectAll<
+      EntityGeneratedColumnValueMap<Entity> &
+        EntityDefaultColumnValueMap<Entity>
+    >,
+    false
+  >
 /**
  * Entity reference can either be an entity name, either reference to entity declaration.
  */
@@ -306,24 +402,6 @@ export type EntityPointer<
   : Reference extends DataSourceEntity<Source>
   ? Reference
   : never
-
-/**
- * Merges generated columns, default columns into given partial entity model.
- */
-export type EntityModelJustInserted<
-  Source extends AnyDataSource,
-  Entity extends DataSourceEntity<Source>,
-  Model extends EntityModelPartial<Source, Entity>
-> = Model &
-  FindReturnType<
-    Source,
-    Entity,
-    SelectAll<
-      EntityGeneratedColumnValueMap<Entity> &
-        EntityDefaultColumnValueMap<Entity>
-    >,
-    false
-  >
 
 export type EntityProps<Entity extends AnyEntity> = {
   [P in keyof Entity["columns"]]: {

@@ -1,5 +1,9 @@
 import { AnyDataSource, DataSourceEntity } from "../data-source"
-import { EntityModelJustInserted, EntityModelPartial } from "../entity"
+import {
+  EntityModelForInsert,
+  EntityModelJustInserted,
+  EntityModelPartial,
+} from "../entity"
 import {
   ArchiveByOptions,
   ArchiveOptions,
@@ -10,7 +14,7 @@ import {
   UnarchiveOptions,
   UpdateByOptions,
   UpdateOptions,
-} from "../options/persistence-options"
+} from "../options"
 
 /**
  * Interface for repositories that implement persistence / alteration operations.
@@ -24,7 +28,7 @@ export interface RepositoryPersistenceMethods<
    * Database error will be thrown if entity already exists in the database.
    * Returns a copy of the model with the default / primary column values.
    */
-  insert<Model extends EntityModelPartial<Source, Entity>>(
+  insert<Model extends EntityModelForInsert<Source, Entity>>(
     model: Model,
     options?: InsertOptions<Source, Entity>,
   ): Promise<EntityModelJustInserted<Source, Entity, Model>>
