@@ -93,9 +93,11 @@ export const UserEntity = entity({
     avatar: {
       type: "many-to-one",
       reference: "PhotoEntity" as const,
+      referencedColumns: { referencedColumn: "filename" } as const,
     },
     photos: {
       type: "many-to-many",
+      owner: true,
       reference: "PhotoEntity" as const,
     },
   },
@@ -255,6 +257,9 @@ async function test() {
       adult: false,
       maritalStatus: "hm",
       kids: 1,
+    },
+    avatar: {
+      filename: "",
     },
   })
   console.log(f)
