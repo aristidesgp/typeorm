@@ -1,5 +1,10 @@
 import { AnyDataSource } from "../data-source"
-import { EntityModelPartial, EntityPointer, EntityPrimariesValueMap, EntityReference } from "../entity"
+import {
+  EntityModelPartial,
+  EntityPointer,
+  EntityPrimariesValueMap,
+  EntityReference,
+} from "../entity"
 import { UnionToIntersection } from "../util"
 
 /**

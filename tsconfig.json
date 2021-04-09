@@ -32,6 +32,6 @@
         "temp",
         "build",
         "node_modules",
-//        "test-future"
+        "test-future"
     ]
 }

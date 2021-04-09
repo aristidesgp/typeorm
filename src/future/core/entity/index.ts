@@ -118,20 +118,6 @@ export type ColumnCompileType<
   : Driver["types"]["columnTypes"][Column["type"]]["type"]
 
 /**
- * For a given entity returns column names with "primary" set to true.
- *
- * For example for { id: { type: "varchar", primary: true }, name: { "varchar", primary: true}, age: { type: "int" }}
- * This function will return "id" | "name" type.
- *
- * todo: add support for primaries in embeds
- */
-export type EntityColumnNamesWithPrimary<Entity extends AnyEntity> = {
-  [P in keyof Entity["columns"]]: Entity["columns"][P]["primary"] extends true
-    ? P
-    : never
-}[string & keyof Entity["columns"]]
-
-/**
  * Returns columns value map with "generated" set to true.
  *
  * Columns value map is an object where every column name is followed by a computed column type.
@@ -200,40 +186,8 @@ export type EntityColumnPaths<
 >
 
 /**
- * Extracts all entity primary columns and primary columns from its embeds into a single string literal type.
- * Example: for { id1, name, profile: { id2, bio, age, photos }} it will return a following type:
- * "id" | "profile." | "profile.id2".
- *
- * There is a reason why "profile." is added - to prevent cases when entity has only ONE id and it is inside embed.
- * In such cases adding "profile." means for MoreThanOneElement<T> that there are more than one "id" inside entity,
- * however there is actually one, its just inside embed. This "hack" is used in order for
- * EntityPrimariesMixed to work.
- */
-export type EntityPrimariesPaths<
-  ValueMap, //  extends AnyEntity,
-  Parent extends string = "",
-  Deepness extends string = "."
-> = string &
-  ValueOf<
-    {
-      [P in string & keyof ValueMap]: ValueMap[P] extends
-        | number
-        | string
-        | boolean
-        ? `${Parent}${P}`
-        :
-            | `${Parent}${P}.`
-            | EntityPrimariesPaths<
-                ValueMap[P],
-                `${Parent}${P}.`,
-                `${Deepness}.`
-              >
-    }
-  >
-
-/**
  * Returns a type of value map of entity primary columns.
- * Returns "never" if no primary keys found in entity.
+ * Returns "unknown" if no primary keys found in entity.
  *
  * Examples:
  * - { id1 } it will return a following type:
@@ -243,10 +197,10 @@ export type EntityPrimariesPaths<
  * - { id1, name, profile: { id2, bio, age, photos }} it will return a following type:
  *   { id1: number, { profile: { id2: string }}}
  * - { name, profile: { bio, age, photos }} it will return a following type:
- *   never
+ *   unknown
  *
  * Implementation notes:
- *  - we use ForceCastIfNoKeys to return "never" if object was empty
+ *  - we use ForceCastIfNoKeys to return "unknown" if object was empty
  *  - we use FlatTypeHint to return "clean type" for type hinting purpose
  *  - we use EntityPrimaryColumnValueMapAsCondition helper to simply code a bit
  */
@@ -268,7 +222,7 @@ export type EntityPrimariesValueMap<
         : never
     }
   >,
-  never
+  unknown
 >
 
 /**
