@@ -1,4 +1,4 @@
-import { AnyEntityList } from "../entity"
+import { AnyEntityList } from "../entity/entity-core"
 
 /**
  * Any DataSourceOptions. Helper type.

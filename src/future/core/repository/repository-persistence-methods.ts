@@ -1,9 +1,9 @@
 import { AnyDataSource, DataSourceEntity } from "../data-source"
 import {
+  EntityModelAfterInsert,
   EntityModelForInsert,
-  EntityModelJustInserted,
-  EntityModelPartial,
-} from "../entity"
+} from "../entity/entity-insert"
+import { EntityModelPartial } from "../entity/entity-model"
 import {
   ArchiveByOptions,
   ArchiveOptions,
@@ -31,7 +31,7 @@ export interface RepositoryPersistenceMethods<
   insert<Model extends EntityModelForInsert<Source, Entity>>(
     model: Model,
     options?: InsertOptions<Source, Entity>,
-  ): Promise<EntityModelJustInserted<Source, Entity, Model>>
+  ): Promise<EntityModelAfterInsert<Source, Entity, Model>>
 
   /**
    * Inserts entities in bulk.

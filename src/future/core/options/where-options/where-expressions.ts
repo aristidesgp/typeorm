@@ -1,5 +1,5 @@
 import { AnyDataSource } from "../../data-source"
-import { AnyEntity } from "../../entity"
+import { AnyEntity } from "../../entity/entity-core"
 import { WhereExpression, WhereOptions } from "./where-options"
 
 export function Or<Source extends AnyDataSource, Entity extends AnyEntity>(

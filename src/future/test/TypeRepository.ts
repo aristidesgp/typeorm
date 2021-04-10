@@ -1,4 +1,4 @@
-import { DataSource } from "../core"
+import { DataSource, EntityModelForInsert } from "../core"
 import { entity, postgres } from "../postgres"
 
 export const AlbumEntity = entity({
@@ -268,9 +268,24 @@ async function test() {
   })
   console.log(e)
 
-  const f = await myDataSource.manager.repository(PhotoEntity).insert({
+  const fx = await myDataSource.manager.repository(PhotoEntity).insert({
     id: 1,
   })
+
+  const modelForInsert: EntityModelForInsert<
+    typeof myDataSource,
+    typeof UserEntity
+  > = {
+    id: 1,
+    name: "Timber",
+    secondName: "Saw",
+    profile: {
+      bio: "about trees",
+      adult: true,
+      passportId: "timer-saw-0123",
+    },
+  }
+  console.log(modelForInsert)
 
   const f = await myDataSource.manager.repository(UserEntity).insert({
     name: "hello",

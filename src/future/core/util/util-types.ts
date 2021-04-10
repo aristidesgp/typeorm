@@ -58,3 +58,10 @@ export type UndefinedToOptional<T> = {
   {
     [K in keyof T as undefined extends T[K] ? never : K]: T[K]
   }
+
+/**
+ * Marks all properties of a given object as non-nullable.
+ */
+export type NonNullableObject<T> = {
+  [P in keyof T]: NonNullable<T[P]>
+}

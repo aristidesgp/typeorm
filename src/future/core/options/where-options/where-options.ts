@@ -1,10 +1,7 @@
 import { AnyDataSource } from "../../data-source"
-import {
-  AnyEntity,
-  ColumnCompileType,
-  EntityProps,
-  ReferencedEntity,
-} from "../../entity"
+import { ColumnCompileType } from "../../entity/entity-columns"
+import { AnyEntity, ReferencedEntity } from "../../entity/entity-core"
+import { EntityProps } from "../../entity/entity-utils"
 
 export type WhereExpression<
   Source extends AnyDataSource,

@@ -2,7 +2,7 @@ import { AnyDataSource } from "../data-source"
 import {
   EntityModelPartial,
   EntityPointer,
-  EntityPrimariesValueMap,
+  EntityPrimaryColumnTypeMap,
   EntityReference,
 } from "../entity"
 import { UnionToIntersection } from "../util"
@@ -38,7 +38,7 @@ export interface ManagerBasicMethods<Source extends AnyDataSource> {
   >(
     entity: EntityRef,
     model: Model,
-  ): EntityPrimariesValueMap<Entity>
+  ): EntityPrimaryColumnTypeMap<Entity>
 
   /**
    * Creates a new entity instance.

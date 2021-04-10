@@ -1,5 +1,5 @@
 import { AnyDataSource } from "../../data-source"
-import { AnyEntity } from "../../entity"
+import { AnyEntity } from "../../entity/entity-core"
 import { WhereOperator } from "./index"
 
 export function Any<
