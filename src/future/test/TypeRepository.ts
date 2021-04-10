@@ -5,6 +5,7 @@ export const AlbumEntity = entity({
   columns: {
     id: {
       type: "int",
+      primary: true,
     },
     name: {
       type: "varchar",
@@ -33,8 +34,14 @@ export const PhotoEntity = entity({
   relations: {
     album: {
       type: "many-to-one",
-      inverse: "photos",
+      inverse: "photos" as const,
       reference: "AlbumEntity" as const,
+    },
+    users: {
+      type: "many-to-many",
+      owner: false,
+      inverse: "photos" as const,
+      reference: "UserEntity" as const,
     },
   },
 })
@@ -93,12 +100,25 @@ export const UserEntity = entity({
     avatar: {
       type: "many-to-one",
       reference: "PhotoEntity" as const,
-      referencedColumns: { referencedColumn: "filename" } as const,
+      referencedColumns: [
+        { referencedColumn: "filename" } as const,
+        { referencedColumn: "id" } as const,
+      ],
     },
     photos: {
       type: "many-to-many",
       owner: true,
       reference: "PhotoEntity" as const,
+      referencedTable: {
+        ownerColumns: [
+          { referencedColumn: "name" as const },
+          { referencedColumn: "status" as const },
+        ],
+        inverseColumns: [
+          { referencedColumn: "filename" } as const,
+          { referencedColumn: "id" } as const,
+        ],
+      },
     },
   },
   embeds: {
@@ -248,6 +268,10 @@ async function test() {
   })
   console.log(e)
 
+  const f = await myDataSource.manager.repository(PhotoEntity).insert({
+    id: 1,
+  })
+
   const f = await myDataSource.manager.repository(UserEntity).insert({
     name: "hello",
     secondName: "wow",
@@ -258,9 +282,10 @@ async function test() {
       maritalStatus: "hm",
       kids: 1,
     },
-    avatar: {
-      filename: "",
-    },
+    // avatar: {
+    //   id: 1,
+    //   filename: 1,
+    // },
   })
   console.log(f)
 

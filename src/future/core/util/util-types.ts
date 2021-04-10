@@ -1,4 +1,9 @@
 /**
+ * Force casts given T to Forced if T extends Forced.
+ */
+export type ForceCastIfExtends<T, Forced> = T extends Forced ? T : Forced
+
+/**
  * Force casts given T to CastTo if T is undefined.
  */
 export type ForceCastIfUndefined<T, CastTo> = T extends undefined ? CastTo : T

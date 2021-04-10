@@ -5,8 +5,8 @@ import { FindReturnType } from "../options"
 import { SelectAll } from "../selection"
 import {
   FlatTypeHint,
+  ForceCastIfExtends,
   ForceCastIfNoKeys,
-  ForceCastIfUndefined,
   NonNever,
   UndefinedToOptional,
   ValueOf,
@@ -73,7 +73,7 @@ export type EntityRelationManyToManyOwner = {
   owner: true
   inverse?: string
   reference: string
-  referencedColumns?: RelationManyToManyJoinColumn
+  referencedTable?: RelationReferencedTable
 }
 
 export type EntityRelationManyToManyNotOwner = {
@@ -104,7 +104,7 @@ export type EntityRelationManyToOne = {
   reference: string
   inverse?: string
   nullable?: boolean
-  referencedColumns?: RelationJoinColumn // | [...RelationJoinColumn[]]
+  referencedColumns?: RelationJoinColumn | [...RelationJoinColumn[]]
 }
 
 export type EntityRelationItem =
@@ -115,7 +115,7 @@ export type EntityRelationItem =
   | EntityRelationOneToOneNotOwner
   | EntityRelationManyToOne
 
-export type RelationManyToManyJoinColumn = {
+export type RelationReferencedTable = {
   name?: string
   ownerColumns?: RelationJoinColumn | [...RelationJoinColumn[]]
   inverseColumns?: RelationJoinColumn | [...RelationJoinColumn[]]
@@ -123,7 +123,7 @@ export type RelationManyToManyJoinColumn = {
 
 export type RelationJoinColumn = {
   name?: string
-  referencedColumn?: string
+  referencedColumn: string
 }
 
 export type EntityRelations = {
@@ -355,61 +355,122 @@ export type EntityModelForInsert<
       : P extends keyof Entity["embeds"]
       ? EntityModelForInsert<Source, Entity["embeds"][P]>
       : P extends keyof Entity["relations"]
-      ? Entity["relations"][P]["type"] extends "many-to-many" | "one-to-many"
-        ?
-            | EntityPrimariesValueMap<ReferencedEntity<Source, Entity, P>>[]
-            | undefined
-        : RelationReferencedColumns<Source, Entity, Entity["relations"][P], P>
+      ? RelationReferenceValueMap<
+          ReferencedEntity<Source, Entity, P>,
+          Entity["relations"][P]
+        >
       : never
   }
 >
 
-type RelationReferencedColumns<
-  Source extends AnyDataSource,
-  Entity extends AnyEntity,
-  Relation extends EntityRelationItem,
-  Property extends keyof Entity["relations"]
-> = Relation extends EntityRelationManyToOne
-  ? Relation["referencedColumns"] extends RelationJoinColumn[]
-    ? any[] // fix when typescript will support tuple to object conversion
-    : Relation["referencedColumns"] extends undefined
-    ? never
-    : Relation["referencedColumns"] extends RelationJoinColumn
-    ? ForceCastIfUndefined<
-        Relation["referencedColumns"],
-        RelationJoinColumn
-      >["referencedColumn"] extends keyof ReferencedEntity<
-        Source,
-        Entity,
-        Property
-      >["columns"]
-      ? {
-          [P in ForceCastIfUndefined<
-            Relation["referencedColumns"],
-            RelationJoinColumn
-          >["referencedColumn"]]: ColumnCompileType<
-            Source["driver"],
-            ReferencedEntity<
-              Source,
-              Entity,
-              Property
-            >["columns"][ForceCastIfUndefined<
-              Relation["referencedColumns"],
-              RelationJoinColumn
-            >["referencedColumn"]]
-          >
-        }
-      : never
-    : EntityPrimariesValueMap<ReferencedEntity<Source, Entity, Property>>
+/**
+ * For a given entity relation
+ */
+export type RelationReferenceValueMap<
+  ReferencedEntity extends AnyEntity,
+  Relation extends EntityRelationItem
+> = Relation extends EntityRelationManyToManyOwner
+  ? Relation["referencedTable"] extends RelationReferencedTable
+    ?
+        | RelationReferencedColumns<
+            ReferencedEntity,
+            ForceCastIfExtends<
+              Relation["referencedTable"],
+              RelationReferencedTable
+            >["inverseColumns"]
+          >[]
+        | undefined
+    : EntityPrimariesValueMap<ReferencedEntity>[] | undefined
+  : Relation extends EntityRelationManyToManyNotOwner
+  ? ReferencedEntity["relations"][Relation["inverse"]] extends EntityRelationManyToManyOwner
+    ? ForceCastIfExtends<
+        ReferencedEntity["relations"][Relation["inverse"]]["referencedTable"],
+        RelationReferencedTable
+      >["ownerColumns"] extends RelationJoinColumn | [...RelationJoinColumn[]]
+      ?
+          | RelationReferencedColumns<
+              ReferencedEntity,
+              ForceCastIfExtends<
+                ReferencedEntity["relations"][Relation["inverse"]]["referencedTable"],
+                RelationReferencedTable
+              >["ownerColumns"]
+            >[]
+          | undefined
+      : EntityPrimariesValueMap<ReferencedEntity>[] | undefined
+    : never
+  : Relation extends EntityRelationManyToOne
+  ?
+      | RelationReferencedColumns<
+          ReferencedEntity,
+          Relation["referencedColumns"]
+        >
+      | undefined
+  : Relation extends EntityRelationOneToMany
+  ? EntityPrimariesValueMap<ReferencedEntity>[] | undefined
+  : Relation extends EntityRelationOneToOneOwner
+  ?
+      | RelationReferencedColumns<
+          ReferencedEntity,
+          Relation["referencedColumns"]
+        >
+      | undefined
+  : Relation extends EntityRelationOneToOneNotOwner
+  ? EntityPrimariesValueMap<ReferencedEntity>[] | undefined
   : never
-//     {
-//     EntityPrimariesValueMap<ReferencedEntity<Source, Entity, P>>
-// }
 
-export type EntityModelForInsertAsCondition<
-  Entity extends AnyEntity,
-  P extends keyof EntityProps<Entity>
-> = true
+export type RelationReferencedColumns<
+  ReferencedEntity extends AnyEntity,
+  ReferencedJoinColumnMixed extends
+    | RelationJoinColumn[]
+    | RelationJoinColumn
+    | undefined
+> = ReferencedJoinColumnMixed extends RelationJoinColumn[]
+  ? ReferencedRelationJoinColumns<
+      ReferencedEntity,
+      ForceCastIfExtends<
+        ReferencedJoinColumnMixed,
+        RelationJoinColumn[]
+      >[number]["referencedColumn"]
+    >
+  : ReferencedJoinColumnMixed extends RelationJoinColumn
+  ? ReferencedRelationJoinColumns<
+      ReferencedEntity,
+      ForceCastIfExtends<
+        ReferencedJoinColumnMixed,
+        RelationJoinColumn
+      >["referencedColumn"]
+    >
+  : EntityPrimariesValueMap<ReferencedEntity>
+
+export type ReferencedRelationJoinColumns<
+  ReferencedEntity extends AnyEntity,
+  JoinColumn extends string
+> = FlatTypeHint<
+  {
+    [P in JoinColumn]: P extends keyof ReferencedEntity["columns"]
+      ? NonNullable<
+          ColumnCompileType<
+            ReferencedEntity["driver"],
+            ReferencedEntity["columns"][P]
+          >
+        >
+      : unknown
+  }
+>
+
+export type ReferencedRelationJoinColumn<
+  ReferencedEntity extends AnyEntity,
+  JoinColumn extends RelationJoinColumn
+> = JoinColumn["referencedColumn"] extends keyof ReferencedEntity["columns"]
+  ? {
+      [P in JoinColumn["referencedColumn"]]: NonNullable<
+        ColumnCompileType<
+          ReferencedEntity["driver"],
+          ReferencedEntity["columns"][P]
+        >
+      >
+    }
+  : never
 
 /**
  * Merges generated columns, default columns into given partial entity model.
