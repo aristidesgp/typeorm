@@ -23,6 +23,6 @@ export interface ManagerRepositoryMethods<Source extends AnyDataSource> {
     CustomRepository
   >(
     entity: EntityRef,
-    custom: CustomRepository & ThisType<PostgresRepository<any, Entity>>,
+    custom: CustomRepository & ThisType<PostgresRepository<Source, Entity>>,
   ): PostgresRepository<Source, Entity> & CustomRepository
 }

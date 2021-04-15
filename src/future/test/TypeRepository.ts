@@ -404,3 +404,19 @@ console.log(UserWithAvatarEager)
 // })
 //
 // console.log(whereOptions);
+
+// entity can have 3 base types:
+// - simple, active-record, class (for decorators)
+// AR methods:
+// hasId()
+// save(Connection)
+// remove()
+// archive()
+// unarchive()
+// reload(FindOptions)
+// load{RelationName}(FindOptions)
+// count{RelationName}(FindOptions)
+// has{RelationName}(FindOptions)
+// count{ManyToMany/OneToMany-RelationName}(FindOptions)
+// add{ManyToMany/OneToMany-RelationName}(RelatedEntityMap)
+// remove{ManyToMany/OneToMany-RelationName}(RelatedEntityMap)

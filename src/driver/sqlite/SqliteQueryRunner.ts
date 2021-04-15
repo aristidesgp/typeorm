@@ -59,7 +59,8 @@ export class SqliteQueryRunner extends AbstractSqliteQueryRunner {
                 }
             };
 
-            const handler = function (err: any, result: any) {
+            const qr = this
+            const handler = function (this: any, err: any, result: any) {
                 if (err && err.toString().indexOf("SQLITE_BUSY:") !== -1) {
                     if (typeof options.busyErrorRetry === "number" && options.busyErrorRetry > 0) {
                         setTimeout(execute, options.busyErrorRetry);
@@ -72,10 +73,10 @@ export class SqliteQueryRunner extends AbstractSqliteQueryRunner {
                 const queryEndTime = +new Date();
                 const queryExecutionTime = queryEndTime - queryStartTime;
                 if (maxQueryExecutionTime && queryExecutionTime > maxQueryExecutionTime)
-                    connection.logger.logQuerySlow(queryExecutionTime, query, parameters, this);
+                    connection.logger.logQuerySlow(queryExecutionTime, query, parameters, qr);
 
                 if (err) {
-                    connection.logger.logQueryError(err, query, parameters, this);
+                    connection.logger.logQueryError(err, query, parameters, qr);
                     fail(new QueryFailedError(query, parameters, err));
                 } else {
                     ok(isInsertQuery ? this["lastID"] : result);

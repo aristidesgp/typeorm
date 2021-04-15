@@ -12,6 +12,7 @@
         "experimentalDecorators": true,
         "sourceMap": true,
         "noImplicitAny": true,
+        "noImplicitThis": true,
         "declaration": true,
         "noFallthroughCasesInSwitch": true,
         "noImplicitReturns": true,

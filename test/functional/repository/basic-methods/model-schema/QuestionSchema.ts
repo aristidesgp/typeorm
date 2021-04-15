@@ -15,6 +15,6 @@ export default {
         }
     },
     target: function Question() {
-        this.type = "question";
+        (this as any).type = "question";
     }
 };

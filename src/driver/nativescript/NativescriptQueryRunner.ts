@@ -38,7 +38,7 @@ export class NativescriptQueryRunner extends AbstractSqliteQueryRunner {
         return new Promise<any[]>( (ok, fail) => {
             const isInsertQuery = query.substr(0, 11) === "INSERT INTO";
 
-            const handler = function (err: any, result: any) {
+            const handler = (err: any, result: any) => {
 
                 // log slow queries if maxQueryExecution time is set
                 const maxQueryExecutionTime = connection.options.maxQueryExecutionTime;

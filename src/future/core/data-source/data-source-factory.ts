@@ -20,7 +20,9 @@ export const DataSource = {
       driver,
       options,
       isConnected: false,
-      manager: driver.builder.manager(this),
+      get manager() {
+        return driver.builder.manager(this)
+      },
       entityMetadatas: [],
       namingStrategy: new DefaultNamingStrategy(),
       logger: new SimpleConsoleLogger(),
