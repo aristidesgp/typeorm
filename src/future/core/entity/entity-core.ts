@@ -1,3 +1,4 @@
+import { AnyModel } from "../../../repository/model"
 import { AnyDataSource, DataSourceEntity } from "../data-source"
 import { AnyDriver } from "../driver"
 import { EntityColumnList } from "./entity-columns"
@@ -9,6 +10,7 @@ import { EntityRelationList } from "./entity-relations"
  */
 export type AnyEntity = EntityCore<
   AnyDriver,
+  AnyModel,
   EntityColumnList<AnyDriver>,
   EntityRelationList,
   EntityEmbedList<AnyDriver>
@@ -20,12 +22,14 @@ export type AnyEntity = EntityCore<
  */
 export interface EntityCore<
   Driver extends AnyDriver,
+  Model extends AnyModel,
   Columns extends EntityColumnList<Driver>,
   Relations extends EntityRelationList,
   Embeds extends EntityEmbedList<Driver>
 > {
   "@type": "Entity"
   driver: Driver
+  model: Model
   columns: Columns
   relations: Relations
   embeds: Embeds

@@ -4,6 +4,7 @@ import {
   FindOptionsBuilder,
   FindOptionsMany,
   FindReturnType,
+  WhereOperatorOptions,
   WhereOptions,
 } from "../options"
 import { FindOptionsCount } from "../options/find-options/find-options-count"
@@ -24,7 +25,7 @@ export interface RepositoryFindMethods<
   /**
    * Finds entities by a given criteria.
    */
-  find<Where extends WhereOptions<Source, Entity>>(
+  find<Where extends WhereOperatorOptions<Source, Entity>>(
     where: Where,
   ): Promise<FindReturnType<Source, Entity, {}, false>[]>
 

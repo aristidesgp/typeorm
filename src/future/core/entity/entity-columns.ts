@@ -1,3 +1,4 @@
+import { AnyModel } from "../../../repository/model"
 import { AnyDriver } from "../driver"
 import { FlatTypeHint, ForceCastIfNoKeys, NonNever, ValueOf } from "../util"
 import { AnyEntity } from "./entity-core"
@@ -34,14 +35,36 @@ export type EntityColumnList<Driver extends AnyDriver> = {
  */
 export type ColumnCompileType<
   Driver extends AnyDriver,
+  Model extends AnyModel,
+  PropertyName extends string,
   Column extends EntityColumn<Driver>
-> = Column["array"] extends true
+> = HasEntityModelColumnType<Model, PropertyName> extends true
+  ? Column["array"] extends true
+    ? Column["nullable"] extends true
+      ? Model["type"][PropertyName][] | null
+      : Model["type"][PropertyName]
+    : Column["nullable"] extends true
+    ? Model["type"][PropertyName] | null
+    : Model["type"][PropertyName]
+  : Column["array"] extends true
   ? Column["nullable"] extends true
     ? Driver["types"]["columnTypes"][Column["type"]]["type"][] | null
     : Driver["types"]["columnTypes"][Column["type"]]["type"]
   : Column["nullable"] extends true
   ? Driver["types"]["columnTypes"][Column["type"]]["type"] | null
   : Driver["types"]["columnTypes"][Column["type"]]["type"]
+
+/**
+ * Checks if entity model has given property name defined.
+ */
+export type HasEntityModelColumnType<
+  Model extends AnyModel,
+  PropertyName extends string
+> = Model["type"] extends object
+  ? PropertyName extends string & keyof Model["type"]
+    ? true
+    : false
+  : false
 
 /**
  * Returns object consist of columns and their types based on a given entity column names.
@@ -54,7 +77,14 @@ export type EntityColumnTypeMapByNames<
 > = FlatTypeHint<
   {
     [P in ColumnNames]: P extends keyof Entity["columns"]
-      ? NonNullable<ColumnCompileType<Entity["driver"], Entity["columns"][P]>>
+      ? NonNullable<
+          ColumnCompileType<
+            Entity["driver"],
+            Entity["model"],
+            P,
+            Entity["columns"][P]
+          >
+        >
       : unknown
   }
 >
@@ -73,9 +103,14 @@ export type EntityColumnTypeMapByNames<
  */
 export type EntityGeneratedColumnTypeMap<Entity extends AnyEntity> = NonNever<
   {
-    [P in keyof EntityProps<Entity>]: P extends keyof Entity["columns"]
+    [P in keyof EntityProps<Entity>]: P extends string & keyof Entity["columns"]
       ? Entity["columns"][P]["generated"] extends true
-        ? ColumnCompileType<Entity["driver"], Entity["columns"][P]>
+        ? ColumnCompileType<
+            Entity["driver"],
+            Entity["model"],
+            P,
+            Entity["columns"][P]
+          >
         : never
       : P extends keyof Entity["embeds"]
       ? EntityGeneratedColumnTypeMap<Entity["embeds"][P]>
@@ -97,9 +132,14 @@ export type EntityGeneratedColumnTypeMap<Entity extends AnyEntity> = NonNever<
  */
 export type EntityDefaultColumnTypeMap<Entity extends AnyEntity> = NonNever<
   {
-    [P in keyof EntityProps<Entity>]: P extends keyof Entity["columns"]
+    [P in keyof EntityProps<Entity>]: P extends string & keyof Entity["columns"]
       ? Entity["columns"][P]["default"] extends string | number | boolean
-        ? ColumnCompileType<Entity["driver"], Entity["columns"][P]>
+        ? ColumnCompileType<
+            Entity["driver"],
+            Entity["model"],
+            P,
+            Entity["columns"][P]
+          >
         : never
       : P extends keyof Entity["embeds"]
       ? EntityDefaultColumnTypeMap<Entity["embeds"][P]>
@@ -157,8 +197,13 @@ export type EntityPrimaryColumnTypeMap<
         P
       > extends true
         ? P
-        : never]: P extends keyof Entity["columns"]
-        ? ColumnCompileType<Entity["driver"], Entity["columns"][P]>
+        : never]: P extends string & keyof Entity["columns"]
+        ? ColumnCompileType<
+            Entity["driver"],
+            Entity["model"],
+            P,
+            Entity["columns"][P]
+          >
         : P extends keyof Entity["embeds"]
         ? EntityPrimaryColumnTypeMap<Entity["embeds"][P], `${Deepness}.`>
         : never

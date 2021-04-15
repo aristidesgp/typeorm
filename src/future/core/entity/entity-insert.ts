@@ -44,10 +44,16 @@ export type EntityModelForInsert<
 > = FlatTypeHint<
   UndefinedToOptional<
     {
-      [P in keyof Entity["columnsEmbedsRelations"]]: P extends keyof Entity["columns"]
+      [P in keyof Entity["columnsEmbedsRelations"]]: P extends string &
+        keyof Entity["columns"]
         ? ColumnCompileTypeForInsert<
             Entity["columns"][P],
-            ColumnCompileType<Source["driver"], Entity["columns"][P]>
+            ColumnCompileType<
+              Source["driver"],
+              Entity["model"],
+              P,
+              Entity["columns"][P]
+            >
           >
         : P extends keyof Entity["embeds"]
         ? EntityModelForInsert<Source, Entity["embeds"][P]>

@@ -17,4 +17,4 @@ export type EntityModel<
 export type EntityModelPartial<
   Source extends AnyDataSource,
   Entity extends AnyEntity
-> = DeepPartial<FindReturnType<Source, Entity, {}, false>>
+> = DeepPartial<EntityModel<Source, Entity>>

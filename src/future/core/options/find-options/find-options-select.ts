@@ -1,7 +1,10 @@
 import { AnyDataSource } from "../../data-source"
-import { ColumnCompileType } from "../../entity/entity-columns"
-import { AnyEntity, ReferencedEntity } from "../../entity/entity-core"
-import { EntityProps } from "../../entity/entity-utils"
+import {
+  AnyEntity,
+  ColumnCompileType,
+  EntityPropsWithModel,
+  ReferencedEntity,
+} from "../../entity"
 
 /**
  * Schema for Selection, used for user to specify what he is going to "select" from the db.
@@ -50,11 +53,16 @@ export type FindReturnTypeProperty<
   Source extends AnyDataSource,
   Entity extends AnyEntity,
   Selection, // if something went wrong use it: extends FindOptionsSelect<Source, Entity>,
-  P extends keyof EntityProps<Entity>,
-  Property extends EntityProps<Entity>[P]["property"],
+  P extends keyof EntityPropsWithModel<Entity>,
+  Property extends EntityPropsWithModel<Entity>[P]["property"],
   ParentPartiallySelected extends boolean
-> = P extends keyof Entity["columns"] // if property is a column, just return it's type inferred from a driver column types defined in the entity
-  ? ColumnCompileType<Entity["driver"], Entity["columns"][P]>
+> = P extends string & keyof Entity["columns"] // if property is a column, just return it's type inferred from a driver column types defined in the entity
+  ? ColumnCompileType<
+      Entity["driver"],
+      Entity["model"],
+      P,
+      Entity["columns"][P]
+    >
   : P extends keyof Entity["embeds"] // if selected property is an embed, we just go recursively
   ? FindReturnType<
       Source,
@@ -94,6 +102,8 @@ export type FindReturnTypeProperty<
           false
         >
     : never
+  : P extends keyof Entity["model"]["type"]
+  ? Entity["model"]["type"][P]
   : never
 
 export type OnlyColumnKeys<Selection, Entity extends AnyEntity> = {
@@ -113,13 +123,18 @@ export type OnlyColumnKeys<Selection, Entity extends AnyEntity> = {
 /**
  * Helper type to mark non-selected properties as "never".
  */
-export type EntitySelectionTruthyKeys<Selection> = {
-  [P in keyof Selection]: Selection[P] extends true
-    ? P
-    : Selection[P] extends object
-    ? P
-    : never
-}[keyof Selection]
+export type EntitySelectionTruthyKeys<Entity extends AnyEntity, Selection> =
+  | {
+      [P in keyof Selection]: Selection[P] extends true
+        ? P
+        : Selection[P] extends object
+        ? P
+        : never
+    }[keyof Selection]
+  | Exclude<
+      keyof Entity["model"]["type"],
+      keyof (Entity["columns"] & Entity["relations"] & Entity["embeds"])
+    >
 
 /**
  * Helper type to mark non-selected properties as "never".
@@ -136,7 +151,8 @@ export type EntitySelectionAllColumns<
       ? P
       : never]: true
   } &
-  Entity["embeds"])
+  Entity["embeds"] &
+  Entity["model"]["type"])
 
 export type FindReturnType<
   Source extends AnyDataSource,
@@ -148,21 +164,24 @@ export type FindReturnType<
   // we need to tell to child (embed) to select only what was selected, to prevent selection of every column
   ParentPartiallySelected extends true
     ? {
-        [P in keyof EntityProps<Entity> as P extends EntitySelectionTruthyKeys<Selection>
+        [P in keyof EntityPropsWithModel<Entity> as P extends EntitySelectionTruthyKeys<
+          Entity,
+          Selection
+        >
           ? P
           : never]: FindReturnTypeProperty<
           Source,
           Entity,
           Selection,
           P,
-          EntityProps<Entity>[P]["property"],
+          EntityPropsWithModel<Entity>[P]["property"],
           true
         >
       }
     : // if no columns were specified in selection, it means we need to select every column
     OnlyColumnKeys<Selection, Entity> extends never
     ? {
-        [P in keyof EntityProps<Entity> as P extends EntitySelectionAllColumns<
+        [P in keyof EntityPropsWithModel<Entity> as P extends EntitySelectionAllColumns<
           Source,
           Entity,
           Selection
@@ -173,20 +192,23 @@ export type FindReturnType<
           Entity,
           Selection,
           P,
-          EntityProps<Entity>[P]["property"],
+          EntityPropsWithModel<Entity>[P]["property"],
           false
         >
       }
     : // otherwise it means only set of columns were selected, and we should only select them
       {
-        [P in keyof EntityProps<Entity> as P extends EntitySelectionTruthyKeys<Selection>
+        [P in keyof EntityPropsWithModel<Entity> as P extends EntitySelectionTruthyKeys<
+          Entity,
+          Selection
+        >
           ? P
           : never]: FindReturnTypeProperty<
           Source,
           Entity,
           Selection,
           P,
-          EntityProps<Entity>[P]["property"],
+          EntityPropsWithModel<Entity>[P]["property"],
           true
         >
       }

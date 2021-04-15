@@ -56,13 +56,23 @@ export type WhereOptionsOperatorProperty<
   Entity extends AnyEntity,
   P extends keyof EntityProps<Entity>
   // Property extends EntityProps<Entity>[P]["property"],
-> = P extends keyof Entity["columns"]
+> = P extends string & keyof Entity["columns"]
   ?
-      | ColumnCompileType<Entity["driver"], Entity["columns"][P]>
+      | ColumnCompileType<
+          Entity["driver"],
+          Entity["model"],
+          P,
+          Entity["columns"][P]
+        >
       | WhereOperator<
           Source,
           Entity,
-          ColumnCompileType<Entity["driver"], Entity["columns"][P]>
+          ColumnCompileType<
+            Entity["driver"],
+            Entity["model"],
+            P,
+            Entity["columns"][P]
+          >
         >
       | WhereExpression<Source, Entity>
   : P extends keyof Entity["embeds"]

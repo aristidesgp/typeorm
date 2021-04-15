@@ -1,3 +1,4 @@
+import { model } from "../../repository/model"
 import { DataSource, EntityModelForInsert } from "../core"
 import { entity, postgres } from "../postgres"
 
@@ -77,6 +78,12 @@ export const ProfileEmbed = entity({
 })
 
 export const UserEntity = entity({
+  model: model<{
+    id: number
+    name: string
+    haha: string
+    fullName(): string
+  }>(),
   columns: {
     id: {
       type: "int",
@@ -192,6 +199,7 @@ export const UserRepository = myDataSource.manager.repository(UserEntity, {
     return []
   },
 })
+export const AlbumRepository = myDataSource.manager.repository(AlbumEntity)
 // const repo = myDataSource.manager.repository("UserEntity").
 
 async function test() {
@@ -200,7 +208,9 @@ async function test() {
     .findOneByOrFail({
       select: {
         id: true,
-        ...UserWithAvatarEager,
+        name: true,
+        photos: true,
+        // ...UserWithAvatarEager,
       },
       where: {
         name: "Umed",
@@ -268,9 +278,9 @@ async function test() {
   })
   console.log(e)
 
-  const fx = await myDataSource.manager.repository(PhotoEntity).insert({
-    id: 1,
-  })
+  // const fx = await myDataSource.manager.repository(PhotoEntity).insert({
+  //   id: 1,
+  // })
 
   const modelForInsert: EntityModelForInsert<
     typeof myDataSource,
@@ -334,7 +344,12 @@ async function test() {
   // const id3 = await myDataSource.manager.getId(UserEntity, {})
   // console.log(id3.profile.passportId)
 
-  const users = await UserRepository.find({})
+  const users = await UserRepository.findBy({
+    select: {
+      id: true,
+    },
+  })
+  console.log(users[0].fullName())
   console.log(users)
 
   const allUsers = await UserRepository.loadAllUsers()
@@ -357,6 +372,8 @@ const UserWithAvatarEager = myDataSource.manager
       educationPhotos: true,
     },
   })
+
+console.log(UserWithAvatarEager)
 
 // const whereOptions: FindOperatorWhereOptions<typeof myDataSource, typeof UserEntity> = Or({
 //     avatar: {
