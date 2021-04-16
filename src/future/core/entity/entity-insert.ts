@@ -1,15 +1,14 @@
-import { AnyDataSource, DataSourceEntity } from "../data-source"
-import { AnyDriver } from "../driver"
+import { DriverTypes } from "../driver"
 import { FindReturnType } from "../options"
 import { SelectAll } from "../selection"
-import { FlatTypeHint, UndefinedToOptional } from "../util"
+import { FlatTypeHint, UndefinedToOptional, ValueOf } from "../util"
 import {
   ColumnCompileType,
   EntityColumn,
   EntityDefaultColumnTypeMap,
   EntityGeneratedColumnTypeMap,
 } from "./entity-columns"
-import { AnyEntity, ReferencedEntity } from "./entity-core"
+import { AnyEntity, AnyEntityList, ReferencedEntity } from "./entity-core"
 import { EntityRelationReferencedColumnTypeMap } from "./entity-referenced-columns"
 
 /**
@@ -19,7 +18,7 @@ import { EntityRelationReferencedColumnTypeMap } from "./entity-referenced-colum
  * Or nullable columns can be omitted because database will insert NULL for them.
  */
 export type ColumnCompileTypeForInsert<
-  Column extends EntityColumn<AnyDriver>,
+  Column extends EntityColumn<any /*DriverTypes*/>,
   CompileType
 > = Column["default"] extends string | number | boolean
   ? CompileType | undefined
@@ -39,7 +38,8 @@ export type ColumnCompileTypeForInsert<
  *  - FlatTypeHint is used to improve type hinting when this type is directly used
  */
 export type EntityModelForInsert<
-  Source extends AnyDataSource,
+  Types extends DriverTypes,
+  Entities extends AnyEntityList,
   Entity extends AnyEntity
 > = FlatTypeHint<
   UndefinedToOptional<
@@ -49,17 +49,18 @@ export type EntityModelForInsert<
         ? ColumnCompileTypeForInsert<
             Entity["columns"][P],
             ColumnCompileType<
-              Source["driver"],
+              Entity["driver"]["types"],
+              Entities,
               Entity["model"],
               P,
               Entity["columns"][P]
             >
           >
         : P extends keyof Entity["embeds"]
-        ? EntityModelForInsert<Source, Entity["embeds"][P]>
+        ? EntityModelForInsert<Types, Entities, Entity["embeds"][P]>
         : P extends keyof Entity["relations"]
         ? EntityRelationReferencedColumnTypeMap<
-            ReferencedEntity<Source, Entity, P>,
+            ReferencedEntity<Entities, Entity, P>,
             Entity["relations"][P]
           >
         : never
@@ -75,15 +76,18 @@ export type EntityModelForInsert<
  * In such cases database returns those values to "insert" method and "insert" method returns them back to user.
  */
 export type EntityModelAfterInsert<
-  Source extends AnyDataSource,
-  Entity extends DataSourceEntity<Source>,
+  Types extends DriverTypes,
+  Entities extends AnyEntityList,
+  Entity extends ValueOf<Entities>,
   Model
 > = Model &
   FindReturnType<
-    Source,
+    Types,
+    Entities,
     Entity,
     SelectAll<
-      EntityGeneratedColumnTypeMap<Entity> & EntityDefaultColumnTypeMap<Entity>
+      EntityGeneratedColumnTypeMap<Types, Entities, Entity> &
+        EntityDefaultColumnTypeMap<Types, Entities, Entity>
     >,
     false
   >

@@ -1,16 +1,17 @@
 import { SelectQueryBuilder } from "../../../query-builder/SelectQueryBuilder"
 import { QueryRunner } from "../../../query-runner/QueryRunner"
-import { AnyDataSource, DataSourceEntity } from "../data-source"
-import { QueryResult, UpdateResult } from "../driver"
-import { EntityColumnPaths } from "../entity"
+import { DriverTypes, QueryResult, UpdateResult } from "../driver"
+import { AnyEntityList, EntityColumnPaths } from "../entity"
 import { WhereOptions } from "../options"
+import { ValueOf } from "../util"
 
 /**
  * Interface for repositories that implement common RDBMS methods.
  */
 export interface RepositoryCommonRdbmsMethods<
-  Source extends AnyDataSource,
-  Entity extends DataSourceEntity<Source>
+  Types extends DriverTypes,
+  Entities extends AnyEntityList,
+  Entity extends ValueOf<Entities>
 > {
   /**
    * Creates a new query builder that can be used to build and execute any SQL query.
@@ -23,7 +24,7 @@ export interface RepositoryCommonRdbmsMethods<
   /**
    * Executes a raw SQL query and returns raw database results.
    */
-  query(query: string, parameters?: any[]): Promise<QueryResult<Source>>
+  query(query: string, parameters?: any[]): Promise<QueryResult<Types>>
 
   /**
    * Clears all the data from the given table/collection (truncates/drops it).
@@ -37,17 +38,17 @@ export interface RepositoryCommonRdbmsMethods<
    * Increments some column by provided value of the entities matched given conditions.
    */
   increment(
-    where: WhereOptions<Source, Entity>,
+    where: WhereOptions<Types, Entities, Entity>,
     columnPath: EntityColumnPaths<Entity>,
     value: number,
-  ): Promise<UpdateResult<Source>>
+  ): Promise<UpdateResult<Types>>
 
   /**
    * Decrements some column by provided value of the entities matched given conditions.
    */
   decrement(
-    where: WhereOptions<Source, Entity>,
+    where: WhereOptions<Types, Entities, Entity>,
     columnPath: EntityColumnPaths<Entity>,
     value: number,
-  ): Promise<UpdateResult<Source>>
+  ): Promise<UpdateResult<Types>>
 }

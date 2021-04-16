@@ -5,12 +5,14 @@ import {
   EntityEmbedList,
   EntityRelationList,
   ForceCastIfUndefined,
+  AnyEntityList,
+  EntityCollection,
 } from "../../core"
-import { PostgresDriver } from "../driver"
+import { PostgresDriver, PostgresDriverTypes } from "../driver"
 
 export function entity<
   GivenModel,
-  Columns extends EntityColumnList<PostgresDriver<any>> | undefined,
+  Columns extends EntityColumnList<PostgresDriverTypes> | undefined,
   Relations extends EntityRelationList | undefined,
   Embeds extends EntityEmbedList<PostgresDriver<any>> | undefined
 >(options: {
@@ -21,9 +23,15 @@ export function entity<
 }): EntityCore<
   PostgresDriver<any>,
   GivenModel extends AnyModel ? GivenModel : Model<undefined>,
-  ForceCastIfUndefined<Columns, {}>,
+  Columns extends EntityColumnList<any> ? Columns : {},
   ForceCastIfUndefined<Relations, {}>,
   ForceCastIfUndefined<Embeds, {}>
 > {
+  return undefined as any
+}
+
+export function entityList<T extends AnyEntityList>(
+  entities: T,
+): EntityCollection<PostgresDriverTypes, T> {
   return undefined as any
 }

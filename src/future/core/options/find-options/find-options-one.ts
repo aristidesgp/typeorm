@@ -1,35 +1,38 @@
-import { AnyDataSource, DataSourceEntity } from "../../data-source"
+import { DriverTypes } from "../../driver"
+import { AnyEntityList } from "../../entity"
+import { ValueOf } from "../../util"
+import { WhereOptions } from "../where-options"
 import { FindOptionsCache } from "./find-options-cache"
 import { FindOptionsOrder } from "./find-options-order"
 import { FindOptionsSelect } from "./find-options-select"
-import { WhereOptions } from "../where-options"
 
 /**
  * Defines a special criteria to find specific entity.
  */
 export interface FindOptions<
-  Source extends AnyDataSource,
-  Entity extends DataSourceEntity<Source>
+  Types extends DriverTypes,
+  Entities extends AnyEntityList,
+  Entity extends ValueOf<Entities>
 > {
   /**
    * What data needs to be selected from the loaded entity.
    */
-  select?: FindOptionsSelect<Source, Entity>
+  select?: FindOptionsSelect<Entities, Entity>
 
   /**
    * Conditions applied to a query on what needs to be selected from the database.
    */
-  where?: WhereOptions<Source, Entity>
+  where?: WhereOptions<Types, Entities, Entity>
 
   /**
    * Order options applied to a query.
    */
-  order?: FindOptionsOrder<Source, Entity>
+  order?: FindOptionsOrder<Types, Entities, Entity>
 
   /**
    * Indicates what locking mode should be used.
    */
-  lock?: Source["driver"]["types"]["lock"]
+  lock?: Types["lockTypes"]
 
   /**
    * Whatever cache should be enabled for query or not.

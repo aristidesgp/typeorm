@@ -1,20 +1,22 @@
 import { DeepPartial } from "../../../common/DeepPartial"
-import { AnyDataSource } from "../data-source"
+import { DriverTypes } from "../driver"
 import { FindReturnType } from "../options"
-import { AnyEntity } from "./entity-core"
+import { AnyEntity, AnyEntityList } from "./entity-core"
 
 /**
  * Type signature of a given entity.
  */
 export type EntityModel<
-  Source extends AnyDataSource,
+  Types extends DriverTypes,
+  Entities extends AnyEntityList,
   Entity extends AnyEntity
-> = FindReturnType<Source, Entity, {}, false>
+> = FindReturnType<Types, Entities, Entity, {}, false>
 
 /**
  * Partially type signature of a given entity.
  */
 export type EntityModelPartial<
-  Source extends AnyDataSource,
+  Types extends DriverTypes,
+  Entities extends AnyEntityList,
   Entity extends AnyEntity
-> = DeepPartial<EntityModel<Source, Entity>>
+> = DeepPartial<EntityModel<Types, Entities, Entity>>

@@ -1,12 +1,16 @@
 import { EntityMetadata } from "../../../metadata/EntityMetadata"
-import { AnyDataSource, DataSourceEntity } from "../data-source"
+import { AnyDataSource } from "../data-source"
+import { DriverTypes } from "../driver"
+import { AnyEntityList } from "../entity"
+import { ValueOf } from "../util"
 
 /**
  * Base Repository interface for all driver Repository implementations.
  */
 export interface RepositoryBase<
-  Source extends AnyDataSource,
-  Entity extends DataSourceEntity<Source>
+  Types extends DriverTypes,
+  Entities extends AnyEntityList,
+  Entity extends ValueOf<Entities>
 > {
   /**
    * Unique type identifier.
@@ -16,7 +20,7 @@ export interface RepositoryBase<
   /**
    * Data source of this repository.
    */
-  dataSource: Source
+  dataSource: AnyDataSource // todo: CoreDataSource<Types, Collection>
 
   /**
    * Entity metadata of the entity managed by this repository.

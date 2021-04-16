@@ -1,8 +1,9 @@
 import { AnyModel } from "../../../repository/model"
-import { AnyDataSource, DataSourceEntity } from "../data-source"
-import { AnyDriver } from "../driver"
+import { AnyDriver, DriverTypes } from "../driver"
+import { ValueOf } from "../util"
 import { EntityColumnList } from "./entity-columns"
 import { EntityEmbedList } from "./entity-embeds"
+import { EntityModel } from "./entity-model"
 import { EntityRelationList } from "./entity-relations"
 
 /**
@@ -11,7 +12,7 @@ import { EntityRelationList } from "./entity-relations"
 export type AnyEntity = EntityCore<
   AnyDriver,
   AnyModel,
-  EntityColumnList<AnyDriver>,
+  EntityColumnList<AnyDriver["types"]>,
   EntityRelationList,
   EntityEmbedList<AnyDriver>
 >
@@ -23,7 +24,7 @@ export type AnyEntity = EntityCore<
 export interface EntityCore<
   Driver extends AnyDriver,
   Model extends AnyModel,
-  Columns extends EntityColumnList<Driver>,
+  Columns extends EntityColumnList<Driver["types"]>,
   Relations extends EntityRelationList,
   Embeds extends EntityEmbedList<Driver>
 > {
@@ -37,6 +38,61 @@ export interface EntityCore<
   columnsEmbedsRelations: Columns & Embeds & Relations
 }
 
+export type EntityResolver<Entity extends AnyEntity> = {}
+
+export type EntityCustomRepository<
+  Entity extends AnyEntity,
+  CustomRepository
+> = {
+  entity: Entity
+  repository: CustomRepository
+}
+
+export type AnyEntityCollection = EntityCollection<DriverTypes, AnyEntityList>
+
+export type EntityResolveMap<
+  Types extends DriverTypes,
+  Entities extends AnyEntityList,
+  Entity extends AnyEntity
+> = {
+  [P in keyof Entity["model"]["type"]]?: Entity["model"]["type"][P] extends Function
+    ? (
+        ...args: Parameters<Entity["model"]["type"][P]>
+      ) =>
+        | ReturnType<Entity["model"]["type"][P]>
+        | Promise<ReturnType<Entity["model"]["type"][P]>>
+    : (
+        entity: EntityModel<Types, Entities, Entity>,
+      ) =>
+        | ReturnType<Entity["model"]["type"][P]>
+        | Promise<ReturnType<Entity["model"]["type"][P]>>
+}
+
+export interface EntityCollection<
+  Types extends DriverTypes,
+  Entities extends AnyEntityList
+> {
+  "@type": "EntityCollection"
+  entities: Entities
+
+  with<
+    EntityRef extends EntityReference<Entities>,
+    Entity extends EntityPointer<Entities, EntityRef>
+  >(
+    entity: EntityRef,
+  ): {
+    resolve(
+      resolver: EntityResolveMap<Types, Entities, Entity>,
+    ): EntityResolver<Entity>
+    repository<CustomRepository>(
+      custom: CustomRepository,
+    ): EntityCustomRepository<Entity, CustomRepository>
+  }
+}
+
+// custom: CustomRepository & ThisType<PostgresRepository<Source, Entity>>,
+// ): PostgresRepository<Source, Entity> & CustomRepository
+
 /**
  * List of named entities.
  */
@@ -49,17 +105,17 @@ export type AnyEntityList = {
  * For example for ReferencedEntity<Any, User, "avatar"> returns "Photo" entity.
  */
 export type ReferencedEntity<
-  Source extends AnyDataSource,
+  Entities extends AnyEntityList,
   Entity extends AnyEntity,
   RelationName extends keyof Entity["relations"]
-> = Source["driver"]["options"]["entities"][Entity["relations"][RelationName]["reference"]]
+> = Entities[Entity["relations"][RelationName]["reference"]]
 
 /**
  * Entity reference can either be an entity name, either reference to entity declaration.
  */
-export type EntityReference<Source extends AnyDataSource> =
-  | keyof Source["driver"]["options"]["entities"]
-  | DataSourceEntity<Source>
+export type EntityReference<Entities extends AnyEntityList> =
+  | keyof Entities
+  | ValueOf<Entities>
 
 /**
  * Resolves given entity or entity name to the entity.
@@ -67,10 +123,10 @@ export type EntityReference<Source extends AnyDataSource> =
  * If given value is entity itself, simply returns it.
  */
 export type EntityPointer<
-  Source extends AnyDataSource,
-  Reference extends EntityReference<Source>
-> = Reference extends keyof Source["driver"]["options"]["entities"]
-  ? Source["driver"]["options"]["entities"][Reference]
-  : Reference extends DataSourceEntity<Source>
+  Entities extends AnyEntityList,
+  Reference extends EntityReference<Entities>
+> = Reference extends keyof Entities
+  ? Entities[Reference]
+  : Reference extends ValueOf<Entities>
   ? Reference
   : never

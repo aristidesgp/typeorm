@@ -1,82 +1,93 @@
-import { AnyDataSource, DataSourceEntity } from "../../data-source"
+import { DriverTypes } from "../../driver"
+import { AnyEntityList } from "../../entity"
+import { ValueOf } from "../../util"
 import { WhereOptions } from "../where-options"
 
 /**
  * Entity insert options.
  */
 export type InsertOptions<
-  Source extends AnyDataSource,
-  Entity extends DataSourceEntity<Source>
-> = Source["driver"]["types"]["insertOptions"]
+  Types extends DriverTypes,
+  Entities extends AnyEntityList,
+  Entity extends ValueOf<Entities>
+> = Types["insertOptions"]
 
 /**
  * Entity update options.
  */
 export type UpdateOptions<
-  Source extends AnyDataSource,
-  Entity extends DataSourceEntity<Source>
-> = Source["driver"]["types"]["updateOptions"]
+  Types extends DriverTypes,
+  Entities extends AnyEntityList,
+  Entity extends ValueOf<Entities>
+> = Types["updateOptions"]
 
 /**
  * Entity update by options.
  */
 export type UpdateByOptions<
-  Source extends AnyDataSource,
-  Entity extends DataSourceEntity<Source>
+  Types extends DriverTypes,
+  Entities extends AnyEntityList,
+  Entity extends ValueOf<Entities>
 > = {
-  where: WhereOptions<Source, Entity>
-} & Source["driver"]["types"]["updateByOptions"]
+  where: WhereOptions<Types, Entities, Entity>
+} & Types["updateByOptions"]
 
 /**
  * Entity delete options.
  */
 export type DeleteOptions<
-  Source extends AnyDataSource,
-  Entity extends DataSourceEntity<Source>
-> = Source["driver"]["types"]["deleteOptions"]
+  Types extends DriverTypes,
+  Entities extends AnyEntityList,
+  Entity extends ValueOf<Entities>
+> = Types["deleteOptions"]
 
 /**
  * Entity delete by options.
  */
 export type DeleteByOptions<
-  Source extends AnyDataSource,
-  Entity extends DataSourceEntity<Source>
+  Types extends DriverTypes,
+  Entities extends AnyEntityList,
+  Entity extends ValueOf<Entities>
 > = {
-  where: WhereOptions<Source, Entity>
-} & Source["driver"]["types"]["deleteByOptions"]
+  where: WhereOptions<Types, Entities, Entity>
+} & Types["deleteByOptions"]
 
 /**
  * Archive (soft-remove) options.
  */
 export type ArchiveOptions<
-  Source extends AnyDataSource,
-  Entity extends DataSourceEntity<Source>
-> = Source["driver"]["types"]["archiveOptions"]
+  Types extends DriverTypes,
+  Entities extends AnyEntityList,
+  Entity extends ValueOf<Entities>
+> = Types["archiveOptions"]
 
 /**
  * Archive (soft-remove) options.
  */
 export type ArchiveByOptions<
-  Source extends AnyDataSource,
-  Entity extends DataSourceEntity<Source>
+  Types extends DriverTypes,
+  Entities extends AnyEntityList,
+  Entity extends ValueOf<Entities>
 > = {
-  where: WhereOptions<Source, Entity>
-} & Source["driver"]["types"]["archiveByOptions"]
+  where: WhereOptions<Types, Entities, Entity>
+} & Types["archiveByOptions"]
 
 /**
  * Entities unarchive options.
  */
 export type UnarchiveOptions<
-  Source extends AnyDataSource,
-  Entity extends DataSourceEntity<Source>
-> = Source["driver"]["types"]["unarchiveOptions"]
+  Types extends DriverTypes,
+  Entities extends AnyEntityList,
+  Entity extends ValueOf<Entities>
+> = Types["unarchiveOptions"]
 
 /**
  * Entities unarchive options.
  */
 export type UnarchiveByOptions<
-  Source extends AnyDataSource,
-  Entity extends DataSourceEntity<Source>
+  Types extends DriverTypes,
+  Entities extends AnyEntityList,
+  Entity extends ValueOf<Entities>
 > = {
-  where: WhereOptions<Source, Entity>
-} & Source["driver"]["types"]["unarchiveByOptions"]
+  where: WhereOptions<Types, Entities, Entity>
+} & Types["unarchiveByOptions"]

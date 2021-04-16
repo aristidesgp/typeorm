@@ -1,36 +1,45 @@
-import { AnyDataSource, DataSourceEntity } from "../../data-source"
+import { DriverTypes } from "../../driver"
+import { AnyEntityList } from "../../entity"
+import { ValueOf } from "../../util"
+import { WhereOptions } from "../where-options"
 import { FindOptionsMany } from "./find-options-many"
 import { FindOptionsOrder } from "./find-options-order"
 import { FindOptionsSelect } from "./find-options-select"
-import { WhereOptions } from "../where-options"
 
 /**
  * Function type that produces FindOptions.
  * This function also contains functions that help to build FindOptions sub-objects.
  */
 export type FindOptionsBuilder<
-  Source extends AnyDataSource,
-  Entity extends DataSourceEntity<Source>
+  Types extends DriverTypes,
+  Entities extends AnyEntityList,
+  Entity extends ValueOf<Entities>
 > = {
   /**
    * Creates a FindOptionsMany object.
    */
-  <Options extends FindOptionsMany<Source, Entity>>(options: Options): Options
+  <Options extends FindOptionsMany<Types, Entities, Entity>>(
+    options: Options,
+  ): Options
 
   /**
    * Creates a FindOptionsSelect object.
    */
-  select<Select extends FindOptionsSelect<Source, Entity>>(
+  select<Select extends FindOptionsSelect<Entities, Entity>>(
     select: Select,
   ): Select
 
   /**
    * Creates a FindOptionsWhere object.
    */
-  where<Where extends WhereOptions<Source, Entity>>(where: Where): Where
+  where<Where extends WhereOptions<Types, Entities, Entity>>(
+    where: Where,
+  ): Where
 
   /**
    * Creates a FindOptionsOrder object.
    */
-  order<Order extends FindOptionsOrder<Source, Entity>>(order: Order): Order
+  order<Order extends FindOptionsOrder<Types, Entities, Entity>>(
+    order: Order,
+  ): Order
 }

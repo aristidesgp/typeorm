@@ -93,7 +93,13 @@ export type EntityRelationReferencedColumnTypeMap<
             >["inverseColumns"]
           >[]
         | undefined
-    : EntityPrimaryColumnTypeMap<ReferencedEntity>[] | undefined
+    :
+        | EntityPrimaryColumnTypeMap<
+            ReferencedEntity["driver"]["types"],
+            ReferencedEntity["driver"]["options"]["entities"]["entities"],
+            ReferencedEntity
+          >[]
+        | undefined
   : Relation extends EntityRelationManyToManyNotOwner
   ? ReferencedEntity["relations"][Relation["inverse"]] extends EntityRelationManyToManyOwner
     ? ForceCastIfExtends<
@@ -111,7 +117,13 @@ export type EntityRelationReferencedColumnTypeMap<
               >["ownerColumns"]
             >[]
           | undefined
-      : EntityPrimaryColumnTypeMap<ReferencedEntity>[] | undefined
+      :
+          | EntityPrimaryColumnTypeMap<
+              ReferencedEntity["driver"]["types"],
+              ReferencedEntity["driver"]["options"]["entities"]["entities"],
+              ReferencedEntity
+            >[]
+          | undefined
     : never
   : Relation extends EntityRelationManyToOne
   ?
@@ -121,7 +133,13 @@ export type EntityRelationReferencedColumnTypeMap<
         >
       | undefined
   : Relation extends EntityRelationOneToMany
-  ? EntityPrimaryColumnTypeMap<ReferencedEntity>[] | undefined
+  ?
+      | EntityPrimaryColumnTypeMap<
+          ReferencedEntity["driver"]["types"],
+          ReferencedEntity["driver"]["options"]["entities"]["entities"],
+          ReferencedEntity
+        >[]
+      | undefined
   : Relation extends EntityRelationOneToOneOwner
   ?
       | EntityRelationReferencedColumnMixedTypeMap<
@@ -130,7 +148,13 @@ export type EntityRelationReferencedColumnTypeMap<
         >
       | undefined
   : Relation extends EntityRelationOneToOneNotOwner
-  ? EntityPrimaryColumnTypeMap<ReferencedEntity>[] | undefined
+  ?
+      | EntityPrimaryColumnTypeMap<
+          ReferencedEntity["driver"]["types"],
+          ReferencedEntity["driver"]["options"]["entities"]["entities"],
+          ReferencedEntity
+        >[]
+      | undefined
   : never
 
 /**
@@ -144,6 +168,8 @@ export type EntityRelationReferencedColumnMixedTypeMap<
     | undefined
 > = ReferencedColumnMixed extends EntityRelationReferencedColumn[]
   ? EntityColumnTypeMapByNames<
+      ReferencedEntity["driver"]["types"],
+      ReferencedEntity["driver"]["options"]["entities"]["entities"],
       ReferencedEntity,
       ForceCastIfExtends<
         ReferencedColumnMixed,
@@ -152,10 +178,16 @@ export type EntityRelationReferencedColumnMixedTypeMap<
     >
   : ReferencedColumnMixed extends EntityRelationReferencedColumn
   ? EntityColumnTypeMapByNames<
+      ReferencedEntity["driver"]["types"],
+      ReferencedEntity["driver"]["options"]["entities"]["entities"],
       ReferencedEntity,
       ForceCastIfExtends<
         ReferencedColumnMixed,
         EntityRelationReferencedColumn
       >["referencedColumn"]
     >
-  : EntityPrimaryColumnTypeMap<ReferencedEntity>
+  : EntityPrimaryColumnTypeMap<
+      ReferencedEntity["driver"]["types"],
+      ReferencedEntity["driver"]["options"]["entities"]["entities"],
+      ReferencedEntity
+    >

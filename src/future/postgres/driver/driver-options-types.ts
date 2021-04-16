@@ -1,9 +1,9 @@
-import { BaseDriverOptions, AnyEntityList } from "../../core"
+import { AnyEntityCollection, BaseDriverOptions } from "../../core"
 
 /**
  * Postgres driver options.
  */
-export interface PostgresDriverOptions<Entities extends AnyEntityList>
-  extends BaseDriverOptions<Entities> {
+export interface PostgresDriverOptions<Collection extends AnyEntityCollection>
+  extends BaseDriverOptions<Collection> {
   // todo: add postgres-specific driver options
 }

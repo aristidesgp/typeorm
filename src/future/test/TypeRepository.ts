@@ -1,6 +1,6 @@
 import { model } from "../../repository/model"
-import { DataSource, EntityModelForInsert } from "../core"
-import { entity, postgres } from "../postgres"
+import { DataSource } from "../core"
+import { entity, entityList, postgres } from "../postgres"
 
 export const AlbumEntity = entity({
   columns: {
@@ -179,27 +179,59 @@ export const CarEntity = entity({
 // usage example
 // -----------------------------------------------------------------
 
+const entities = entityList({
+  UserEntity,
+  PhotoEntity,
+  AlbumEntity,
+  CarEntity,
+})
+
+const resolvers = [
+  entities.with(UserEntity).resolve({
+    async haha() {
+      return 1
+    },
+  }),
+]
+console.log(resolvers)
+
+const repositories = [
+  entities.with(UserEntity).repository({
+    async haha() {
+      return 1
+    },
+  }),
+]
+
+console.log(resolvers)
+
+// const repositories = [
+//   entities.with(UserEntity).repository({
+//     async loadAllUsers() {
+//       return this.findBy({
+//         where: {
+//           id: 1,
+//         },
+//       })
+//     },
+//   }),
+// ]
+
 const myDataSource = DataSource.create({
   type: postgres({
     username: "",
     password: "",
     database: "",
-    entities: {
-      UserEntity,
-      PhotoEntity,
-      AlbumEntity,
-      CarEntity,
-    },
+    entities: entities,
+    resolvers: resolvers,
+    repositories: repositories,
   }),
 })
 console.log(myDataSource)
 
-export const UserRepository = myDataSource.manager.repository(UserEntity, {
-  async loadAllUsers() {
-    return []
-  },
-})
-export const AlbumRepository = myDataSource.manager.repository(AlbumEntity)
+// export const UserRepository = myDataSource.manager.repository(UserEntity, {
+// })
+// export const AlbumRepository = myDataSource.manager.repository(AlbumEntity)
 // const repo = myDataSource.manager.repository("UserEntity").
 
 async function test() {
@@ -282,20 +314,20 @@ async function test() {
   //   id: 1,
   // })
 
-  const modelForInsert: EntityModelForInsert<
-    typeof myDataSource,
-    typeof UserEntity
-  > = {
-    id: 1,
-    name: "Timber",
-    secondName: "Saw",
-    profile: {
-      bio: "about trees",
-      adult: true,
-      passportId: "timer-saw-0123",
-    },
-  }
-  console.log(modelForInsert)
+  // const modelForInsert: EntityModelForInsert<
+  //   typeof myDataSource,
+  //   typeof UserEntity
+  // > = {
+  //   id: 1,
+  //   name: "Timber",
+  //   secondName: "Saw",
+  //   profile: {
+  //     bio: "about trees",
+  //     adult: true,
+  //     passportId: "timer-saw-0123",
+  //   },
+  // }
+  // console.log(modelForInsert)
 
   const f = await myDataSource.manager.repository(UserEntity).insert({
     name: "hello",
@@ -318,6 +350,11 @@ async function test() {
     name: "ModelZ",
   })
   console.log(g)
+
+  const users = await myDataSource.manager.find(UserEntity, {
+    name: "Umed",
+  })
+  console.log(users)
 
   // const a1 = await myDataSource.manager.findOneByIdOrFail(PhotoEntity, 1)
   // console.log(a1)
@@ -344,16 +381,16 @@ async function test() {
   // const id3 = await myDataSource.manager.getId(UserEntity, {})
   // console.log(id3.profile.passportId)
 
-  const users = await UserRepository.findBy({
-    select: {
-      id: true,
-    },
-  })
-  console.log(users[0].fullName())
-  console.log(users)
-
-  const allUsers = await UserRepository.loadAllUsers()
-  console.log(allUsers)
+  // const users = await UserRepository.findBy({
+  //   select: {
+  //     id: true,
+  //   },
+  // })
+  // console.log(users[0].fullName())
+  // console.log(users)
+  //
+  // const allUsers = await UserRepository.loadAllUsers()
+  // console.log(allUsers)
 
   // myDataSource.manager.reposi
   // .transaction(async (manager) => {

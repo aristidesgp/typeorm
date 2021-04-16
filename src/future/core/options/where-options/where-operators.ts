@@ -1,16 +1,17 @@
-import { AnyDataSource } from "../../data-source"
-import { AnyEntity } from "../../entity/entity-core"
+import { DriverTypes } from "../../driver"
+import { AnyEntity, AnyEntityList } from "../../entity/entity-core"
 import { WhereOperator } from "./index"
 
 export function Any<
-  Source extends AnyDataSource,
+  Types extends DriverTypes,
+  Entities extends AnyEntityList,
   Entity extends AnyEntity,
   ValueType
->(...values: ValueType[]): WhereOperator<Source, Entity, ValueType> {
+>(...values: ValueType[]): WhereOperator<Types, Entities, Entity, ValueType> {
   return {
     "@type": "WhereOperator",
     kind: "any",
-    driver: null as any,
+    // driver: null as any,
     entity: null as any,
     valueType: null as any,
     value: values,
@@ -18,17 +19,18 @@ export function Any<
 }
 
 export function Between<
-  Source extends AnyDataSource,
+  Types extends DriverTypes,
+  Entities extends AnyEntityList,
   Entity extends AnyEntity,
   ValueType
 >(
   first: ValueType,
   second: ValueType,
-): WhereOperator<Source, Entity, ValueType> {
+): WhereOperator<Types, Entities, Entity, ValueType> {
   return {
     "@type": "WhereOperator",
     kind: "between",
-    driver: null as any,
+    // driver: null as any,
     entity: null as any,
     valueType: null as any,
     value: [first, second],
@@ -36,14 +38,15 @@ export function Between<
 }
 
 export function Equal<
-  Source extends AnyDataSource,
+  Types extends DriverTypes,
+  Entities extends AnyEntityList,
   Entity extends AnyEntity,
   ValueType
->(value: ValueType): WhereOperator<Source, Entity, ValueType> {
+>(value: ValueType): WhereOperator<Types, Entities, Entity, ValueType> {
   return {
     "@type": "WhereOperator",
     kind: "equal",
-    driver: null as any,
+    // driver: null as any,
     entity: null as any,
     valueType: null as any,
     value: value,
@@ -51,14 +54,15 @@ export function Equal<
 }
 
 export function Like<
-  Source extends AnyDataSource,
+  Types extends DriverTypes,
+  Entities extends AnyEntityList,
   Entity extends AnyEntity,
   ValueType
->(value: string): WhereOperator<Source, Entity, ValueType> {
+>(value: string): WhereOperator<Types, Entities, Entity, ValueType> {
   return {
     "@type": "WhereOperator",
     kind: "like",
-    driver: null as any,
+    // driver: null as any,
     entity: null as any,
     valueType: null as any,
     value: value,
@@ -66,14 +70,15 @@ export function Like<
 }
 
 export function ILike<
-  Source extends AnyDataSource,
+  Types extends DriverTypes,
+  Entities extends AnyEntityList,
   Entity extends AnyEntity,
   ValueType
->(value: string): WhereOperator<Source, Entity, ValueType> {
+>(value: string): WhereOperator<Types, Entities, Entity, ValueType> {
   return {
     "@type": "WhereOperator",
     kind: "ilike",
-    driver: null as any,
+    // driver: null as any,
     entity: null as any,
     valueType: null as any,
     value: value,
@@ -81,14 +86,15 @@ export function ILike<
 }
 
 export function In<
-  Source extends AnyDataSource,
+  Types extends DriverTypes,
+  Entities extends AnyEntityList,
   Entity extends AnyEntity,
   ValueType
->(...values: ValueType[]): WhereOperator<Source, Entity, ValueType> {
+>(...values: ValueType[]): WhereOperator<Types, Entities, Entity, ValueType> {
   return {
     "@type": "WhereOperator",
     kind: "in",
-    driver: null as any,
+    // driver: null as any,
     entity: null as any,
     valueType: null as any,
     value: values,
@@ -96,14 +102,15 @@ export function In<
 }
 
 export function LessThan<
-  Source extends AnyDataSource,
+  Types extends DriverTypes,
+  Entities extends AnyEntityList,
   Entity extends AnyEntity,
   ValueType
->(value: ValueType): WhereOperator<Source, Entity, ValueType> {
+>(value: ValueType): WhereOperator<Types, Entities, Entity, ValueType> {
   return {
     "@type": "WhereOperator",
     kind: "lessThan",
-    driver: null as any,
+    // driver: null as any,
     entity: null as any,
     valueType: null as any,
     value: value,
@@ -111,14 +118,15 @@ export function LessThan<
 }
 
 export function LessThanOrEqual<
-  Source extends AnyDataSource,
+  Types extends DriverTypes,
+  Entities extends AnyEntityList,
   Entity extends AnyEntity,
   ValueType
->(value: ValueType): WhereOperator<Source, Entity, ValueType> {
+>(value: ValueType): WhereOperator<Types, Entities, Entity, ValueType> {
   return {
     "@type": "WhereOperator",
     kind: "lessThanOrEqual",
-    driver: null as any,
+    // driver: null as any,
     entity: null as any,
     valueType: null as any,
     value: value,
@@ -126,14 +134,15 @@ export function LessThanOrEqual<
 }
 
 export function MoreThan<
-  Source extends AnyDataSource,
+  Types extends DriverTypes,
+  Entities extends AnyEntityList,
   Entity extends AnyEntity,
   ValueType
->(value: ValueType): WhereOperator<Source, Entity, ValueType> {
+>(value: ValueType): WhereOperator<Types, Entities, Entity, ValueType> {
   return {
     "@type": "WhereOperator",
     kind: "moreThan",
-    driver: null as any,
+    // driver: null as any,
     entity: null as any,
     valueType: null as any,
     value: value,
@@ -141,14 +150,15 @@ export function MoreThan<
 }
 
 export function MoreThanOrEqual<
-  Source extends AnyDataSource,
+  Types extends DriverTypes,
+  Entities extends AnyEntityList,
   Entity extends AnyEntity,
   ValueType
->(value: ValueType): WhereOperator<Source, Entity, ValueType> {
+>(value: ValueType): WhereOperator<Types, Entities, Entity, ValueType> {
   return {
     "@type": "WhereOperator",
     kind: "moreThanOrEqual",
-    driver: null as any,
+    // driver: null as any,
     entity: null as any,
     valueType: null as any,
     value: value,
@@ -156,14 +166,15 @@ export function MoreThanOrEqual<
 }
 
 export function Raw<
-  Source extends AnyDataSource,
+  Types extends DriverTypes,
+  Entities extends AnyEntityList,
   Entity extends AnyEntity,
   ValueType
->(value: string): WhereOperator<Source, Entity, ValueType> {
+>(value: string): WhereOperator<Types, Entities, Entity, ValueType> {
   return {
     "@type": "WhereOperator",
     kind: "raw",
-    driver: null as any,
+    // driver: null as any,
     entity: null as any,
     valueType: null as any,
     value: value,
@@ -171,14 +182,15 @@ export function Raw<
 }
 
 export function Escaped<
-  Source extends AnyDataSource,
+  Types extends DriverTypes,
+  Entities extends AnyEntityList,
   Entity extends AnyEntity,
   ValueType
->(value: string): WhereOperator<Source, Entity, ValueType> {
+>(value: string): WhereOperator<Types, Entities, Entity, ValueType> {
   return {
     "@type": "WhereOperator",
     kind: "escaped",
-    driver: null as any,
+    // driver: null as any,
     entity: null as any,
     valueType: null as any,
     value: value,
@@ -186,17 +198,18 @@ export function Escaped<
 }
 
 export function Column<
-  Source extends AnyDataSource,
+  Types extends DriverTypes,
+  Entities extends AnyEntityList,
   Entity extends AnyEntity,
   ValueType
 >(
   name: keyof Entity["columns"],
   // alias?: string
-): WhereOperator<Source, Entity, ValueType> {
+): WhereOperator<Types, Entities, Entity, ValueType> {
   return {
     "@type": "WhereOperator",
     kind: "column",
-    driver: null as any,
+    // driver: null as any,
     entity: null as any,
     valueType: null as any,
     value: name,

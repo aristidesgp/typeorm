@@ -1,9 +1,14 @@
 import { AnyDataSource } from "../data-source"
+import { DriverTypes } from "../driver"
+import { AnyEntityList } from "../entity"
 
 /**
  * Base Manager interface for all driver Manager implementations.
  */
-export interface ManagerBase<Source extends AnyDataSource> {
+export interface ManagerBase<
+  Types extends DriverTypes,
+  Entities extends AnyEntityList
+> {
   /**
    * Unique type identifier.
    */
@@ -12,5 +17,5 @@ export interface ManagerBase<Source extends AnyDataSource> {
   /**
    * Data source of this repository.
    */
-  dataSource: Source
+  dataSource: AnyDataSource // todo: CoreDataSource<Types, Collection>
 }

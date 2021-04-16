@@ -1,5 +1,6 @@
 import {
-  AnyDataSource,
+  AnyEntityList,
+  DriverTypes,
   ManagerBase,
   ManagerBasicMethods,
   ManagerCommonRdbmsMethods,
@@ -10,12 +11,14 @@ import {
 } from "../../core"
 import { Releasable } from "../../core/connection"
 
-export interface PostgresManager<Source extends AnyDataSource>
-  extends ManagerBase<Source>,
-    ManagerBasicMethods<Source>,
-    ManagerCommonRdbmsMethods<Source>,
-    ManagerFindMethods<Source>,
-    ManagerPersistenceMethods<Source>,
-    ManagerRepositoryMethods<Source>,
-    ManagerTreeMethods<Source>,
+export interface PostgresManager<
+  Types extends DriverTypes,
+  Entities extends AnyEntityList
+> extends ManagerBase<Types, Entities>,
+    ManagerBasicMethods<Types, Entities>,
+    ManagerCommonRdbmsMethods<Types, Entities>,
+    ManagerFindMethods<Types, Entities>,
+    ManagerPersistenceMethods<Types, Entities>,
+    ManagerRepositoryMethods<Types, Entities>,
+    ManagerTreeMethods<Types, Entities>,
     Releasable {}

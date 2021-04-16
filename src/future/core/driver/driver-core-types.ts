@@ -10,7 +10,7 @@ import { AnyDriverOptions } from "./driver-options"
  */
 export type AnyDriver = CoreDriver<
   AnyDriverOptions,
-  ManagerBase<any>,
+  ManagerBase<any, any>,
   CoreQueryRunner,
   any
 >
@@ -20,7 +20,7 @@ export type AnyDriver = CoreDriver<
  */
 export type CoreDriver<
   Options extends AnyDriverOptions,
-  Manager extends ManagerBase<any>,
+  Manager extends ManagerBase<any, any>,
   QueryRunner extends CoreQueryRunner,
   Types extends DriverTypes
 > = {
@@ -34,22 +34,14 @@ export type CoreDriver<
   }
 }
 
-export type QueryResult<
-  Source extends AnyDataSource
-> = Source["driver"]["types"]["queryResult"]
+export type QueryResult<Types extends DriverTypes> = Types["queryResult"]
 
-export type InsertResult<
-  Source extends AnyDataSource
-> = Source["driver"]["types"]["insertResult"]
+export type InsertResult<Types extends DriverTypes> = Types["insertResult"]
 
-export type UpdateResult<
-  Source extends AnyDataSource
-> = Source["driver"]["types"]["updateResult"]
+export type UpdateResult<Types extends DriverTypes> = Types["updateResult"]
 
-export type DeleteResult<
-  Source extends AnyDataSource
-> = Source["driver"]["types"]["deleteResult"]
+export type DeleteResult<Types extends DriverTypes> = Types["deleteResult"]
 
 export type IsolationLevels<
-  Source extends AnyDataSource
-> = Source["driver"]["types"]["isolationLevels"]
+  Types extends DriverTypes
+> = Types["isolationLevels"]

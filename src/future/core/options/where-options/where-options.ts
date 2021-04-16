@@ -1,21 +1,27 @@
-import { AnyDataSource } from "../../data-source"
-import { ColumnCompileType } from "../../entity/entity-columns"
-import { AnyEntity, ReferencedEntity } from "../../entity/entity-core"
-import { EntityProps } from "../../entity/entity-utils"
+import { DriverTypes } from "../../driver"
+import {
+  AnyEntity,
+  AnyEntityList,
+  ColumnCompileType,
+  EntityProps,
+  ReferencedEntity,
+} from "../../entity"
 
 export type WhereExpression<
-  Source extends AnyDataSource,
+  Types extends DriverTypes,
+  Entities extends AnyEntityList,
   Entity extends AnyEntity
 > = {
   "@type": "WhereExpression"
   kind: "not" | "or" | "and" | "xor"
-  driver: Source
+  // driver: Source
   entity: Entity
-  options: WhereOptions<Source, Entity>[]
+  options: WhereOptions<Types, Entities, Entity>[]
 }
 
 export type WhereOperator<
-  Source extends AnyDataSource,
+  Types extends DriverTypes,
+  Entities extends AnyEntityList,
   Entity extends AnyEntity,
   ValueType
 > = {
@@ -37,7 +43,7 @@ export type WhereOperator<
     // | "not"
     | "escaped"
     | "column"
-  driver: Source
+  // driver: Source
   entity: Entity
   valueType: ValueType
   value: any
@@ -47,46 +53,55 @@ export type WhereOperator<
  * Schema for a EntitySelection, used to specify what properties of a Entity must be selected.
  */
 export type WhereOptions<
-  Source extends AnyDataSource,
+  Types extends DriverTypes,
+  Entities extends AnyEntityList,
   Entity extends AnyEntity
-> = WhereExpression<Source, Entity> | WhereOperatorOptions<Source, Entity>
+> =
+  | WhereExpression<Types, Entities, Entity>
+  | WhereOperatorOptions<Types, Entities, Entity>
 
 export type WhereOptionsOperatorProperty<
-  Source extends AnyDataSource,
+  Types extends DriverTypes,
+  Entities extends AnyEntityList,
   Entity extends AnyEntity,
   P extends keyof EntityProps<Entity>
   // Property extends EntityProps<Entity>[P]["property"],
 > = P extends string & keyof Entity["columns"]
   ?
       | ColumnCompileType<
-          Entity["driver"],
+          Entity["driver"]["types"],
+          Entities,
           Entity["model"],
           P,
           Entity["columns"][P]
         >
       | WhereOperator<
-          Source,
+          Types,
+          Entities,
           Entity,
           ColumnCompileType<
-            Entity["driver"],
+            Entity["driver"]["types"],
+            Entities,
             Entity["model"],
             P,
             Entity["columns"][P]
           >
         >
-      | WhereExpression<Source, Entity>
+      | WhereExpression<Types, Entities, Entity>
   : P extends keyof Entity["embeds"]
-  ? WhereOptions<Source, Entity["embeds"][P]>
+  ? WhereOptions<Types, Entities, Entity["embeds"][P]>
   : P extends keyof Entity["relations"]
-  ? WhereOptions<Source, ReferencedEntity<Source, Entity, P>>
+  ? WhereOptions<Types, Entities, ReferencedEntity<Entities, Entity, P>>
   : never
 
 export type WhereOperatorOptions<
-  Source extends AnyDataSource,
+  Types extends DriverTypes,
+  Entities extends AnyEntityList,
   Entity extends AnyEntity
 > = {
   [P in keyof EntityProps<Entity>]?: WhereOptionsOperatorProperty<
-    Source,
+    Types,
+    Entities,
     Entity,
     P
   >

@@ -1,20 +1,32 @@
 import { SelectQueryBuilder } from "../../../query-builder/SelectQueryBuilder"
 import { QueryRunner } from "../../../query-runner/QueryRunner"
-import { AnyDataSource } from "../data-source"
-import { IsolationLevels, QueryResult, UpdateResult } from "../driver"
-import { EntityColumnPaths, EntityPointer, EntityReference } from "../entity"
+import {
+  DriverTypes,
+  IsolationLevels,
+  QueryResult,
+  UpdateResult,
+} from "../driver"
+import {
+  AnyEntityList,
+  EntityColumnPaths,
+  EntityPointer,
+  EntityReference,
+} from "../entity"
 import { WhereOptions } from "../options"
 
 /**
  * Interface for managers that implement common RDBMS methods.
  */
-export interface ManagerCommonRdbmsMethods<Source extends AnyDataSource> {
+export interface ManagerCommonRdbmsMethods<
+  Types extends DriverTypes,
+  Entities extends AnyEntityList
+> {
   /**
    * Creates a new query builder that can be used to build and execute any SQL query.
    */
   createQueryBuilder<
-    EntityRef extends EntityReference<Source>,
-    Entity extends EntityPointer<Source, EntityRef>
+    EntityRef extends EntityReference<Entities>,
+    Entity extends EntityPointer<Entities, EntityRef>
   >(
     entity: EntityRef,
     alias?: string,
@@ -24,7 +36,7 @@ export interface ManagerCommonRdbmsMethods<Source extends AnyDataSource> {
   /**
    * Executes a raw SQL query and returns raw database results.
    */
-  query(query: string, parameters?: any[]): Promise<QueryResult<Source>>
+  query(query: string, parameters?: any[]): Promise<QueryResult<Types>>
 
   /**
    * Wraps given function execution (and all operations made there) in a transaction.
@@ -39,7 +51,7 @@ export interface ManagerCommonRdbmsMethods<Source extends AnyDataSource> {
    * All database operations must be executed using provided entity manager.
    */
   transaction<Result>(
-    isolationLevel: IsolationLevels<Source>,
+    isolationLevel: IsolationLevels<Types>,
     runInTransaction: (entityManager: this) => Promise<Result>,
   ): Promise<Result>
 
@@ -50,8 +62,8 @@ export interface ManagerCommonRdbmsMethods<Source extends AnyDataSource> {
    * @see https://stackoverflow.com/a/5972738/925151
    */
   clear<
-    EntityRef extends EntityReference<Source>,
-    Entity extends EntityPointer<Source, EntityRef>
+    EntityRef extends EntityReference<Entities>,
+    Entity extends EntityPointer<Entities, EntityRef>
   >(
     entity: EntityRef,
   ): Promise<void>
@@ -60,25 +72,25 @@ export interface ManagerCommonRdbmsMethods<Source extends AnyDataSource> {
    * Increments some column by provided value of the entities matched given conditions.
    */
   increment<
-    EntityRef extends EntityReference<Source>,
-    Entity extends EntityPointer<Source, EntityRef>
+    EntityRef extends EntityReference<Entities>,
+    Entity extends EntityPointer<Entities, EntityRef>
   >(
     entity: EntityRef,
-    where: WhereOptions<Source, Entity>,
+    where: WhereOptions<Types, Entities, Entity>,
     columnPath: EntityColumnPaths<Entity>,
     value: number,
-  ): Promise<UpdateResult<Source>>
+  ): Promise<UpdateResult<Types>>
 
   /**
    * Decrements some column by provided value of the entities matched given conditions.
    */
   decrement<
-    EntityRef extends EntityReference<Source>,
-    Entity extends EntityPointer<Source, EntityRef>
+    EntityRef extends EntityReference<Entities>,
+    Entity extends EntityPointer<Entities, EntityRef>
   >(
     entity: EntityRef,
-    where: WhereOptions<Source, Entity>,
+    where: WhereOptions<Types, Entities, Entity>,
     columnPath: EntityColumnPaths<Entity>,
     value: number,
-  ): Promise<UpdateResult<Source>>
+  ): Promise<UpdateResult<Types>>
 }

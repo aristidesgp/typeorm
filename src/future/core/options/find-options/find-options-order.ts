@@ -1,24 +1,31 @@
-import { AnyDataSource, DataSourceEntity } from "../../data-source"
-import { ReferencedEntity } from "../../entity/entity-core"
+import { DriverTypes } from "../../driver"
+import {
+  AnyEntity,
+  AnyEntityList,
+  ReferencedEntity,
+} from "../../entity/entity-core"
 
 /**
  * Ordering options in find options.
  */
 export type FindOptionsOrder<
-  Source extends AnyDataSource,
-  Entity extends DataSourceEntity<Source>
+  Types extends DriverTypes,
+  Entities extends AnyEntityList,
+  Entity extends AnyEntity
 > = {
-  [P in keyof Entity["columns"]]?: Source["driver"]["types"]["orderTypes"]
+  [P in keyof Entity["columns"]]?: Types["orderTypes"]
 } &
   {
     [P in keyof Entity["relations"]]?: FindOptionsOrder<
-      Source,
-      ReferencedEntity<Source, Entity, P>
+      Types,
+      Entities,
+      ReferencedEntity<Entities, Entity, P>
     >
   } &
   {
     [P in keyof Entity["embeds"]]?: FindOptionsOrder<
-      Source,
+      Types,
+      Entities,
       Entity["embeds"][P]
     >
   }

@@ -1,5 +1,9 @@
-import { AnyDataSource } from "../data-source"
-import { EntityPointer, EntityReference } from "../entity/entity-core"
+import { DriverTypes } from "../driver"
+import {
+  AnyEntityList,
+  EntityPointer,
+  EntityReference,
+} from "../entity/entity-core"
 import {
   FindOptions,
   FindOptionsBuilder,
@@ -13,42 +17,46 @@ import { ForceCastIfUndefined } from "../util"
 /**
  * Interface for managers that implement find* methods.
  */
-export interface ManagerFindMethods<Source extends AnyDataSource> {
+export interface ManagerFindMethods<
+  Types extends DriverTypes,
+  Entities extends AnyEntityList
+> {
   /**
    * Helps to build a FindOptions object.
    */
   findOptions<
-    EntityRef extends EntityReference<Source>,
-    Entity extends EntityPointer<Source, EntityRef>
+    EntityRef extends EntityReference<Entities>,
+    Entity extends EntityPointer<Entities, EntityRef>
   >(
     entityRef: EntityRef,
-  ): FindOptionsBuilder<Source, Entity>
+  ): FindOptionsBuilder<Types, Entities, Entity>
 
   /**
    * Finds entities by a given criteria.
    */
   find<
-    EntityRef extends EntityReference<Source>,
-    Entity extends EntityPointer<Source, EntityRef>,
-    Where extends WhereOptions<Source, Entity>
+    EntityRef extends EntityReference<Entities>,
+    Entity extends EntityPointer<Entities, EntityRef>,
+    Where extends WhereOptions<Types, Entities, Entity>
   >(
     entityRef: EntityRef,
     where: Where,
-  ): Promise<FindReturnType<Source, Entity, {}, false>[]>
+  ): Promise<FindReturnType<Types, Entities, Entity, {}, false>[]>
 
   /**
    * Finds entities by a given find options.
    */
   findBy<
-    EntityRef extends EntityReference<Source>,
-    Entity extends EntityPointer<Source, EntityRef>,
-    Options extends FindOptionsMany<Source, Entity>
+    EntityRef extends EntityReference<Entities>,
+    Entity extends EntityPointer<Entities, EntityRef>,
+    Options extends FindOptionsMany<Types, Entities, Entity>
   >(
     entityRef: EntityRef,
     options: Options,
   ): Promise<
     FindReturnType<
-      Source,
+      Types,
+      Entities,
       Entity,
       ForceCastIfUndefined<Options["select"], {}>,
       false
@@ -60,27 +68,28 @@ export interface ManagerFindMethods<Source extends AnyDataSource> {
    * If entity was not found in the database - it returns null.
    */
   findOne<
-    EntityRef extends EntityReference<Source>,
-    Entity extends EntityPointer<Source, EntityRef>,
-    Where extends WhereOptions<Source, Entity>
+    EntityRef extends EntityReference<Entities>,
+    Entity extends EntityPointer<Entities, EntityRef>,
+    Where extends WhereOptions<Types, Entities, Entity>
   >(
     entityRef: EntityRef,
     where: Where,
-  ): Promise<FindReturnType<Source, Entity, {}, false> | null>
+  ): Promise<FindReturnType<Types, Entities, Entity, {}, false> | null>
 
   /**
    * Finds first entity matching given find options.
    * If entity was not found in the database - it returns null.
    */
   findOneBy<
-    EntityRef extends EntityReference<Source>,
-    Entity extends EntityPointer<Source, EntityRef>,
-    Options extends FindOptions<Source, Entity>
+    EntityRef extends EntityReference<Entities>,
+    Entity extends EntityPointer<Entities, EntityRef>,
+    Options extends FindOptions<Types, Entities, Entity>
   >(
     entityRef: EntityRef,
     options: Options,
   ): Promise<FindReturnType<
-    Source,
+    Types,
+    Entities,
     Entity,
     ForceCastIfUndefined<Options["select"], {}>,
     false
@@ -91,28 +100,29 @@ export interface ManagerFindMethods<Source extends AnyDataSource> {
    * If entity was not found in the database - it throws an Error.
    */
   findOneOrFail<
-    EntityRef extends EntityReference<Source>,
-    Entity extends EntityPointer<Source, EntityRef>,
-    Where extends WhereOptions<Source, Entity>
+    EntityRef extends EntityReference<Entities>,
+    Entity extends EntityPointer<Entities, EntityRef>,
+    Where extends WhereOptions<Types, Entities, Entity>
   >(
     entityRef: EntityRef,
     where: Where,
-  ): Promise<FindReturnType<Source, Entity, {}, false>>
+  ): Promise<FindReturnType<Types, Entities, Entity, {}, false>>
 
   /**
    * Finds first entity matching given find options.
    * If entity was not found in the database - it throws an Error.
    */
   findOneByOrFail<
-    EntityRef extends EntityReference<Source>,
-    Entity extends EntityPointer<Source, EntityRef>,
-    Options extends FindOptions<Source, Entity>
+    EntityRef extends EntityReference<Entities>,
+    Entity extends EntityPointer<Entities, EntityRef>,
+    Options extends FindOptions<Types, Entities, Entity>
   >(
     entityRef: EntityRef,
     options: Options,
   ): Promise<
     FindReturnType<
-      Source,
+      Types,
+      Entities,
       Entity,
       ForceCastIfUndefined<Options["select"], {}>,
       false
@@ -125,13 +135,13 @@ export interface ManagerFindMethods<Source extends AnyDataSource> {
    * but ignores pagination settings ("skip" and "take" options).
    */
   findAndCount<
-    EntityRef extends EntityReference<Source>,
-    Entity extends EntityPointer<Source, EntityRef>,
-    Where extends WhereOptions<Source, Entity>
+    EntityRef extends EntityReference<Entities>,
+    Entity extends EntityPointer<Entities, EntityRef>,
+    Where extends WhereOptions<Types, Entities, Entity>
   >(
     entityRef: EntityRef,
     where: Where,
-  ): Promise<[FindReturnType<Source, Entity, {}, false>[], number]>
+  ): Promise<[FindReturnType<Types, Entities, Entity, {}, false>[], number]>
 
   /**
    * Counts entities matching given find options.
@@ -139,16 +149,17 @@ export interface ManagerFindMethods<Source extends AnyDataSource> {
    * but ignores pagination settings ("skip" and "take" options).
    */
   findAndCountBy<
-    EntityRef extends EntityReference<Source>,
-    Entity extends EntityPointer<Source, EntityRef>,
-    Options extends FindOptions<Source, Entity>
+    EntityRef extends EntityReference<Entities>,
+    Entity extends EntityPointer<Entities, EntityRef>,
+    Options extends FindOptions<Types, Entities, Entity>
   >(
     entityRef: EntityRef,
     options: Options,
   ): Promise<
     [
       FindReturnType<
-        Source,
+        Types,
+        Entities,
         Entity,
         ForceCastIfUndefined<Options["select"], {}>,
         false
@@ -161,9 +172,9 @@ export interface ManagerFindMethods<Source extends AnyDataSource> {
    * Counts entities matching given where criteria.
    */
   count<
-    EntityRef extends EntityReference<Source>,
-    Entity extends EntityPointer<Source, EntityRef>,
-    Where extends WhereOptions<Source, Entity>
+    EntityRef extends EntityReference<Entities>,
+    Entity extends EntityPointer<Entities, EntityRef>,
+    Where extends WhereOptions<Types, Entities, Entity>
   >(
     entityRef: EntityRef,
     where: Where,
@@ -173,9 +184,9 @@ export interface ManagerFindMethods<Source extends AnyDataSource> {
    * Counts entities matching given count options.
    */
   countBy<
-    EntityRef extends EntityReference<Source>,
-    Entity extends EntityPointer<Source, EntityRef>,
-    Options extends FindOptionsCount<Source, Entity>
+    EntityRef extends EntityReference<Entities>,
+    Entity extends EntityPointer<Entities, EntityRef>,
+    Options extends FindOptionsCount<Types, Entities, Entity>
   >(
     entityRef: EntityRef,
     options: Options,

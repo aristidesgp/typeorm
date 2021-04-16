@@ -1,5 +1,6 @@
-import { AnyDataSource } from "../data-source"
+import { DriverTypes } from "../driver"
 import {
+  AnyEntityList,
   EntityModelPartial,
   EntityPointer,
   EntityPrimaryColumnTypeMap,
@@ -12,17 +13,20 @@ import { UnionToIntersection } from "../util"
  *
  * todo: check if we can implement proper typing for save(models), remove(models), etc.
  */
-export interface ManagerBasicMethods<Source extends AnyDataSource> {
+export interface ManagerBasicMethods<
+  Types extends DriverTypes,
+  Entities extends AnyEntityList
+> {
   /**
    * Checks if entity has an id.
    * If entity has multiple ids, it will check them all.
    */
   hasId<
-    EntityRef extends EntityReference<Source>,
-    Entity extends EntityPointer<Source, EntityRef>
+    EntityRef extends EntityReference<Entities>,
+    Entity extends EntityPointer<Entities, EntityRef>
   >(
     entity: EntityRef,
-    model: EntityModelPartial<Source, Entity>,
+    model: EntityModelPartial<Types, Entities, Entity>,
   ): boolean
 
   /**
@@ -32,21 +36,21 @@ export interface ManagerBasicMethods<Source extends AnyDataSource> {
    * Returns null if entity doesn't have at least one of its ids.
    */
   getId<
-    EntityRef extends EntityReference<Source>,
-    Entity extends EntityPointer<Source, EntityRef>,
-    Model extends EntityModelPartial<Source, Entity>
+    EntityRef extends EntityReference<Entities>,
+    Entity extends EntityPointer<Entities, EntityRef>,
+    Model extends EntityModelPartial<Types, Entities, Entity>
   >(
     entity: EntityRef,
     model: Model,
-  ): EntityPrimaryColumnTypeMap<Entity>
+  ): EntityPrimaryColumnTypeMap<Types, Entities, Entity>
 
   /**
    * Creates a new entity instance.
    */
   create<
-    EntityRef extends EntityReference<Source>,
-    Entity extends EntityPointer<Source, EntityRef>,
-    Model extends EntityModelPartial<Source, Entity>
+    EntityRef extends EntityReference<Entities>,
+    Entity extends EntityPointer<Entities, EntityRef>,
+    Model extends EntityModelPartial<Types, Entities, Entity>
   >(
     entity: EntityRef,
     model: Model,
@@ -56,9 +60,9 @@ export interface ManagerBasicMethods<Source extends AnyDataSource> {
    * Merges multiple entities (or entity-like objects) into a given entity.
    */
   merge<
-    EntityRef extends EntityReference<Source>,
-    Entity extends EntityPointer<Source, EntityRef>,
-    Models extends EntityModelPartial<Source, Entity>[]
+    EntityRef extends EntityReference<Entities>,
+    Entity extends EntityPointer<Entities, EntityRef>,
+    Models extends EntityModelPartial<Types, Entities, Entity>[]
   >(
     entity: EntityRef,
     ...models: Models
