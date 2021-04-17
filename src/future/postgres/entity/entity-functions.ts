@@ -1,8 +1,6 @@
 import {
   AnyEntityList,
   EntityCollection,
-  EntityPointer,
-  EntityReference,
   EntityResolveMap,
   EntityResolver,
 } from "../../core"
@@ -11,17 +9,21 @@ import { PostgresRepository } from "../repository"
 
 export interface PostgresEntityCollection<Entities extends AnyEntityList>
   extends EntityCollection<Entities> {
-  "@type": "EntityCollection"
-  entities: Entities
+  /**
+   * Logic for entity properties and methods resolving.
+   */
+  resolve<EntityName extends keyof Entities>(
+    entity: EntityName,
+    resolver: EntityResolveMap<
+      PostgresDriverTypes,
+      Entities,
+      Entities[EntityName]
+    >,
+  ): EntityResolver<Entities[EntityName]>
 
-  resolve<
-    EntityRef extends EntityReference<Entities>,
-    Entity extends EntityPointer<Entities, EntityRef>
-  >(
-    entity: EntityRef,
-    resolver: EntityResolveMap<PostgresDriverTypes, Entities, Entity>,
-  ): EntityResolver<Entity>
-
+  /**
+   * Creates a custom repository for a given entity.
+   */
   repository<EntityName extends keyof Entities, CustomRepository>(
     entity: EntityName,
     custom: CustomRepository &

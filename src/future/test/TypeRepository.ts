@@ -186,7 +186,7 @@ const entities = Postgres.entities({
   CarEntity,
 })
 
-const UserResolver = entities.resolve(UserEntity, {
+const UserResolver = entities.resolve("UserEntity", {
   async haha() {
     return 1
   },
@@ -200,28 +200,18 @@ const UserRepository = entities.repository("UserEntity", {
   },
 })
 
-const resolvers = [UserResolver]
-
-const repositories = {
-  ...UserRepository,
-}
-
 const myDataSource = DataSource.create({
   type: Postgres({
     username: "",
     password: "",
     database: "",
     entities,
-    resolvers,
-    repositories,
+    resolvers: [UserResolver],
+    repositories: {
+      ...UserRepository,
+    },
   }),
 })
-// console.log(myDataSource.manager.repository("UserEntity").allUsers())
-
-// export const UserRepository = myDataSource.manager.repository(UserEntity, {
-// })
-// export const AlbumRepository = myDataSource.manager.repository(AlbumEntity)
-// const repo = myDataSource.manager.repository("UserEntity").
 
 async function test() {
   console.log(myDataSource.manager.repository("UserEntity").allUsers())
