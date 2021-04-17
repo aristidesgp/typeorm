@@ -33,9 +33,19 @@ import { ForceCastIfExtends } from "../../util"
  *   }
  * })
  */
+<<<<<<< HEAD:src/future/core/options/find-options/find-options-select.ts
 export type FindOptionsSelect<Entity extends AnyEntity> = {
   [P in keyof Entity["columns"]]?: boolean
 } &
+=======
+export type FindOptionsSelect<
+  Source extends AnyDataSource,
+  Entity extends AnyEntity
+> = object &
+  {
+    [P in keyof Entity["columns"]]?: boolean
+  } &
+>>>>>>> 8db50b55... tests reimplementation and documentation:src/future/core/find-options/find-options-select.ts
   {
     [P in keyof Entity["virtualLazyProperties"]]?: boolean
   } &
