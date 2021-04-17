@@ -28,10 +28,10 @@ export interface BaseDriverOptions<
   /**
    * List of resolvers registered in the data source.
    */
-  resolvers: EntityResolver<AnyEntity>[]
+  resolvers?: EntityResolver<AnyEntity>[]
 
   /**
    * List of custom repositories registered in the data source.
    */
-  repositories: CustomRepositories
+  repositories?: CustomRepositories
 }

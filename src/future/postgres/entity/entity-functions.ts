@@ -1,45 +1,13 @@
-import { AnyModel, Model } from "../../../repository/model"
 import {
-  EntityCore,
-  EntityColumnList,
-  EntityEmbedList,
-  EntityRelationList,
-  ForceCastIfUndefined,
   AnyEntityList,
   EntityCollection,
-  EntityReference,
   EntityPointer,
+  EntityReference,
   EntityResolveMap,
   EntityResolver,
 } from "../../core"
-import { PostgresDriver, PostgresDriverTypes } from "../driver"
+import { PostgresDriverTypes } from "../driver"
 import { PostgresRepository } from "../repository"
-
-export function entity<
-  GivenModel,
-  Columns extends EntityColumnList<PostgresDriverTypes> | undefined,
-  Relations extends EntityRelationList | undefined,
-  Embeds extends EntityEmbedList<PostgresDriver<any>> | undefined
->(options: {
-  model?: GivenModel
-  columns?: Columns
-  relations?: Relations
-  embeds?: Embeds
-}): EntityCore<
-  PostgresDriver<any>,
-  GivenModel extends AnyModel ? GivenModel : Model<undefined>,
-  Columns extends EntityColumnList<any> ? Columns : {},
-  ForceCastIfUndefined<Relations, {}>,
-  ForceCastIfUndefined<Embeds, {}>
-> {
-  return undefined as any
-}
-
-export function entityList<T extends AnyEntityList>(
-  entities: T,
-): PostgresEntityCollection<T> {
-  return undefined as any
-}
 
 export interface PostgresEntityCollection<Entities extends AnyEntityList>
   extends EntityCollection<Entities> {
@@ -69,6 +37,3 @@ export interface PostgresEntityCollection<Entities extends AnyEntityList>
       CustomRepository
   }
 }
-
-// custom: CustomRepository & ThisType<PostgresRepository<Source, Entity>>,
-// ): PostgresRepository<Source, Entity> & CustomRepository

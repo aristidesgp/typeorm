@@ -1,12 +1,65 @@
-import { AnyEntityCollection, AnyRepositoryList } from "../../core"
+import { AnyModel, Model } from "../../../repository/model"
+import {
+  AnyEntityCollection,
+  AnyEntityList,
+  AnyRepositoryList,
+  EntityColumnList,
+  EntityCore,
+  EntityEmbedList,
+  EntityRelationList,
+  ForceCastIfUndefined,
+} from "../../core"
+import { PostgresEntityCollection } from "../entity"
 import { createPostgresManager } from "../manager"
-import { createPostgresQueryRunner } from "../query-runner/query-runner-functions"
+import { createPostgresQueryRunner } from "../query-runner"
+import { PostgresDriverTypes } from "./driver-column-types"
 import { PostgresDriverOptions } from "./driver-options-types"
 import { PostgresDriver } from "./driver-types"
 
-export function postgres<
+export type Postgres = {
+  /**
+   * Creates a postgres driver.
+   */
+  <
+    Options extends PostgresDriverOptions<
+      AnyEntityCollection,
+      AnyRepositoryList
+    >
+  >(
+    options: Options,
+  ): PostgresDriver<Options>
+
+  /**
+   * Creates a postgres entity.
+   */
+  entity<
+    GivenModel,
+    Columns extends EntityColumnList<PostgresDriverTypes> | undefined,
+    Relations extends EntityRelationList | undefined,
+    Embeds extends EntityEmbedList<PostgresDriver<any>> | undefined
+  >(options: {
+    model?: GivenModel
+    columns?: Columns
+    relations?: Relations
+    embeds?: Embeds
+  }): EntityCore<
+    PostgresDriver<any>,
+    GivenModel extends AnyModel ? GivenModel : Model<undefined>,
+    Columns extends EntityColumnList<any> ? Columns : {},
+    ForceCastIfUndefined<Relations, {}>,
+    ForceCastIfUndefined<Embeds, {}>
+  >
+
+  /**
+   * Creates a postgres entity list.
+   */
+  entities<T extends AnyEntityList>(entities: T): PostgresEntityCollection<T>
+}
+
+export const Postgres: Postgres = function <
   Options extends PostgresDriverOptions<AnyEntityCollection, AnyRepositoryList>
 >(options: Options): PostgresDriver<Options> {
+  // return null as any
   return {
     types: null as any,
     manager: null as any,
@@ -22,3 +75,19 @@ export function postgres<
     },
   }
 }
+
+Postgres.entity = () => {
+  return undefined as any
+}
+Postgres.entities = () => {
+  return undefined as any
+}
+
+// function Postgres(): PostgresConstructor {
+//   return {} as any
+// }
+// Options.select = () => {
+//   return {} as any
+// }
+//
+// export const Postgres: Postgres =

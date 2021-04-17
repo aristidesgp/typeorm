@@ -11,5 +11,7 @@ export interface PostgresDriverOptions<
   Collection extends AnyEntityCollection,
   CustomRepositories extends AnyRepositoryList
 > extends BaseDriverOptions<Collection, CustomRepositories> {
-  // todo: add postgres-specific driver options
+  username: string
+  password: string
+  database: string
 }

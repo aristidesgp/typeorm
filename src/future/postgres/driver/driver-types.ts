@@ -1,4 +1,9 @@
-import { AnyEntityCollection, AnyRepositoryList, CoreDriver } from "../../core"
+import {
+  AnyEntityCollection,
+  AnyRepositoryList,
+  CoreDriver,
+  ForceCastIfUndefined,
+} from "../../core"
 import { PostgresManager } from "../manager"
 import { PostgresQueryRunner } from "../query-runner"
 import { PostgresDriverTypes } from "./driver-column-types"
@@ -11,7 +16,7 @@ export interface PostgresDriver<
     PostgresManager<
       PostgresDriverTypes,
       Options["entities"]["entities"],
-      Options["repositories"]
+      ForceCastIfUndefined<Options["repositories"], {}>
     >,
     PostgresQueryRunner,
     PostgresDriverTypes

@@ -1,8 +1,8 @@
 import { model } from "../../repository/model"
 import { DataSource } from "../core"
-import { entity, entityList, postgres } from "../postgres"
+import { Postgres } from "../postgres"
 
-export const AlbumEntity = entity({
+export const AlbumEntity = Postgres.entity({
   columns: {
     id: {
       type: "int",
@@ -21,7 +21,7 @@ export const AlbumEntity = entity({
   },
 })
 
-export const PhotoEntity = entity({
+export const PhotoEntity = Postgres.entity({
   columns: {
     id: {
       primary: true,
@@ -47,7 +47,7 @@ export const PhotoEntity = entity({
   },
 })
 
-export const ProfileEmbed = entity({
+export const ProfileEmbed = Postgres.entity({
   columns: {
     passportId: {
       type: "varchar",
@@ -77,7 +77,7 @@ export const ProfileEmbed = entity({
   },
 })
 
-export const UserEntity = entity({
+export const UserEntity = Postgres.entity({
   model: model<{
     id: number
     name: string
@@ -133,7 +133,7 @@ export const UserEntity = entity({
   },
 })
 
-export const CarInfoEmbed = entity({
+export const CarInfoEmbed = Postgres.entity({
   columns: {
     vin: {
       primary: true,
@@ -149,7 +149,7 @@ export const CarInfoEmbed = entity({
   },
 })
 
-export const CarEntity = entity({
+export const CarEntity = Postgres.entity({
   columns: {
     id: {
       type: "int",
@@ -179,7 +179,7 @@ export const CarEntity = entity({
 // usage example
 // -----------------------------------------------------------------
 
-const entities = entityList({
+const entities = Postgres.entities({
   UserEntity,
   PhotoEntity,
   AlbumEntity,
@@ -207,16 +207,16 @@ const repositories = {
 }
 
 const myDataSource = DataSource.create({
-  type: postgres({
+  type: Postgres({
     username: "",
     password: "",
     database: "",
-    entities: entities,
-    resolvers: resolvers,
-    repositories: repositories,
+    entities,
+    resolvers,
+    repositories,
   }),
 })
-console.log(myDataSource)
+// console.log(myDataSource.manager.repository("UserEntity").allUsers())
 
 // export const UserRepository = myDataSource.manager.repository(UserEntity, {
 // })
