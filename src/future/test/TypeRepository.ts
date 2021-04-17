@@ -78,6 +78,21 @@ export const ProfileEmbed = Postgres.entity({
 })
 
 export const UserEntity = Postgres.entity({
+  // virtualLazyProperties: model<{
+  //   id: number
+  //   name: string
+  //   haha: string
+  //   fullName(): string
+  // }>(),
+  // virtualEagerProperties: model<{
+  //   id: number
+  //   name: string
+  //   haha: string
+  //   fullName(): string
+  // }>(),
+  // virtualMethods: model<{
+  //   fullName(): string
+  // }>(),
   model: model<{
     id: number
     name: string
@@ -186,16 +201,18 @@ const entities = Postgres.entities({
   CarEntity,
 })
 
-const UserResolver = entities.resolve("UserEntity", {
+const UserResolver = entities.resolve("UserEntity", (manager) => ({
   async haha() {
-    return 1
+    return manager.repository("UserEntity").find({})
   },
-})
+}))
 
-const UserRepository = entities.repository("UserEntity", {
+const UserRepositoryMethods = entities.repository("UserEntity", {
   async allUsers() {
     return this.findBy({
-      where: {},
+      where: {
+        id: 1,
+      },
     })
   },
 })
@@ -205,16 +222,18 @@ const myDataSource = DataSource.create({
     username: "",
     password: "",
     database: "",
-    entities,
+    entities: entities,
     resolvers: [UserResolver],
     repositories: {
-      ...UserRepository,
+      ...UserRepositoryMethods,
     },
   }),
 })
 
+const UserRepository = myDataSource.manager.repository("UserEntity")
+
 async function test() {
-  console.log(myDataSource.manager.repository("UserEntity").allUsers())
+  console.log(UserRepository.allUsers())
   console.log(
     myDataSource.manager.repository("PhotoEntity").findBy({
       where: {
@@ -239,6 +258,8 @@ async function test() {
         },
       },
     })
+
+  a.fullName()
 
   console.log(a.photos[0].filename)
 

@@ -9,7 +9,7 @@ import {
   EntityRelationList,
   ForceCastIfUndefined,
 } from "../../core"
-import { PostgresEntityCollection } from "../entity"
+import { PostgresEntityList } from "../entity"
 import { createPostgresManager } from "../manager"
 import { createPostgresQueryRunner } from "../query-runner"
 import { PostgresDriverTypes } from "./driver-column-types"
@@ -53,7 +53,7 @@ export type Postgres = {
   /**
    * Creates a postgres entity list.
    */
-  entities<T extends AnyEntityList>(entities: T): PostgresEntityCollection<T>
+  entities<T extends AnyEntityList>(entities: T): PostgresEntityList<T>
 }
 
 export const Postgres: Postgres = function <
