@@ -186,36 +186,25 @@ const entities = entityList({
   CarEntity,
 })
 
-const resolvers = [
-  entities.with(UserEntity).resolve({
-    async haha() {
-      return 1
-    },
-  }),
-]
-console.log(resolvers)
+const UserResolver = entities.resolve(UserEntity, {
+  async haha() {
+    return 1
+  },
+})
 
-const repositories = [
-  entities.with(UserEntity).repository({
-    async haha() {
-      return 1
-    },
-  }),
-]
+const UserRepository = entities.repository("UserEntity", {
+  async allUsers() {
+    return this.findBy({
+      where: {},
+    })
+  },
+})
 
-console.log(resolvers)
+const resolvers = [UserResolver]
 
-// const repositories = [
-//   entities.with(UserEntity).repository({
-//     async loadAllUsers() {
-//       return this.findBy({
-//         where: {
-//           id: 1,
-//         },
-//       })
-//     },
-//   }),
-// ]
+const repositories = {
+  ...UserRepository,
+}
 
 const myDataSource = DataSource.create({
   type: postgres({
@@ -235,6 +224,15 @@ console.log(myDataSource)
 // const repo = myDataSource.manager.repository("UserEntity").
 
 async function test() {
+  console.log(myDataSource.manager.repository("UserEntity").allUsers())
+  console.log(
+    myDataSource.manager.repository("PhotoEntity").findBy({
+      where: {
+        id: 1,
+      },
+    }),
+  )
+
   const a = await myDataSource.manager
     .repository("UserEntity")
     .findOneByOrFail({
@@ -329,7 +327,7 @@ async function test() {
   // }
   // console.log(modelForInsert)
 
-  const f = await myDataSource.manager.repository(UserEntity).insert({
+  const f = await myDataSource.manager.repository("UserEntity").insert({
     name: "hello",
     secondName: "wow",
     profile: {

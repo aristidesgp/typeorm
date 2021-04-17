@@ -1,11 +1,11 @@
-import { AnyEntityCollection } from "../../core"
+import { AnyEntityCollection, AnyRepositoryList } from "../../core"
 import { createPostgresManager } from "../manager"
 import { createPostgresQueryRunner } from "../query-runner/query-runner-functions"
 import { PostgresDriverOptions } from "./driver-options-types"
 import { PostgresDriver } from "./driver-types"
 
 export function postgres<
-  Options extends PostgresDriverOptions<AnyEntityCollection>
+  Options extends PostgresDriverOptions<AnyEntityCollection, AnyRepositoryList>
 >(options: Options): PostgresDriver<Options> {
   return {
     types: null as any,

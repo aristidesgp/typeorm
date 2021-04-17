@@ -1,14 +1,25 @@
-import { AnyEntity, AnyEntityCollection, EntityResolver } from "../entity"
+import {
+  AnyEntity,
+  AnyEntityCollection,
+  AnyRepositoryList,
+  EntityResolver,
+} from "../entity"
 
 /**
  * Any DataSourceOptions. Helper type.
  */
-export type AnyDriverOptions = BaseDriverOptions<AnyEntityCollection>
+export type AnyDriverOptions = BaseDriverOptions<
+  AnyEntityCollection,
+  AnyRepositoryList
+>
 
 /**
  * Options passed to the DataSource.
  */
-export interface BaseDriverOptions<Collection extends AnyEntityCollection> {
+export interface BaseDriverOptions<
+  Collection extends AnyEntityCollection,
+  CustomRepositories extends AnyRepositoryList
+> {
   /**
    * List of entities to be used in this data source.
    */
@@ -18,4 +29,9 @@ export interface BaseDriverOptions<Collection extends AnyEntityCollection> {
    * List of resolvers registered in the data source.
    */
   resolvers: EntityResolver<AnyEntity>[]
+
+  /**
+   * List of custom repositories registered in the data source.
+   */
+  repositories: CustomRepositories
 }

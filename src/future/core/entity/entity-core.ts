@@ -48,7 +48,7 @@ export type EntityCustomRepository<
   repository: CustomRepository
 }
 
-export type AnyEntityCollection = EntityCollection<DriverTypes, AnyEntityList>
+export type AnyEntityCollection = EntityCollection<AnyEntityList>
 
 export type EntityResolveMap<
   Types extends DriverTypes,
@@ -68,30 +68,14 @@ export type EntityResolveMap<
         | Promise<ReturnType<Entity["model"]["type"][P]>>
 }
 
-export interface EntityCollection<
-  Types extends DriverTypes,
-  Entities extends AnyEntityList
-> {
-  "@type": "EntityCollection"
-  entities: Entities
-
-  with<
-    EntityRef extends EntityReference<Entities>,
-    Entity extends EntityPointer<Entities, EntityRef>
-  >(
-    entity: EntityRef,
-  ): {
-    resolve(
-      resolver: EntityResolveMap<Types, Entities, Entity>,
-    ): EntityResolver<Entity>
-    repository<CustomRepository>(
-      custom: CustomRepository,
-    ): EntityCustomRepository<Entity, CustomRepository>
-  }
+export type AnyRepositoryList = {
+  [entityName: string]: any
 }
 
-// custom: CustomRepository & ThisType<PostgresRepository<Source, Entity>>,
-// ): PostgresRepository<Source, Entity> & CustomRepository
+export interface EntityCollection<Entities extends AnyEntityList> {
+  "@type": "EntityCollection"
+  entities: Entities
+}
 
 /**
  * List of named entities.

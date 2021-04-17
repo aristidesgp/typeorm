@@ -3,7 +3,7 @@ import { PostgresManager } from "./manager-type"
 
 export function createPostgresManager(
   dataSource: AnyDataSource,
-): PostgresManager<any, any> {
+): PostgresManager<any, any, any> {
   function Options() {
     return {} as any
   }
