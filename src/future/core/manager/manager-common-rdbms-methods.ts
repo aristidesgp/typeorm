@@ -6,29 +6,18 @@ import {
   QueryResult,
   UpdateResult,
 } from "../driver"
-import {
-  AnyEntityList,
-  EntityColumnPaths,
-  EntityPointer,
-  EntityReference,
-} from "../entity"
+import { AnyEntity, EntityColumnPaths } from "../entity"
 import { WhereOptions } from "../options"
 
 /**
  * Interface for managers that implement common RDBMS methods.
  */
-export interface ManagerCommonRdbmsMethods<
-  Types extends DriverTypes,
-  Entities extends AnyEntityList
-> {
+export interface ManagerCommonRdbmsMethods<Types extends DriverTypes> {
   /**
    * Creates a new query builder that can be used to build and execute any SQL query.
    */
-  createQueryBuilder<
-    EntityRef extends EntityReference<Entities>,
-    Entity extends EntityPointer<Entities, EntityRef>
-  >(
-    entity: EntityRef,
+  createQueryBuilder<Entity extends AnyEntity>(
+    entity: () => Entity,
     alias?: string,
     queryRunner?: QueryRunner,
   ): SelectQueryBuilder<Entity>
@@ -61,22 +50,14 @@ export interface ManagerCommonRdbmsMethods<
    * Note: on some drivers this method uses TRUNCATE and may not work as you expect in transactions.
    * @see https://stackoverflow.com/a/5972738/925151
    */
-  clear<
-    EntityRef extends EntityReference<Entities>,
-    Entity extends EntityPointer<Entities, EntityRef>
-  >(
-    entity: EntityRef,
-  ): Promise<void>
+  clear<Entity extends AnyEntity>(entity: () => Entity): Promise<void>
 
   /**
    * Increments some column by provided value of the entities matched given conditions.
    */
-  increment<
-    EntityRef extends EntityReference<Entities>,
-    Entity extends EntityPointer<Entities, EntityRef>
-  >(
-    entity: EntityRef,
-    where: WhereOptions<Types, Entities, Entity>,
+  increment<Entity extends AnyEntity>(
+    entity: () => Entity,
+    where: WhereOptions<Types, Entity>,
     columnPath: EntityColumnPaths<Entity>,
     value: number,
   ): Promise<UpdateResult<Types>>
@@ -84,12 +65,9 @@ export interface ManagerCommonRdbmsMethods<
   /**
    * Decrements some column by provided value of the entities matched given conditions.
    */
-  decrement<
-    EntityRef extends EntityReference<Entities>,
-    Entity extends EntityPointer<Entities, EntityRef>
-  >(
-    entity: EntityRef,
-    where: WhereOptions<Types, Entities, Entity>,
+  decrement<Entity extends AnyEntity>(
+    entity: () => Entity,
+    where: WhereOptions<Types, Entity>,
     columnPath: EntityColumnPaths<Entity>,
     value: number,
   ): Promise<UpdateResult<Types>>

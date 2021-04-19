@@ -1,7 +1,6 @@
 import { DriverTypes } from "../../driver"
 import {
   AnyEntity,
-  AnyEntityList,
   ColumnCompileType,
   EntityPropsWithModel,
   ReferencedEntity,
@@ -32,27 +31,20 @@ import {
  *   }
  * })
  */
-export type FindOptionsSelect<
-  Entities extends AnyEntityList,
-  Entity extends AnyEntity
-> = {
+export type FindOptionsSelect<Entity extends AnyEntity> = {
   [P in keyof Entity["columns"]]?: boolean
 } &
   {
     [P in keyof Entity["relations"]]?:
       | boolean
-      | FindOptionsSelect<Entities, ReferencedEntity<Entities, Entity, P>>
+      | FindOptionsSelect<ReferencedEntity<Entity, P>>
   } &
   {
-    [P in keyof Entity["embeds"]]?: FindOptionsSelect<
-      Entities,
-      Entity["embeds"][P]
-    >
+    [P in keyof Entity["embeds"]]?: FindOptionsSelect<Entity["embeds"][P]>
   }
 
 export type FindReturnTypeProperty<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
   Entity extends AnyEntity,
   Selection, // if something went wrong use it: extends FindOptionsSelect<Source, Entity>,
   P extends keyof EntityPropsWithModel<Entity>,
@@ -61,7 +53,6 @@ export type FindReturnTypeProperty<
 > = P extends string & keyof Entity["columns"] // if property is a column, just return it's type inferred from a driver column types defined in the entity
   ? ColumnCompileType<
       Entity["driver"]["types"],
-      Entities,
       Entity["model"],
       P,
       Entity["columns"][P]
@@ -69,7 +60,6 @@ export type FindReturnTypeProperty<
   : P extends keyof Entity["embeds"] // if selected property is an embed, we just go recursively
   ? FindReturnType<
       Types,
-      Entities,
       Entity["embeds"][Property],
       Selection[Property],
       ParentPartiallySelected
@@ -81,34 +71,20 @@ export type FindReturnTypeProperty<
         | "one-to-many"
       ? FindReturnType<
           Types,
-          Entities,
-          ReferencedEntity<Entities, Entity, Property>,
+          ReferencedEntity<Entity, Property>,
           Selection[Property],
           false
         >[]
       : FindReturnType<
           Types,
-          Entities,
-          ReferencedEntity<Entities, Entity, Property>,
+          ReferencedEntity<Entity, Property>,
           Selection[Property],
           false
         >
     : Selection[Property] extends true // 2. we can select the whole related object (means its columns) by using relation: true
     ? Entity["relations"][P]["type"] extends "many-to-many" | "one-to-many" // Entity["model"]["type"][P] extends Array<infer U> ?
-      ? FindReturnType<
-          Types,
-          Entities,
-          ReferencedEntity<Entities, Entity, Property>,
-          {},
-          false
-        >[]
-      : FindReturnType<
-          Types,
-          Entities,
-          ReferencedEntity<Entities, Entity, Property>,
-          {},
-          false
-        >
+      ? FindReturnType<Types, ReferencedEntity<Entity, Property>, {}, false>[]
+      : FindReturnType<Types, ReferencedEntity<Entity, Property>, {}, false>
     : never
   : P extends keyof Entity["model"]["type"]
   ? Entity["model"]["type"][P]
@@ -149,9 +125,8 @@ export type EntitySelectionTruthyKeys<Entity extends AnyEntity, Selection> =
  */
 export type EntitySelectionAllColumns<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
   Entity extends AnyEntity,
-  Selection extends FindOptionsSelect<Entities, Entity>
+  Selection extends FindOptionsSelect<Entity>
 > = keyof (Entity["columns"] &
   {
     [P in keyof Entity["relations"] as Selection[P] extends true
@@ -165,7 +140,6 @@ export type EntitySelectionAllColumns<
 
 export type FindReturnType<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
   Entity extends AnyEntity,
   Selection, // if something went wrong use it: extends FindOptionsSelect<Source, Entity>,
   ParentPartiallySelected extends boolean
@@ -181,7 +155,6 @@ export type FindReturnType<
           ? P
           : never]: FindReturnTypeProperty<
           Types,
-          Entities,
           Entity,
           Selection,
           P,
@@ -194,14 +167,12 @@ export type FindReturnType<
     ? {
         [P in keyof EntityPropsWithModel<Entity> as P extends EntitySelectionAllColumns<
           Types,
-          Entities,
           Entity,
           Selection
         >
           ? P
           : never]: FindReturnTypeProperty<
           Types,
-          Entities,
           Entity,
           Selection,
           P,
@@ -218,7 +189,6 @@ export type FindReturnType<
           ? P
           : never]: FindReturnTypeProperty<
           Types,
-          Entities,
           Entity,
           Selection,
           P,

@@ -1,6 +1,5 @@
 import { AnyModel } from "../../../repository/model"
 import { AnyDriver, DriverTypes } from "../driver"
-import { ValueOf } from "../util"
 import { EntityColumnList } from "./entity-columns"
 import { EntityEmbedList } from "./entity-embeds"
 import { EntityModel } from "./entity-model"
@@ -54,7 +53,6 @@ export type AnyEntityCollection = EntityCollection<AnyEntityList>
 
 export type EntityResolveMap<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
   Entity extends AnyEntity
 > = {
   [P in keyof Entity["model"]["type"]]?: Entity["model"]["type"][P] extends Function
@@ -64,7 +62,7 @@ export type EntityResolveMap<
         | ReturnType<Entity["model"]["type"][P]>
         | Promise<ReturnType<Entity["model"]["type"][P]>>
     : (
-        entity: EntityModel<Types, Entities, Entity>,
+        entity: EntityModel<Types, Entity>,
       ) =>
         | ReturnType<Entity["model"]["type"][P]>
         | Promise<ReturnType<Entity["model"]["type"][P]>>
@@ -91,7 +89,6 @@ export type AnyEntityList = {
  * For example for ReferencedEntity<Any, User, "avatar"> returns "Photo" entity.
  */
 export type ReferencedEntity<
-  Entities extends AnyEntityList,
   Entity extends AnyEntity,
   RelationName extends keyof Entity["relations"]
 > = Entity["relations"][RelationName] extends EntityRelation<any>
@@ -103,24 +100,23 @@ export type ReferencedEntity<
 
 /**
  * Entity reference can either be an entity name, either reference to entity declaration.
- */
+
 export type EntityReference<Entities extends AnyEntityList> =
   | keyof Entities
   | ValueOf<Entities>
-  | (() => ValueOf<Entities>)
+  | (() => ValueOf<Entities>) */
 
 /**
  * Resolves given entity or entity name to the entity.
  * If given value is entity name, finds entity with such name and returns it.
  * If given value is entity itself, simply returns it.
- */
+
 export type EntityPointer<
-  Entities extends AnyEntityList,
   Reference extends EntityReference<Entities>
-> = Reference extends keyof Entities
+> = Reference extends AnyEntity
   ? Entities[Reference]
   : Reference extends ValueOf<Entities>
   ? Reference
   : Reference extends () => infer U
   ? U
-  : never
+  : never */

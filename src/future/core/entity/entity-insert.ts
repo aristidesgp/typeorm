@@ -1,14 +1,14 @@
 import { DriverTypes } from "../driver"
 import { FindReturnType } from "../options"
 import { SelectAll } from "../selection"
-import { FlatTypeHint, UndefinedToOptional, ValueOf } from "../util"
+import { FlatTypeHint, UndefinedToOptional } from "../util"
 import {
   ColumnCompileType,
   EntityColumn,
   EntityDefaultColumnTypeMap,
   EntityGeneratedColumnTypeMap,
 } from "./entity-columns"
-import { AnyEntity, AnyEntityList, ReferencedEntity } from "./entity-core"
+import { AnyEntity, ReferencedEntity } from "./entity-core"
 import { EntityRelationReferencedColumnTypeMap } from "./entity-referenced-columns"
 
 /**
@@ -39,7 +39,6 @@ export type ColumnCompileTypeForInsert<
  */
 export type EntityModelForInsert<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
   Entity extends AnyEntity
 > = FlatTypeHint<
   UndefinedToOptional<
@@ -50,17 +49,16 @@ export type EntityModelForInsert<
             Entity["columns"][P],
             ColumnCompileType<
               Entity["driver"]["types"],
-              Entities,
               Entity["model"],
               P,
               Entity["columns"][P]
             >
           >
         : P extends keyof Entity["embeds"]
-        ? EntityModelForInsert<Types, Entities, Entity["embeds"][P]>
+        ? EntityModelForInsert<Types, Entity["embeds"][P]>
         : P extends keyof Entity["relations"]
         ? EntityRelationReferencedColumnTypeMap<
-            ReferencedEntity<Entities, Entity, P>,
+            ReferencedEntity<Entity, P>,
             Entity["relations"][P]
           >
         : never
@@ -77,17 +75,15 @@ export type EntityModelForInsert<
  */
 export type EntityModelAfterInsert<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
-  Entity extends ValueOf<Entities>,
+  Entity extends AnyEntity,
   Model
 > = Model &
   FindReturnType<
     Types,
-    Entities,
     Entity,
     SelectAll<
-      EntityGeneratedColumnTypeMap<Types, Entities, Entity> &
-        EntityDefaultColumnTypeMap<Types, Entities, Entity>
+      EntityGeneratedColumnTypeMap<Types, Entity> &
+        EntityDefaultColumnTypeMap<Types, Entity>
     >,
     false
   >

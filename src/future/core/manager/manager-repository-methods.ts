@@ -1,27 +1,23 @@
 import { DriverTypes } from "../driver"
-import { AnyEntityList, EntityReference } from "../entity/entity-core"
 
 /**
  * Interface for managers supporting repositories.
  */
-export interface ManagerRepositoryMethods<
-  Types extends DriverTypes,
-  Entities extends AnyEntityList
-> {
+export interface ManagerRepositoryMethods<Types extends DriverTypes> {
   /**
    * Gets an entity repository by a given entity name.
-   */
+
   repository<EntityRef extends EntityReference<Entities>>(
     entity: EntityRef,
-  ): any // PostgresRepository<Types, EntityPointer<Entities, EntityRef>> // todo: FIX POSTGRES DEP
-
+  ): any // PostgresRepository<Types, EntityPointer<EntityRef>> // todo: FIX POSTGRES DEP
+  */
   /**
    * Gets an entity repository by a given entity name and applies given custom repository functions.
    * This method is used to create custom repositories.
    */
   // repository<// todo: FIX POSTGRES DEP
   //   EntityRef extends EntityReference<Entities>,
-  //   Entity extends EntityPointer<Entities, EntityRef>,
+  //   Entity extends EntityPointer<EntityRef>,
   //   CustomRepository
   // >(
   //   entity: EntityRef,

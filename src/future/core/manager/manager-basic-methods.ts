@@ -1,10 +1,8 @@
 import { DriverTypes } from "../driver"
 import {
-  AnyEntityList,
+  AnyEntity,
   EntityModelPartial,
-  EntityPointer,
   EntityPrimaryColumnTypeMap,
-  EntityReference,
 } from "../entity"
 import { UnionToIntersection } from "../util"
 
@@ -13,20 +11,14 @@ import { UnionToIntersection } from "../util"
  *
  * todo: check if we can implement proper typing for save(models), remove(models), etc.
  */
-export interface ManagerBasicMethods<
-  Types extends DriverTypes,
-  Entities extends AnyEntityList
-> {
+export interface ManagerBasicMethods<Types extends DriverTypes> {
   /**
    * Checks if entity has an id.
    * If entity has multiple ids, it will check them all.
    */
-  hasId<
-    EntityRef extends EntityReference<Entities>,
-    Entity extends EntityPointer<Entities, EntityRef>
-  >(
-    entity: EntityRef,
-    model: EntityModelPartial<Types, Entities, Entity>,
+  hasId<Entity extends AnyEntity>(
+    entity: () => Entity,
+    model: EntityModelPartial<Types, Entity>,
   ): boolean
 
   /**
@@ -36,23 +28,21 @@ export interface ManagerBasicMethods<
    * Returns null if entity doesn't have at least one of its ids.
    */
   getId<
-    EntityRef extends EntityReference<Entities>,
-    Entity extends EntityPointer<Entities, EntityRef>,
-    Model extends EntityModelPartial<Types, Entities, Entity>
+    Entity extends AnyEntity,
+    Model extends EntityModelPartial<Types, Entity>
   >(
-    entity: EntityRef,
+    entity: () => Entity,
     model: Model,
-  ): EntityPrimaryColumnTypeMap<Types, Entities, Entity>
+  ): EntityPrimaryColumnTypeMap<Types, Entity>
 
   /**
    * Creates a new entity instance.
    */
   create<
-    EntityRef extends EntityReference<Entities>,
-    Entity extends EntityPointer<Entities, EntityRef>,
-    Model extends EntityModelPartial<Types, Entities, Entity>
+    Entity extends AnyEntity,
+    Model extends EntityModelPartial<Types, Entity>
   >(
-    entity: EntityRef,
+    entity: () => Entity,
     model: Model,
   ): Model
 
@@ -60,11 +50,10 @@ export interface ManagerBasicMethods<
    * Merges multiple entities (or entity-like objects) into a given entity.
    */
   merge<
-    EntityRef extends EntityReference<Entities>,
-    Entity extends EntityPointer<Entities, EntityRef>,
-    Models extends EntityModelPartial<Types, Entities, Entity>[]
+    Entity extends AnyEntity,
+    Models extends EntityModelPartial<Types, Entity>[]
   >(
-    entity: EntityRef,
+    entity: () => Entity,
     ...models: Models
   ): UnionToIntersection<Models[number]>
 }

@@ -1,5 +1,5 @@
 import {
-  AnyEntityList,
+  AnyEntity,
   DriverTypes,
   RepositoryBase,
   RepositoryBasicMethods,
@@ -7,7 +7,6 @@ import {
   RepositoryFindMethods,
   RepositoryPersistenceMethods,
   RepositoryTreeMethods,
-  ValueOf,
 } from "../../core"
 import { Releasable } from "../../core/connection"
 
@@ -16,12 +15,11 @@ import { Releasable } from "../../core/connection"
  */
 export interface PostgresRepository<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
-  Entity extends ValueOf<Entities>
-> extends RepositoryBase<Types, Entities, Entity>,
-    RepositoryBasicMethods<Types, Entities, Entity>,
-    RepositoryCommonRdbmsMethods<Types, Entities, Entity>,
-    RepositoryFindMethods<Types, Entities, Entity>,
-    RepositoryPersistenceMethods<Types, Entities, Entity>,
-    RepositoryTreeMethods<Types, Entities, Entity>,
+  Entity extends AnyEntity
+> extends RepositoryBase<Types, Entity>,
+    RepositoryBasicMethods<Types, Entity>,
+    RepositoryCommonRdbmsMethods<Types, Entity>,
+    RepositoryFindMethods<Types, Entity>,
+    RepositoryPersistenceMethods<Types, Entity>,
+    RepositoryTreeMethods<Types, Entity>,
     Releasable {}

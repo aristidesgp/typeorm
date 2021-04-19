@@ -15,7 +15,6 @@ export interface PostgresDriver<
     Options,
     PostgresManager<
       PostgresDriverTypes,
-      Options["entities"]["entities"],
       ForceCastIfUndefined<Options["repositories"], {}>
     >,
     PostgresQueryRunner,

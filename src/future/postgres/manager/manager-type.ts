@@ -1,5 +1,5 @@
 import {
-  AnyEntityList,
+  AnyEntity,
   AnyRepositoryList,
   DriverTypes,
   ManagerBase,
@@ -14,22 +14,26 @@ import { PostgresRepository } from "../repository"
 
 export interface PostgresManager<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
   Repositories extends AnyRepositoryList
-> extends ManagerBase<Types, Entities>,
-    ManagerBasicMethods<Types, Entities>,
-    ManagerCommonRdbmsMethods<Types, Entities>,
-    ManagerFindMethods<Types, Entities>,
-    ManagerPersistenceMethods<Types, Entities>,
+> extends ManagerBase<Types>,
+    ManagerBasicMethods<Types>,
+    ManagerCommonRdbmsMethods<Types>,
+    ManagerFindMethods<Types>,
+    ManagerPersistenceMethods<Types>,
     // ManagerRepositoryMethods<Types, Entities>,
-    ManagerTreeMethods<Types, Entities>,
+    ManagerTreeMethods<Types>,
     Releasable {
   /**
    * Gets the entity repository by a given entity name.
+   *
+   * todo: change current implementation, repository should be inside entity, e.g. Entity["repository"]
    */
-  repository<EntityName extends keyof Entities>(
-    entity: EntityName,
-  ): EntityName extends keyof Repositories
+  repository<Entity extends AnyEntity>(
+    entity: () => Entity,
+  ): /*EntityName extends keyof Repositories
     ? Repositories[EntityName]
-    : PostgresRepository<Types, Entities, Entities[EntityName]>
+    : */ PostgresRepository<
+    Types,
+    Entity
+  > // Entities[EntityName]
 }

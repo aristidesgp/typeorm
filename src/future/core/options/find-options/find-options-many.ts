@@ -1,5 +1,5 @@
 import { DriverTypes } from "../../driver"
-import { AnyEntity, AnyEntityList } from "../../entity"
+import { AnyEntity } from "../../entity"
 import { FindOptions } from "./find-options-one"
 
 /**
@@ -7,9 +7,8 @@ import { FindOptions } from "./find-options-one"
  */
 export interface FindOptionsMany<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
   Entity extends AnyEntity // ValueOf<Entities>
-> extends FindOptions<Types, Entities, Entity> {
+> extends FindOptions<Types, Entity> {
   /**
    * Offset (paginated) where from entities should be taken.
    */

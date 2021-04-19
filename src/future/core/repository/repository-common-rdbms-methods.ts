@@ -1,17 +1,15 @@
 import { SelectQueryBuilder } from "../../../query-builder/SelectQueryBuilder"
 import { QueryRunner } from "../../../query-runner/QueryRunner"
 import { DriverTypes, QueryResult, UpdateResult } from "../driver"
-import { AnyEntityList, EntityColumnPaths } from "../entity"
+import { AnyEntity, EntityColumnPaths } from "../entity"
 import { WhereOptions } from "../options"
-import { ValueOf } from "../util"
 
 /**
  * Interface for repositories that implement common RDBMS methods.
  */
 export interface RepositoryCommonRdbmsMethods<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
-  Entity extends ValueOf<Entities>
+  Entity extends AnyEntity
 > {
   /**
    * Creates a new query builder that can be used to build and execute any SQL query.
@@ -38,7 +36,7 @@ export interface RepositoryCommonRdbmsMethods<
    * Increments some column by provided value of the entities matched given conditions.
    */
   increment(
-    where: WhereOptions<Types, Entities, Entity>,
+    where: WhereOptions<Types, Entity>,
     columnPath: EntityColumnPaths<Entity>,
     value: number,
   ): Promise<UpdateResult<Types>>
@@ -47,7 +45,7 @@ export interface RepositoryCommonRdbmsMethods<
    * Decrements some column by provided value of the entities matched given conditions.
    */
   decrement(
-    where: WhereOptions<Types, Entities, Entity>,
+    where: WhereOptions<Types, Entity>,
     columnPath: EntityColumnPaths<Entity>,
     value: number,
   ): Promise<UpdateResult<Types>>

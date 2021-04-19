@@ -232,21 +232,21 @@ const entities = Postgres.entities({
   CarEntity: CarEntity(),
 })
 
-const UserResolver = entities.resolve("UserEntity", (manager) => ({
-  async haha() {
-    return manager.repository("UserEntity").find({})
-  },
-}))
-
-const UserRepositoryMethods = entities.repository("UserEntity", {
-  async allUsers() {
-    return this.findBy({
-      where: {
-        id: 1,
-      },
-    })
-  },
-})
+// const UserResolver = entities.resolve(UserEntity, (manager) => ({
+//   async haha() {
+//     return manager.repository(UserEntity).find({})
+//   },
+// }))
+//
+// const UserRepositoryMethods = entities.repository("UserEntity", {
+//   async allUsers() {
+//     return this.findBy({
+//       where: {
+//         id: 1,
+//       },
+//     })
+//   },
+// })
 
 const myDataSource = DataSource.create({
   type: Postgres({
@@ -254,43 +254,43 @@ const myDataSource = DataSource.create({
     password: "",
     database: "",
     entities: entities,
-    resolvers: [UserResolver],
+    resolvers: [
+      /*UserResolver*/
+    ],
     repositories: {
-      ...UserRepositoryMethods,
+      // ...UserRepositoryMethods,
     },
   }),
 })
 
-const UserRepository = myDataSource.manager.repository("UserEntity")
+// const UserRepository = myDataSource.manager.repository(UserEntity)
 
 async function test() {
-  console.log(UserRepository.allUsers())
+  // console.log(UserRepository.allUsers())
   console.log(
-    myDataSource.manager.repository("PhotoEntity").findBy({
+    myDataSource.manager.repository(PhotoEntity).findBy({
       where: {
         id: 1,
       },
     }),
   )
 
-  const a = await myDataSource.manager
-    .repository("UserEntity")
-    .findOneByOrFail({
-      select: {
-        id: true,
-        name: true,
-        photos: true,
-        // ...UserWithAvatarEager,
+  const a = await myDataSource.manager.repository(UserEntity).findOneByOrFail({
+    select: {
+      id: true,
+      name: true,
+      photos: true,
+      // ...UserWithAvatarEager,
+    },
+    where: {
+      name: "Umed",
+      avatar: {
+        id: 1,
       },
-      where: {
-        name: "Umed",
-        avatar: {
-          id: 1,
-        },
-      },
-    })
+    },
+  })
 
-  a.fullName()
+  // a.fullName()
 
   console.log(a.photos[0].filename)
 
@@ -313,10 +313,10 @@ async function test() {
   // console.log(b)
 
   await myDataSource.manager
-    .repository("UserEntity")
+    .repository(UserEntity)
     .increment({ id: 1 }, "profile.maritalStatus", 1)
 
-  const c = myDataSource.manager.repository("UserEntity").create({
+  const c = myDataSource.manager.repository(UserEntity).create({
     name: "Olim",
     profile: {
       bio: "soset",
@@ -324,7 +324,7 @@ async function test() {
   })
   console.log(c)
 
-  const id = myDataSource.manager.repository("UserEntity").getId(c)
+  const id = myDataSource.manager.repository(UserEntity).getId(c)
   console.log(id)
 
   // const x: SelectAll<EntityPrimaryColumnValueMap<typeof UserEntity>> = {
@@ -332,7 +332,7 @@ async function test() {
   // }
   // console.log(x)
 
-  const d = myDataSource.manager.repository("UserEntity").merge(
+  const d = myDataSource.manager.repository(UserEntity).merge(
     {
       id: 1,
     },
@@ -345,7 +345,7 @@ async function test() {
   )
   console.log(d)
 
-  const e = myDataSource.manager.create("PhotoEntity", {
+  const e = myDataSource.manager.create(PhotoEntity, {
     filename: "Umed",
   })
   console.log(e)
@@ -369,7 +369,7 @@ async function test() {
   // }
   // console.log(modelForInsert)
 
-  const f = await myDataSource.manager.repository("UserEntity").insert({
+  const f = await myDataSource.manager.repository(UserEntity).insert({
     name: "hello",
     secondName: "wow",
     profile: {
@@ -386,7 +386,7 @@ async function test() {
   })
   console.log(f)
 
-  const g = await myDataSource.manager.insert("CarEntity", {
+  const g = await myDataSource.manager.insert(CarEntity, {
     name: "ModelZ",
   })
   console.log(g)
@@ -410,12 +410,12 @@ async function test() {
   // })
   // console.log(a3)
 
-  const id1 = await myDataSource.manager.getId("PhotoEntity", {
+  const id1 = await myDataSource.manager.getId(PhotoEntity, {
     filename: ":wow",
   })
   console.log(id1)
 
-  const id2 = await myDataSource.manager.getId("CarEntity", {})
+  const id2 = await myDataSource.manager.getId(CarEntity, {})
   console.log(id2.info.vin)
 
   // const id3 = await myDataSource.manager.getId(UserEntity, {})
@@ -441,7 +441,7 @@ async function test() {
 test()
 
 const UserWithAvatarEager = myDataSource.manager
-  .repository("UserEntity")
+  .repository(UserEntity)
   .findOptions.select({
     avatar: true,
     photos: true,

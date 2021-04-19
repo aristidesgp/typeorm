@@ -1,7 +1,7 @@
 import { AnyModel } from "../../../repository/model"
 import { DriverTypes } from "../driver"
 import { FlatTypeHint, ForceCastIfNoKeys, NonNever, ValueOf } from "../util"
-import { AnyEntity, AnyEntityList } from "./entity-core"
+import { AnyEntity } from "./entity-core"
 import { EntityProps } from "./entity-utils"
 
 /**
@@ -35,7 +35,6 @@ export type EntityColumnList<Types extends DriverTypes> = {
  */
 export type ColumnCompileType<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
   Model extends AnyModel,
   PropertyName extends string,
   Column extends EntityColumn<Types>
@@ -74,7 +73,6 @@ export type HasEntityModelColumnType<
  */
 export type EntityColumnTypeMapByNames<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
   Entity extends AnyEntity,
   ColumnNames extends string
 > = FlatTypeHint<
@@ -83,7 +81,6 @@ export type EntityColumnTypeMapByNames<
       ? NonNullable<
           ColumnCompileType<
             Entity["driver"]["types"],
-            Entities,
             Entity["model"],
             P,
             Entity["columns"][P]
@@ -107,7 +104,6 @@ export type EntityColumnTypeMapByNames<
  */
 export type EntityGeneratedColumnTypeMap<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
   Entity extends AnyEntity
 > = NonNever<
   {
@@ -115,14 +111,13 @@ export type EntityGeneratedColumnTypeMap<
       ? Entity["columns"][P]["generated"] extends true
         ? ColumnCompileType<
             Entity["driver"]["types"],
-            Entities,
             Entity["model"],
             P,
             Entity["columns"][P]
           >
         : never
       : P extends keyof Entity["embeds"]
-      ? EntityGeneratedColumnTypeMap<Types, Entities, Entity["embeds"][P]>
+      ? EntityGeneratedColumnTypeMap<Types, Entity["embeds"][P]>
       : never
   }
 >
@@ -141,7 +136,6 @@ export type EntityGeneratedColumnTypeMap<
  */
 export type EntityDefaultColumnTypeMap<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
   Entity extends AnyEntity
 > = NonNever<
   {
@@ -149,14 +143,13 @@ export type EntityDefaultColumnTypeMap<
       ? Entity["columns"][P]["default"] extends string | number | boolean
         ? ColumnCompileType<
             Entity["driver"]["types"],
-            Entities,
             Entity["model"],
             P,
             Entity["columns"][P]
           >
         : never
       : P extends keyof Entity["embeds"]
-      ? EntityDefaultColumnTypeMap<Types, Entities, Entity["embeds"][P]>
+      ? EntityDefaultColumnTypeMap<Types, Entity["embeds"][P]>
       : never
   }
 >
@@ -202,7 +195,6 @@ export type EntityColumnPaths<
  */
 export type EntityPrimaryColumnTypeMap<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
   Entity extends AnyEntity,
   Deepness extends string = "."
 > = ForceCastIfNoKeys<
@@ -216,18 +208,12 @@ export type EntityPrimaryColumnTypeMap<
         : never]: P extends string & keyof Entity["columns"]
         ? ColumnCompileType<
             Entity["driver"]["types"],
-            Entities,
             Entity["model"],
             P,
             Entity["columns"][P]
           >
         : P extends keyof Entity["embeds"]
-        ? EntityPrimaryColumnTypeMap<
-            Types,
-            Entities,
-            Entity["embeds"][P],
-            `${Deepness}.`
-          >
+        ? EntityPrimaryColumnTypeMap<Types, Entity["embeds"][P], `${Deepness}.`>
         : never
     }
   >,

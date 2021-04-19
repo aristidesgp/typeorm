@@ -1,13 +1,12 @@
 import { DriverTypes } from "../../driver"
-import { AnyEntity, AnyEntityList } from "../../entity/entity-core"
+import { AnyEntity } from "../../entity/entity-core"
 import { WhereOperator } from "./index"
 
 export function Any<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
   Entity extends AnyEntity,
   ValueType
->(...values: ValueType[]): WhereOperator<Types, Entities, Entity, ValueType> {
+>(...values: ValueType[]): WhereOperator<Types, Entity, ValueType> {
   return {
     "@type": "WhereOperator",
     kind: "any",
@@ -20,13 +19,12 @@ export function Any<
 
 export function Between<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
   Entity extends AnyEntity,
   ValueType
 >(
   first: ValueType,
   second: ValueType,
-): WhereOperator<Types, Entities, Entity, ValueType> {
+): WhereOperator<Types, Entity, ValueType> {
   return {
     "@type": "WhereOperator",
     kind: "between",
@@ -39,10 +37,9 @@ export function Between<
 
 export function Equal<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
   Entity extends AnyEntity,
   ValueType
->(value: ValueType): WhereOperator<Types, Entities, Entity, ValueType> {
+>(value: ValueType): WhereOperator<Types, Entity, ValueType> {
   return {
     "@type": "WhereOperator",
     kind: "equal",
@@ -55,10 +52,9 @@ export function Equal<
 
 export function Like<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
   Entity extends AnyEntity,
   ValueType
->(value: string): WhereOperator<Types, Entities, Entity, ValueType> {
+>(value: string): WhereOperator<Types, Entity, ValueType> {
   return {
     "@type": "WhereOperator",
     kind: "like",
@@ -71,10 +67,9 @@ export function Like<
 
 export function ILike<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
   Entity extends AnyEntity,
   ValueType
->(value: string): WhereOperator<Types, Entities, Entity, ValueType> {
+>(value: string): WhereOperator<Types, Entity, ValueType> {
   return {
     "@type": "WhereOperator",
     kind: "ilike",
@@ -87,10 +82,9 @@ export function ILike<
 
 export function In<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
   Entity extends AnyEntity,
   ValueType
->(...values: ValueType[]): WhereOperator<Types, Entities, Entity, ValueType> {
+>(...values: ValueType[]): WhereOperator<Types, Entity, ValueType> {
   return {
     "@type": "WhereOperator",
     kind: "in",
@@ -103,10 +97,9 @@ export function In<
 
 export function LessThan<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
   Entity extends AnyEntity,
   ValueType
->(value: ValueType): WhereOperator<Types, Entities, Entity, ValueType> {
+>(value: ValueType): WhereOperator<Types, Entity, ValueType> {
   return {
     "@type": "WhereOperator",
     kind: "lessThan",
@@ -119,10 +112,9 @@ export function LessThan<
 
 export function LessThanOrEqual<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
   Entity extends AnyEntity,
   ValueType
->(value: ValueType): WhereOperator<Types, Entities, Entity, ValueType> {
+>(value: ValueType): WhereOperator<Types, Entity, ValueType> {
   return {
     "@type": "WhereOperator",
     kind: "lessThanOrEqual",
@@ -135,10 +127,9 @@ export function LessThanOrEqual<
 
 export function MoreThan<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
   Entity extends AnyEntity,
   ValueType
->(value: ValueType): WhereOperator<Types, Entities, Entity, ValueType> {
+>(value: ValueType): WhereOperator<Types, Entity, ValueType> {
   return {
     "@type": "WhereOperator",
     kind: "moreThan",
@@ -151,10 +142,9 @@ export function MoreThan<
 
 export function MoreThanOrEqual<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
   Entity extends AnyEntity,
   ValueType
->(value: ValueType): WhereOperator<Types, Entities, Entity, ValueType> {
+>(value: ValueType): WhereOperator<Types, Entity, ValueType> {
   return {
     "@type": "WhereOperator",
     kind: "moreThanOrEqual",
@@ -167,10 +157,9 @@ export function MoreThanOrEqual<
 
 export function Raw<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
   Entity extends AnyEntity,
   ValueType
->(value: string): WhereOperator<Types, Entities, Entity, ValueType> {
+>(value: string): WhereOperator<Types, Entity, ValueType> {
   return {
     "@type": "WhereOperator",
     kind: "raw",
@@ -183,10 +172,9 @@ export function Raw<
 
 export function Escaped<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
   Entity extends AnyEntity,
   ValueType
->(value: string): WhereOperator<Types, Entities, Entity, ValueType> {
+>(value: string): WhereOperator<Types, Entity, ValueType> {
   return {
     "@type": "WhereOperator",
     kind: "escaped",
@@ -199,13 +187,12 @@ export function Escaped<
 
 export function Column<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
   Entity extends AnyEntity,
   ValueType
 >(
   name: keyof Entity["columns"],
   // alias?: string
-): WhereOperator<Types, Entities, Entity, ValueType> {
+): WhereOperator<Types, Entity, ValueType> {
   return {
     "@type": "WhereOperator",
     kind: "column",

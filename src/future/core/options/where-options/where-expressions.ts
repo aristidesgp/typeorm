@@ -1,14 +1,10 @@
 import { DriverTypes } from "../../driver"
-import { AnyEntity, AnyEntityList } from "../../entity/entity-core"
+import { AnyEntity } from "../../entity/entity-core"
 import { WhereExpression, WhereOptions } from "./where-options"
 
-export function Or<
-  Types extends DriverTypes,
-  Entities extends AnyEntityList,
-  Entity extends AnyEntity
->(
-  ...args: WhereOptions<Types, Entities, Entity>[]
-): WhereExpression<Types, Entities, Entity> {
+export function Or<Types extends DriverTypes, Entity extends AnyEntity>(
+  ...args: WhereOptions<Types, Entity>[]
+): WhereExpression<Types, Entity> {
   return {
     "@type": "WhereExpression",
     kind: "or",
@@ -18,13 +14,9 @@ export function Or<
   }
 }
 
-export function And<
-  Types extends DriverTypes,
-  Entities extends AnyEntityList,
-  Entity extends AnyEntity
->(
-  ...args: WhereOptions<Types, Entities, Entity>[]
-): WhereExpression<Types, Entities, Entity> {
+export function And<Types extends DriverTypes, Entity extends AnyEntity>(
+  ...args: WhereOptions<Types, Entity>[]
+): WhereExpression<Types, Entity> {
   return {
     "@type": "WhereExpression",
     kind: "and",
@@ -34,13 +26,9 @@ export function And<
   }
 }
 
-export function Not<
-  Types extends DriverTypes,
-  Entities extends AnyEntityList,
-  Entity extends AnyEntity
->(
-  ...args: WhereOptions<Types, Entities, Entity>[]
-): WhereExpression<Types, Entities, Entity> {
+export function Not<Types extends DriverTypes, Entity extends AnyEntity>(
+  ...args: WhereOptions<Types, Entity>[]
+): WhereExpression<Types, Entity> {
   return {
     "@type": "WhereExpression",
     kind: "not",
@@ -50,13 +38,9 @@ export function Not<
   }
 }
 
-export function Xor<
-  Types extends DriverTypes,
-  Entities extends AnyEntityList,
-  Entity extends AnyEntity
->(
-  ...args: WhereOptions<Types, Entities, Entity>[]
-): WhereExpression<Types, Entities, Entity> {
+export function Xor<Types extends DriverTypes, Entity extends AnyEntity>(
+  ...args: WhereOptions<Types, Entity>[]
+): WhereExpression<Types, Entity> {
   return {
     "@type": "WhereExpression",
     kind: "xor",

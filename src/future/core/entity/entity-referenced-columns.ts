@@ -96,7 +96,6 @@ export type EntityRelationReferencedColumnTypeMap<
     :
         | EntityPrimaryColumnTypeMap<
             ReferencedEntity["driver"]["types"],
-            ReferencedEntity["driver"]["options"]["entities"]["entities"],
             ReferencedEntity
           >[]
         | undefined
@@ -124,7 +123,6 @@ export type EntityRelationReferencedColumnTypeMap<
         :
             | EntityPrimaryColumnTypeMap<
                 ReferencedEntity["driver"]["types"],
-                ReferencedEntity["driver"]["options"]["entities"]["entities"],
                 ReferencedEntity
               >[]
             | undefined
@@ -141,7 +139,6 @@ export type EntityRelationReferencedColumnTypeMap<
   ?
       | EntityPrimaryColumnTypeMap<
           ReferencedEntity["driver"]["types"],
-          ReferencedEntity["driver"]["options"]["entities"]["entities"],
           ReferencedEntity
         >[]
       | undefined
@@ -156,7 +153,6 @@ export type EntityRelationReferencedColumnTypeMap<
   ?
       | EntityPrimaryColumnTypeMap<
           ReferencedEntity["driver"]["types"],
-          ReferencedEntity["driver"]["options"]["entities"]["entities"],
           ReferencedEntity
         >[]
       | undefined
@@ -174,7 +170,6 @@ export type EntityRelationReferencedColumnMixedTypeMap<
 > = ReferencedColumnMixed extends EntityRelationReferencedColumn[]
   ? EntityColumnTypeMapByNames<
       ReferencedEntity["driver"]["types"],
-      ReferencedEntity["driver"]["options"]["entities"]["entities"],
       ReferencedEntity,
       ForceCastIfExtends<
         ReferencedColumnMixed,
@@ -184,7 +179,6 @@ export type EntityRelationReferencedColumnMixedTypeMap<
   : ReferencedColumnMixed extends EntityRelationReferencedColumn
   ? EntityColumnTypeMapByNames<
       ReferencedEntity["driver"]["types"],
-      ReferencedEntity["driver"]["options"]["entities"]["entities"],
       ReferencedEntity,
       ForceCastIfExtends<
         ReferencedColumnMixed,
@@ -193,6 +187,5 @@ export type EntityRelationReferencedColumnMixedTypeMap<
     >
   : EntityPrimaryColumnTypeMap<
       ReferencedEntity["driver"]["types"],
-      ReferencedEntity["driver"]["options"]["entities"]["entities"],
       ReferencedEntity
     >

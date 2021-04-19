@@ -1,5 +1,5 @@
 import { DriverTypes } from "../driver"
-import { AnyEntityList } from "../entity"
+import { AnyEntity } from "../entity"
 import {
   FindOptions,
   FindOptionsBuilder,
@@ -9,37 +9,35 @@ import {
   WhereOptions,
 } from "../options"
 import { FindOptionsCount } from "../options/find-options/find-options-count"
-import { ForceCastIfUndefined, ValueOf } from "../util"
+import { ForceCastIfUndefined } from "../util"
 
 /**
  * Interface for repositories that implement find* methods.
  */
 export interface RepositoryFindMethods<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
-  Entity extends ValueOf<Entities>
+  Entity extends AnyEntity
 > {
   /**
    * Helps to build a FindOptions object.
    */
-  findOptions: FindOptionsBuilder<Types, Entities, Entity>
+  findOptions: FindOptionsBuilder<Types, Entity>
 
   /**
    * Finds entities by a given criteria.
    */
-  find<Where extends WhereOperatorOptions<Types, Entities, Entity>>(
+  find<Where extends WhereOperatorOptions<Types, Entity>>(
     where: Where,
-  ): Promise<FindReturnType<Types, Entities, Entity, {}, false>[]>
+  ): Promise<FindReturnType<Types, Entity, {}, false>[]>
 
   /**
    * Finds entities by a given find options.
    */
-  findBy<Options extends FindOptionsMany<Types, Entities, Entity>>(
+  findBy<Options extends FindOptionsMany<Types, Entity>>(
     options: Options,
   ): Promise<
     FindReturnType<
       Types,
-      Entities,
       Entity,
       ForceCastIfUndefined<Options["select"], {}>,
       false
@@ -50,19 +48,18 @@ export interface RepositoryFindMethods<
    * Finds first entity by a given where criteria.
    * If entity was not found in the database - it returns null.
    */
-  findOne<Where extends WhereOptions<Types, Entities, Entity>>(
+  findOne<Where extends WhereOptions<Types, Entity>>(
     where: Where,
-  ): Promise<FindReturnType<Types, Entities, Entity, {}, false> | null>
+  ): Promise<FindReturnType<Types, Entity, {}, false> | null>
 
   /**
    * Finds first entity matching given find options.
    * If entity was not found in the database - it returns null.
    */
-  findOneBy<Options extends FindOptions<Types, Entities, Entity>>(
+  findOneBy<Options extends FindOptions<Types, Entity>>(
     options: Options,
   ): Promise<FindReturnType<
     Types,
-    Entities,
     Entity,
     ForceCastIfUndefined<Options["select"], {}>,
     false
@@ -72,20 +69,19 @@ export interface RepositoryFindMethods<
    * Finds first entity matching given where criteria.
    * If entity was not found in the database - it throws an Error.
    */
-  findOneOrFail<Where extends WhereOptions<Types, Entities, Entity>>(
+  findOneOrFail<Where extends WhereOptions<Types, Entity>>(
     where: Where,
-  ): Promise<FindReturnType<Types, Entities, Entity, {}, false>>
+  ): Promise<FindReturnType<Types, Entity, {}, false>>
 
   /**
    * Finds first entity matching given find options.
    * If entity was not found in the database - it throws an Error.
    */
-  findOneByOrFail<Options extends FindOptions<Types, Entities, Entity>>(
+  findOneByOrFail<Options extends FindOptions<Types, Entity>>(
     options: Options,
   ): Promise<
     FindReturnType<
       Types,
-      Entities,
       Entity,
       ForceCastIfUndefined<Options["select"], {}>,
       false
@@ -97,22 +93,21 @@ export interface RepositoryFindMethods<
    * Also counts all entities matching given conditions,
    * but ignores pagination settings ("skip" and "take" options).
    */
-  findAndCount<Where extends WhereOptions<Types, Entities, Entity>>(
+  findAndCount<Where extends WhereOptions<Types, Entity>>(
     where: Where,
-  ): Promise<[FindReturnType<Types, Entities, Entity, {}, false>[], number]>
+  ): Promise<[FindReturnType<Types, Entity, {}, false>[], number]>
 
   /**
    * Counts entities matching given find options.
    * Also counts all entities matching given conditions,
    * but ignores pagination settings ("skip" and "take" options).
    */
-  findAndCountBy<Options extends FindOptions<Types, Entities, Entity>>(
+  findAndCountBy<Options extends FindOptions<Types, Entity>>(
     options: Options,
   ): Promise<
     [
       FindReturnType<
         Types,
-        Entities,
         Entity,
         ForceCastIfUndefined<Options["select"], {}>,
         false
@@ -124,14 +119,14 @@ export interface RepositoryFindMethods<
   /**
    * Counts entities matching given where criteria.
    */
-  count<Where extends WhereOptions<Types, Entities, Entity>>(
+  count<Where extends WhereOptions<Types, Entity>>(
     where: Where,
   ): Promise<number>
 
   /**
    * Counts entities matching given count options.
    */
-  countBy<Options extends FindOptionsCount<Types, Entities, Entity>>(
+  countBy<Options extends FindOptionsCount<Types, Entity>>(
     options: Options,
   ): Promise<number>
 }

@@ -1,5 +1,5 @@
 import { DriverTypes } from "../../driver"
-import { AnyEntity, AnyEntityList } from "../../entity"
+import { AnyEntity } from "../../entity"
 import { WhereOptions } from "../where-options"
 import { FindOptionsCache } from "./find-options-cache"
 import { FindOptionsOrder } from "./find-options-order"
@@ -10,23 +10,22 @@ import { FindOptionsSelect } from "./find-options-select"
  */
 export interface FindOptions<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
   Entity extends AnyEntity // ValueOf<Entities>
 > {
   /**
    * What data needs to be selected from the loaded entity.
    */
-  select?: FindOptionsSelect<Entities, Entity>
+  select?: FindOptionsSelect<Entity>
 
   /**
    * Conditions applied to a query on what needs to be selected from the database.
    */
-  where?: WhereOptions<Types, Entities, Entity>
+  where?: WhereOptions<Types, Entity>
 
   /**
    * Order options applied to a query.
    */
-  order?: FindOptionsOrder<Types, Entities, Entity>
+  order?: FindOptionsOrder<Types, Entity>
 
   /**
    * Indicates what locking mode should be used.

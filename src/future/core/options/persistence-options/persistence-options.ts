@@ -1,6 +1,5 @@
 import { DriverTypes } from "../../driver"
-import { AnyEntityList } from "../../entity"
-import { ValueOf } from "../../util"
+import { AnyEntity } from "../../entity"
 import { WhereOptions } from "../where-options"
 
 /**
@@ -8,8 +7,7 @@ import { WhereOptions } from "../where-options"
  */
 export type InsertOptions<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
-  Entity extends ValueOf<Entities>
+  Entity extends AnyEntity
 > = Types["insertOptions"]
 
 /**
@@ -17,8 +15,7 @@ export type InsertOptions<
  */
 export type UpdateOptions<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
-  Entity extends ValueOf<Entities>
+  Entity extends AnyEntity
 > = Types["updateOptions"]
 
 /**
@@ -26,10 +23,9 @@ export type UpdateOptions<
  */
 export type UpdateByOptions<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
-  Entity extends ValueOf<Entities>
+  Entity extends AnyEntity
 > = {
-  where: WhereOptions<Types, Entities, Entity>
+  where: WhereOptions<Types, Entity>
 } & Types["updateByOptions"]
 
 /**
@@ -37,8 +33,7 @@ export type UpdateByOptions<
  */
 export type DeleteOptions<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
-  Entity extends ValueOf<Entities>
+  Entity extends AnyEntity
 > = Types["deleteOptions"]
 
 /**
@@ -46,10 +41,9 @@ export type DeleteOptions<
  */
 export type DeleteByOptions<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
-  Entity extends ValueOf<Entities>
+  Entity extends AnyEntity
 > = {
-  where: WhereOptions<Types, Entities, Entity>
+  where: WhereOptions<Types, Entity>
 } & Types["deleteByOptions"]
 
 /**
@@ -57,8 +51,7 @@ export type DeleteByOptions<
  */
 export type ArchiveOptions<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
-  Entity extends ValueOf<Entities>
+  Entity extends AnyEntity
 > = Types["archiveOptions"]
 
 /**
@@ -66,10 +59,9 @@ export type ArchiveOptions<
  */
 export type ArchiveByOptions<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
-  Entity extends ValueOf<Entities>
+  Entity extends AnyEntity
 > = {
-  where: WhereOptions<Types, Entities, Entity>
+  where: WhereOptions<Types, Entity>
 } & Types["archiveByOptions"]
 
 /**
@@ -77,8 +69,7 @@ export type ArchiveByOptions<
  */
 export type UnarchiveOptions<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
-  Entity extends ValueOf<Entities>
+  Entity extends AnyEntity
 > = Types["unarchiveOptions"]
 
 /**
@@ -86,8 +77,7 @@ export type UnarchiveOptions<
  */
 export type UnarchiveByOptions<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
-  Entity extends ValueOf<Entities>
+  Entity extends AnyEntity
 > = {
-  where: WhereOptions<Types, Entities, Entity>
+  where: WhereOptions<Types, Entity>
 } & Types["unarchiveByOptions"]

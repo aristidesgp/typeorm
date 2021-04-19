@@ -1,5 +1,5 @@
 import { DriverTypes } from "../../driver"
-import { AnyEntity, AnyEntityList } from "../../entity"
+import { AnyEntity } from "../../entity"
 import { WhereOptions } from "../where-options"
 import { FindOptionsMany } from "./find-options-many"
 import { FindOptionsOrder } from "./find-options-order"
@@ -11,34 +11,25 @@ import { FindOptionsSelect } from "./find-options-select"
  */
 export type FindOptionsBuilder<
   Types extends DriverTypes,
-  Entities extends AnyEntityList,
   Entity extends AnyEntity
 > = {
   /**
    * Creates a FindOptionsMany object.
    */
-  <Options extends FindOptionsMany<Types, Entities, Entity>>(
-    options: Options,
-  ): Options
+  <Options extends FindOptionsMany<Types, Entity>>(options: Options): Options
 
   /**
    * Creates a FindOptionsSelect object.
    */
-  select<Select extends FindOptionsSelect<Entities, Entity>>(
-    select: Select,
-  ): Select
+  select<Select extends FindOptionsSelect<Entity>>(select: Select): Select
 
   /**
    * Creates a FindOptionsWhere object.
    */
-  where<Where extends WhereOptions<Types, Entities, Entity>>(
-    where: Where,
-  ): Where
+  where<Where extends WhereOptions<Types, Entity>>(where: Where): Where
 
   /**
    * Creates a FindOptionsOrder object.
    */
-  order<Order extends FindOptionsOrder<Types, Entities, Entity>>(
-    order: Order,
-  ): Order
+  order<Order extends FindOptionsOrder<Types, Entity>>(order: Order): Order
 }
