@@ -16,6 +16,10 @@ import { PostgresDriverTypes } from "./driver-column-types"
 import { PostgresDriverOptions } from "./driver-options-types"
 import { PostgresDriver } from "./driver-types"
 
+export type VirtualLazyPropertiesList<Manager> = {
+  [key: string]: (manager: Manager) => Promise<any>
+}
+
 export type Postgres = {
   /**
    * Creates a postgres driver.
@@ -36,8 +40,12 @@ export type Postgres = {
     GivenModel,
     Columns extends EntityColumnList<PostgresDriverTypes> | undefined,
     Relations extends EntityRelationList | undefined,
-    Embeds extends EntityEmbedList<PostgresDriver<any>> | undefined
+    Embeds extends EntityEmbedList<PostgresDriver<any>> | undefined,
+    VirtualLazyProperties extends VirtualLazyPropertiesList<
+      PostgresDriver<any>["manager"]
+    >
   >(options: {
+    virtualLazyProperties?: VirtualLazyProperties
     model?: GivenModel
     columns?: Columns
     relations?: Relations

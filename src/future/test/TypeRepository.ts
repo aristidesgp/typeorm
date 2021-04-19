@@ -1,204 +1,235 @@
-import { model } from "../../repository/model"
 import { DataSource } from "../core"
 import { Postgres } from "../postgres"
 
-export const AlbumEntity = Postgres.entity({
-  columns: {
-    id: {
-      type: "int",
-      primary: true,
+export function AlbumEntity() {
+  return Postgres.entity({
+    columns: {
+      id: {
+        type: "int",
+        primary: true,
+      },
+      name: {
+        type: "varchar",
+      },
     },
-    name: {
-      type: "varchar",
+    relations: {
+      photos: {
+        type: "one-to-many",
+        inverse: "album",
+        reference: PhotoEntity,
+      },
     },
-  },
-  relations: {
-    photos: {
-      type: "one-to-many",
-      inverse: "album",
-      reference: "PhotoEntity" as const,
-    },
-  },
-})
+  })
+}
 
-export const PhotoEntity = Postgres.entity({
-  columns: {
-    id: {
-      primary: true,
-      type: "int",
+export function PhotoEntity() {
+  return Postgres.entity({
+    columns: {
+      id: {
+        primary: true,
+        type: "int",
+      },
+      filename: {
+        type: "varchar",
+        nullable: true,
+      },
     },
-    filename: {
-      type: "varchar",
-      nullable: true,
+    relations: {
+      album: {
+        type: "many-to-one",
+        inverse: "photos" as const,
+        reference: AlbumEntity,
+      },
+      users: {
+        type: "many-to-many",
+        owner: false,
+        inverse: "photos" as const,
+        reference: UserEntity,
+      },
     },
-  },
-  relations: {
-    album: {
-      type: "many-to-one",
-      inverse: "photos" as const,
-      reference: "AlbumEntity" as const,
-    },
-    users: {
-      type: "many-to-many",
-      owner: false,
-      inverse: "photos" as const,
-      reference: "UserEntity" as const,
-    },
-  },
-})
+  })
+}
 
-export const ProfileEmbed = Postgres.entity({
-  columns: {
-    passportId: {
-      type: "varchar",
-      // primary: true,
+export function ProfileEmbed() {
+  return Postgres.entity({
+    columns: {
+      passportId: {
+        type: "varchar",
+        // primary: true,
+      },
+      bio: {
+        type: "varchar",
+      },
+      maritalStatus: {
+        type: "varchar",
+        nullable: true,
+      },
+      adult: {
+        type: "boolean",
+      },
+      kids: {
+        type: "int",
+        default: 0,
+      },
     },
-    bio: {
-      type: "varchar",
+    relations: {
+      educationPhotos: {
+        type: "one-to-many",
+        inverse: "",
+        reference: PhotoEntity,
+      },
     },
-    maritalStatus: {
-      type: "varchar",
-      nullable: true,
-    },
-    adult: {
-      type: "boolean",
-    },
-    kids: {
-      type: "int",
-      default: 0,
-    },
-  },
-  relations: {
-    educationPhotos: {
-      type: "one-to-many",
-      inverse: "",
-      reference: "PhotoEntity" as const,
-    },
-  },
-})
+  })
+}
 
-export const UserEntity = Postgres.entity({
-  // virtualLazyProperties: model<{
-  //   id: number
-  //   name: string
-  //   haha: string
-  //   fullName(): string
-  // }>(),
-  // virtualEagerProperties: model<{
-  //   id: number
-  //   name: string
-  //   haha: string
-  //   fullName(): string
-  // }>(),
-  // virtualMethods: model<{
-  //   fullName(): string
-  // }>(),
-  model: model<{
-    id: number
-    name: string
-    haha: string
-    fullName(): string
-  }>(),
-  columns: {
-    id: {
-      type: "int",
-      primary: true,
-      generated: true,
+export function UserEntity() {
+  return Postgres.entity({
+    // repository: {},
+    virtualLazyProperties: {
+      async photosCount(manager) {
+        const result = await manager.findBy(PhotoEntity, {
+          select: {
+            album: {
+              id: true,
+              photos: {
+                id: true,
+                filename: true,
+                album: true,
+              },
+            },
+          },
+          where: {
+            id: 1,
+          },
+        })
+        return result
+      },
     },
-    name: {
-      type: "varchar",
-      // primary: true,
+    // virtualLazyProperties: model<{
+    //   id: number
+    //   name: string
+    //   haha: string
+    //   fullName(): string
+    // }>(),
+    // virtualEagerProperties: model<{
+    //   id: number
+    //   name: string
+    //   haha: string
+    //   fullName(): string
+    // }>(),
+    // virtualMethods: model<{
+    //   fullName(): string
+    // }>(),
+    // model: model<{
+    //   id: number
+    //   name: string
+    //   haha: string
+    //   fullName(): string
+    // }>(),
+    columns: {
+      id: {
+        type: "int",
+        primary: true,
+        generated: true,
+      },
+      name: {
+        type: "varchar",
+        // primary: true,
+      },
+      secondName: {
+        type: "varchar",
+        // primary: true,
+      },
+      status: {
+        type: "varchar",
+        default: "user",
+      },
     },
-    secondName: {
-      type: "varchar",
-      // primary: true,
-    },
-    status: {
-      type: "varchar",
-      default: "user",
-    },
-  },
-  relations: {
-    avatar: {
-      type: "many-to-one",
-      reference: "PhotoEntity" as const,
-      referencedColumns: [
-        { referencedColumn: "filename" } as const,
-        { referencedColumn: "id" } as const,
-      ],
-    },
-    photos: {
-      type: "many-to-many",
-      owner: true,
-      reference: "PhotoEntity" as const,
-      referencedTable: {
-        ownerColumns: [
-          { referencedColumn: "name" as const },
-          { referencedColumn: "status" as const },
-        ],
-        inverseColumns: [
+    relations: {
+      avatar: {
+        type: "many-to-one",
+        reference: PhotoEntity,
+        referencedColumns: [
           { referencedColumn: "filename" } as const,
           { referencedColumn: "id" } as const,
         ],
       },
+      photos: {
+        type: "many-to-many",
+        owner: true,
+        reference: PhotoEntity,
+        referencedTable: {
+          ownerColumns: [
+            { referencedColumn: "name" as const },
+            { referencedColumn: "status" as const },
+          ],
+          inverseColumns: [
+            { referencedColumn: "filename" } as const,
+            { referencedColumn: "id" } as const,
+          ],
+        },
+      },
     },
-  },
-  embeds: {
-    profile: ProfileEmbed,
-  },
-})
+    embeds: {
+      profile: ProfileEmbed(),
+    },
+  })
+}
 
-export const CarInfoEmbed = Postgres.entity({
-  columns: {
-    vin: {
-      primary: true,
-      type: "varchar",
+export function CarInfoEmbed() {
+  return Postgres.entity({
+    columns: {
+      vin: {
+        primary: true,
+        type: "varchar",
+      },
+      torque: {
+        type: "int",
+      },
+      year: {
+        type: "int",
+        default: 2021,
+      },
     },
-    torque: {
-      type: "int",
-    },
-    year: {
-      type: "int",
-      default: 2021,
-    },
-  },
-})
+  })
+}
 
-export const CarEntity = Postgres.entity({
-  columns: {
-    id: {
-      type: "int",
-      primary: true,
+export function CarEntity() {
+  return Postgres.entity({
+    columns: {
+      id: {
+        type: "int",
+        primary: true,
+      },
+      name: {
+        type: "varchar",
+        // primary: true,
+      },
+      status: {
+        type: "varchar",
+        default: "production",
+      },
     },
-    name: {
-      type: "varchar",
-      // primary: true,
+    relations: {
+      photo: {
+        type: "many-to-one",
+        reference: "PhotoEntity" as const,
+      },
     },
-    status: {
-      type: "varchar",
-      default: "production",
+    embeds: {
+      info: CarInfoEmbed(),
     },
-  },
-  relations: {
-    photo: {
-      type: "many-to-one",
-      reference: "PhotoEntity" as const,
-    },
-  },
-  embeds: {
-    info: CarInfoEmbed,
-  },
-})
-
+  })
+}
 // -----------------------------------------------------------------
 // usage example
 // -----------------------------------------------------------------
 
 const entities = Postgres.entities({
-  UserEntity,
-  PhotoEntity,
-  AlbumEntity,
-  CarEntity,
+  UserEntity: UserEntity(),
+  PhotoEntity: PhotoEntity(),
+  AlbumEntity: AlbumEntity(),
+  CarEntity: CarEntity(),
 })
 
 const UserResolver = entities.resolve("UserEntity", (manager) => ({
@@ -314,7 +345,7 @@ async function test() {
   )
   console.log(d)
 
-  const e = myDataSource.manager.create(PhotoEntity, {
+  const e = myDataSource.manager.create("PhotoEntity", {
     filename: "Umed",
   })
   console.log(e)
@@ -355,7 +386,7 @@ async function test() {
   })
   console.log(f)
 
-  const g = await myDataSource.manager.insert(CarEntity, {
+  const g = await myDataSource.manager.insert("CarEntity", {
     name: "ModelZ",
   })
   console.log(g)
@@ -379,12 +410,12 @@ async function test() {
   // })
   // console.log(a3)
 
-  const id1 = await myDataSource.manager.getId(PhotoEntity, {
+  const id1 = await myDataSource.manager.getId("PhotoEntity", {
     filename: ":wow",
   })
   console.log(id1)
 
-  const id2 = await myDataSource.manager.getId(CarEntity, {})
+  const id2 = await myDataSource.manager.getId("CarEntity", {})
   console.log(id2.info.vin)
 
   // const id3 = await myDataSource.manager.getId(UserEntity, {})

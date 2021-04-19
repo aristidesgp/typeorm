@@ -1,9 +1,10 @@
 import { DriverTypes } from "../driver"
 import {
+  AnyEntity,
   AnyEntityList,
   EntityPointer,
   EntityReference,
-} from "../entity/entity-core"
+} from "../entity"
 import {
   FindOptions,
   FindOptionsBuilder,
@@ -24,22 +25,18 @@ export interface ManagerFindMethods<
   /**
    * Helps to build a FindOptions object.
    */
-  findOptions<
-    EntityRef extends EntityReference<Entities>,
-    Entity extends EntityPointer<Entities, EntityRef>
-  >(
-    entityRef: EntityRef,
+  findOptions<Entity extends AnyEntity>(
+    entityRef: () => Entity,
   ): FindOptionsBuilder<Types, Entities, Entity>
 
   /**
    * Finds entities by a given criteria.
    */
   find<
-    EntityRef extends EntityReference<Entities>,
-    Entity extends EntityPointer<Entities, EntityRef>,
+    Entity extends AnyEntity,
     Where extends WhereOptions<Types, Entities, Entity>
   >(
-    entityRef: EntityRef,
+    entityRef: () => Entity,
     where: Where,
   ): Promise<FindReturnType<Types, Entities, Entity, {}, false>[]>
 
@@ -47,11 +44,10 @@ export interface ManagerFindMethods<
    * Finds entities by a given find options.
    */
   findBy<
-    EntityRef extends EntityReference<Entities>,
-    Entity extends EntityPointer<Entities, EntityRef>,
+    Entity extends AnyEntity,
     Options extends FindOptionsMany<Types, Entities, Entity>
   >(
-    entityRef: EntityRef,
+    entityRef: () => Entity,
     options: Options,
   ): Promise<
     FindReturnType<
@@ -68,11 +64,10 @@ export interface ManagerFindMethods<
    * If entity was not found in the database - it returns null.
    */
   findOne<
-    EntityRef extends EntityReference<Entities>,
-    Entity extends EntityPointer<Entities, EntityRef>,
+    Entity extends AnyEntity,
     Where extends WhereOptions<Types, Entities, Entity>
   >(
-    entityRef: EntityRef,
+    entityRef: () => Entity,
     where: Where,
   ): Promise<FindReturnType<Types, Entities, Entity, {}, false> | null>
 
@@ -81,11 +76,10 @@ export interface ManagerFindMethods<
    * If entity was not found in the database - it returns null.
    */
   findOneBy<
-    EntityRef extends EntityReference<Entities>,
-    Entity extends EntityPointer<Entities, EntityRef>,
+    Entity extends AnyEntity,
     Options extends FindOptions<Types, Entities, Entity>
   >(
-    entityRef: EntityRef,
+    entityRef: () => Entity,
     options: Options,
   ): Promise<FindReturnType<
     Types,
@@ -100,11 +94,10 @@ export interface ManagerFindMethods<
    * If entity was not found in the database - it throws an Error.
    */
   findOneOrFail<
-    EntityRef extends EntityReference<Entities>,
-    Entity extends EntityPointer<Entities, EntityRef>,
+    Entity extends AnyEntity,
     Where extends WhereOptions<Types, Entities, Entity>
   >(
-    entityRef: EntityRef,
+    entityRef: () => Entity,
     where: Where,
   ): Promise<FindReturnType<Types, Entities, Entity, {}, false>>
 
@@ -113,11 +106,10 @@ export interface ManagerFindMethods<
    * If entity was not found in the database - it throws an Error.
    */
   findOneByOrFail<
-    EntityRef extends EntityReference<Entities>,
-    Entity extends EntityPointer<Entities, EntityRef>,
+    Entity extends AnyEntity,
     Options extends FindOptions<Types, Entities, Entity>
   >(
-    entityRef: EntityRef,
+    entityRef: () => Entity,
     options: Options,
   ): Promise<
     FindReturnType<
@@ -135,11 +127,10 @@ export interface ManagerFindMethods<
    * but ignores pagination settings ("skip" and "take" options).
    */
   findAndCount<
-    EntityRef extends EntityReference<Entities>,
-    Entity extends EntityPointer<Entities, EntityRef>,
+    Entity extends AnyEntity,
     Where extends WhereOptions<Types, Entities, Entity>
   >(
-    entityRef: EntityRef,
+    entityRef: () => Entity,
     where: Where,
   ): Promise<[FindReturnType<Types, Entities, Entity, {}, false>[], number]>
 
@@ -149,11 +140,10 @@ export interface ManagerFindMethods<
    * but ignores pagination settings ("skip" and "take" options).
    */
   findAndCountBy<
-    EntityRef extends EntityReference<Entities>,
-    Entity extends EntityPointer<Entities, EntityRef>,
+    Entity extends AnyEntity,
     Options extends FindOptions<Types, Entities, Entity>
   >(
-    entityRef: EntityRef,
+    entityRef: () => Entity,
     options: Options,
   ): Promise<
     [
@@ -172,11 +162,10 @@ export interface ManagerFindMethods<
    * Counts entities matching given where criteria.
    */
   count<
-    EntityRef extends EntityReference<Entities>,
-    Entity extends EntityPointer<Entities, EntityRef>,
+    Entity extends AnyEntity,
     Where extends WhereOptions<Types, Entities, Entity>
   >(
-    entityRef: EntityRef,
+    entityRef: () => Entity,
     where: Where,
   ): Promise<number>
 

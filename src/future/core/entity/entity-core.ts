@@ -4,7 +4,9 @@ import { ValueOf } from "../util"
 import { EntityColumnList } from "./entity-columns"
 import { EntityEmbedList } from "./entity-embeds"
 import { EntityModel } from "./entity-model"
-import { EntityRelationList } from "./entity-relations"
+import { EntityRelation, EntityRelationList } from "./entity-relations"
+
+export type AnyEntityFactory = () => AnyEntity
 
 /**
  * Represents any entity. Convenience type.
@@ -92,7 +94,12 @@ export type ReferencedEntity<
   Entities extends AnyEntityList,
   Entity extends AnyEntity,
   RelationName extends keyof Entity["relations"]
-> = Entities[Entity["relations"][RelationName]["reference"]]
+> = Entity["relations"][RelationName] extends EntityRelation<any>
+  ? ReturnType<Entity["relations"][RelationName]["reference"]>
+  : never
+/* Entity["relations"][RelationName]["reference"] extends string
+  ? Entities[Entity["relations"][RelationName]["reference"]]
+  :*/
 
 /**
  * Entity reference can either be an entity name, either reference to entity declaration.
@@ -100,6 +107,7 @@ export type ReferencedEntity<
 export type EntityReference<Entities extends AnyEntityList> =
   | keyof Entities
   | ValueOf<Entities>
+  | (() => ValueOf<Entities>)
 
 /**
  * Resolves given entity or entity name to the entity.
@@ -113,4 +121,6 @@ export type EntityPointer<
   ? Entities[Reference]
   : Reference extends ValueOf<Entities>
   ? Reference
+  : Reference extends () => infer U
+  ? U
   : never

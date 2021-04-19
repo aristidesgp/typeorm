@@ -1,6 +1,5 @@
 import { DriverTypes } from "../../driver"
-import { AnyEntityList } from "../../entity"
-import { ValueOf } from "../../util"
+import { AnyEntity, AnyEntityList } from "../../entity"
 import { WhereOptions } from "../where-options"
 import { FindOptionsCache } from "./find-options-cache"
 import { FindOptionsOrder } from "./find-options-order"
@@ -12,7 +11,7 @@ import { FindOptionsSelect } from "./find-options-select"
 export interface FindOptions<
   Types extends DriverTypes,
   Entities extends AnyEntityList,
-  Entity extends ValueOf<Entities>
+  Entity extends AnyEntity // ValueOf<Entities>
 > {
   /**
    * What data needs to be selected from the loaded entity.
