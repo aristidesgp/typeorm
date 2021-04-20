@@ -6,6 +6,8 @@ import {
   EntityColumnList,
   EntityCore,
   EntityEmbedList,
+  EntityMethods,
+  EntityProperties,
   EntityRelationList,
   ForceCastIfUndefined,
 } from "../../core"
@@ -15,10 +17,6 @@ import { createPostgresQueryRunner } from "../query-runner"
 import { PostgresDriverTypes } from "./driver-column-types"
 import { PostgresDriverOptions } from "./driver-options-types"
 import { PostgresDriver } from "./driver-types"
-
-export type VirtualLazyPropertiesList<Manager> = {
-  [key: string]: (manager: Manager) => Promise<any>
-}
 
 export type Postgres = {
   /**
@@ -41,21 +39,30 @@ export type Postgres = {
     Columns extends EntityColumnList<PostgresDriverTypes> | undefined,
     Relations extends EntityRelationList | undefined,
     Embeds extends EntityEmbedList<PostgresDriver<any>> | undefined,
-    VirtualLazyProperties extends VirtualLazyPropertiesList<
-      PostgresDriver<any>["manager"]
-    >
+    VirtualMethods extends EntityMethods | undefined,
+    VirtualLazyProperties extends
+      | EntityProperties<PostgresDriver<any>>
+      | undefined,
+    VirtualEagerProperties extends
+      | EntityProperties<PostgresDriver<any>>
+      | undefined
   >(options: {
-    virtualLazyProperties?: VirtualLazyProperties
     model?: GivenModel
     columns?: Columns
     relations?: Relations
     embeds?: Embeds
+    virtualMethods?: VirtualMethods
+    virtualLazyProperties?: VirtualLazyProperties
+    virtualEagerProperties?: VirtualEagerProperties
   }): EntityCore<
     PostgresDriver<any>,
     GivenModel extends AnyModel ? GivenModel : Model<undefined>,
     Columns extends EntityColumnList<any> ? Columns : {},
     ForceCastIfUndefined<Relations, {}>,
-    ForceCastIfUndefined<Embeds, {}>
+    ForceCastIfUndefined<Embeds, {}>,
+    ForceCastIfUndefined<VirtualMethods, {}>,
+    ForceCastIfUndefined<VirtualLazyProperties, {}>,
+    ForceCastIfUndefined<VirtualEagerProperties, {}>
   >
 
   /**

@@ -1,24 +1,16 @@
-import {
-  AnyEntityList,
-  EntityCollection,
-  EntityResolveMap,
-  EntityResolver,
-} from "../../core"
-import { PostgresDriverTypes } from "../driver"
-import { PostgresManager } from "../manager"
+import { AnyEntityList, EntityCollection } from "../../core"
 
 export interface PostgresEntityList<Entities extends AnyEntityList>
   extends EntityCollection<Entities> {
   /**
    * Logic for entity properties and methods resolving.
-   */
+
   resolve<EntityName extends keyof Entities>(
     entity: EntityName,
     resolver: (
       manager: PostgresManager<PostgresDriverTypes, {}>,
     ) => EntityResolveMap<PostgresDriverTypes, Entities[EntityName]>,
-  ): EntityResolver<Entities[EntityName]>
-
+  ): EntityResolver<Entities[EntityName]>*/
   /**
    * Creates a custom repository for a given entity.
 

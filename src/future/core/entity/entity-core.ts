@@ -1,8 +1,11 @@
 import { AnyModel } from "../../../repository/model"
-import { AnyDriver, DriverTypes } from "../driver"
-import { EntityColumnList } from "./entity-columns"
+import { AnyDriver } from "../driver"
+import {
+  EntityColumnList,
+  EntityMethods,
+  EntityProperties,
+} from "./entity-columns"
 import { EntityEmbedList } from "./entity-embeds"
-import { EntityModel } from "./entity-model"
 import { EntityRelation, EntityRelationList } from "./entity-relations"
 
 export type AnyEntityFactory = () => AnyEntity
@@ -15,7 +18,10 @@ export type AnyEntity = EntityCore<
   AnyModel,
   EntityColumnList<AnyDriver["types"]>,
   EntityRelationList,
-  EntityEmbedList<AnyDriver>
+  EntityEmbedList<AnyDriver>,
+  EntityMethods,
+  EntityProperties<AnyDriver>,
+  EntityProperties<AnyDriver>
 >
 
 /**
@@ -27,11 +33,17 @@ export interface EntityCore<
   Model extends AnyModel,
   Columns extends EntityColumnList<Driver["types"]>,
   Relations extends EntityRelationList,
-  Embeds extends EntityEmbedList<Driver>
+  Embeds extends EntityEmbedList<Driver>,
+  VirtualMethods extends EntityMethods,
+  VirtualLazyProperties extends EntityProperties<Driver>,
+  VirtualEagerProperties extends EntityProperties<Driver>
 > {
   "@type": "Entity"
   driver: Driver
   model: Model
+  virtualMethods: VirtualMethods
+  virtualLazyProperties: VirtualLazyProperties
+  virtualEagerProperties: VirtualEagerProperties
   columns: Columns
   relations: Relations
   embeds: Embeds
@@ -50,23 +62,7 @@ export type EntityCustomRepository<
 }
 
 export type AnyEntityCollection = EntityCollection<AnyEntityList>
-
-export type EntityResolveMap<
-  Types extends DriverTypes,
-  Entity extends AnyEntity
-> = {
-  [P in keyof Entity["model"]["type"]]?: Entity["model"]["type"][P] extends Function
-    ? (
-        ...args: Parameters<Entity["model"]["type"][P]>
-      ) =>
-        | ReturnType<Entity["model"]["type"][P]>
-        | Promise<ReturnType<Entity["model"]["type"][P]>>
-    : (
-        entity: EntityModel<Types, Entity>,
-      ) =>
-        | ReturnType<Entity["model"]["type"][P]>
-        | Promise<ReturnType<Entity["model"]["type"][P]>>
-}
+//ø
 
 export type AnyRepositoryList = {
   [entityName: string]: any

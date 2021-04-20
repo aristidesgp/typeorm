@@ -85,6 +85,17 @@ export function ProfileEmbed() {
 export function UserEntity() {
   return Postgres.entity({
     // repository: {},
+    virtualMethods: {
+      walkHome() {
+        console.log("walking home...")
+        return true
+      },
+    },
+    virtualEagerProperties: {
+      async fullName(manager) {
+        return "Dima Dima"
+      },
+    },
     virtualLazyProperties: {
       async photosCount(manager) {
         const result = await manager.findBy(PhotoEntity, {
@@ -102,7 +113,8 @@ export function UserEntity() {
             id: 1,
           },
         })
-        return result
+        console.log(result)
+        return 1
       },
     },
     // virtualLazyProperties: model<{
@@ -391,8 +403,15 @@ async function test() {
   })
   console.log(g)
 
-  const users = await myDataSource.manager.find(UserEntity, {
-    name: "Umed",
+  const users = await myDataSource.manager.findBy(UserEntity, {
+    select: {
+      id: true,
+      photosCount: true,
+      // photosCount: true,
+    },
+    where: {
+      name: "Umed",
+    },
   })
   console.log(users)
 

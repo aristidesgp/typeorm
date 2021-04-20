@@ -1,5 +1,5 @@
 import { AnyModel } from "../../../repository/model"
-import { DriverTypes } from "../driver"
+import { AnyDriver, DriverTypes } from "../driver"
 import { FlatTypeHint, ForceCastIfNoKeys, NonNever, ValueOf } from "../util"
 import { AnyEntity } from "./entity-core"
 import { EntityProps } from "./entity-utils"
@@ -25,6 +25,18 @@ export type EntityColumn<Types extends DriverTypes> = {
  */
 export type EntityColumnList<Types extends DriverTypes> = {
   [key: string]: EntityColumn<Types>
+}
+
+export type EntityPropertiesItem<Driver extends AnyDriver> = (
+  manager: Driver["manager"],
+) => any
+
+export type EntityProperties<Driver extends AnyDriver> = {
+  [name: string]: EntityPropertiesItem<Driver>
+}
+
+export type EntityMethods = {
+  [name: string]: any
 }
 
 /**

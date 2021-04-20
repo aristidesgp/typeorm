@@ -2,9 +2,11 @@ import { DriverTypes } from "../../driver"
 import {
   AnyEntity,
   ColumnCompileType,
+  EntityPropertiesItem,
   EntityPropsWithModel,
   ReferencedEntity,
 } from "../../entity"
+import { ForceCastIfExtends } from "../../util"
 
 /**
  * Schema for Selection, used for user to specify what he is going to "select" from the db.
@@ -34,6 +36,9 @@ import {
 export type FindOptionsSelect<Entity extends AnyEntity> = {
   [P in keyof Entity["columns"]]?: boolean
 } &
+  {
+    [P in keyof Entity["virtualLazyProperties"]]?: boolean
+  } &
   {
     [P in keyof Entity["relations"]]?:
       | boolean
@@ -88,6 +93,36 @@ export type FindReturnTypeProperty<
     : never
   : P extends keyof Entity["model"]["type"]
   ? Entity["model"]["type"][P]
+  : P extends keyof Entity["virtualMethods"]
+  ? Entity["virtualMethods"][P]
+  : P extends keyof Entity["virtualLazyProperties"]
+  ? ReturnType<
+      ForceCastIfExtends<
+        Entity["virtualLazyProperties"][P],
+        EntityPropertiesItem<any>
+      >
+    > extends Promise<infer U>
+    ? U
+    : ReturnType<
+        ForceCastIfExtends<
+          Entity["virtualLazyProperties"][P],
+          EntityPropertiesItem<any>
+        >
+      >
+  : P extends keyof Entity["virtualEagerProperties"]
+  ? ReturnType<
+      ForceCastIfExtends<
+        Entity["virtualEagerProperties"][P],
+        EntityPropertiesItem<any>
+      >
+    > extends Promise<infer U>
+    ? U
+    : ReturnType<
+        ForceCastIfExtends<
+          Entity["virtualEagerProperties"][P],
+          EntityPropertiesItem<any>
+        >
+      >
   : never
 
 export type OnlyColumnKeys<Selection, Entity extends AnyEntity> = {
@@ -115,10 +150,8 @@ export type EntitySelectionTruthyKeys<Entity extends AnyEntity, Selection> =
         ? P
         : never
     }[keyof Selection]
-  | Exclude<
-      keyof Entity["model"]["type"],
-      keyof (Entity["columns"] & Entity["relations"] & Entity["embeds"])
-    >
+  | keyof Entity["virtualEagerProperties"]
+  | keyof Entity["virtualMethods"]
 
 /**
  * Helper type to mark non-selected properties as "never".
@@ -136,7 +169,8 @@ export type EntitySelectionAllColumns<
       : never]: true
   } &
   Entity["embeds"] &
-  Entity["model"]["type"])
+  Entity["virtualEagerProperties"] &
+  Entity["virtualMethods"])
 
 export type FindReturnType<
   Types extends DriverTypes,

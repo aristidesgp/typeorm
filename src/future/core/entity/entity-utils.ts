@@ -8,6 +8,24 @@ export type EntityPropsWithModel<
       type: "model"
       property: P
     }
+  } &
+  {
+    [P in keyof Entity["virtualMethods"]]: {
+      type: "virtualMethods"
+      property: P
+    }
+  } &
+  {
+    [P in keyof Entity["virtualLazyProperties"]]: {
+      type: "virtualLazyProperties"
+      property: P
+    }
+  } &
+  {
+    [P in keyof Entity["virtualEagerProperties"]]: {
+      type: "virtualEagerProperties"
+      property: P
+    }
   }
 
 export type EntityProps<Entity extends AnyEntity> = {
