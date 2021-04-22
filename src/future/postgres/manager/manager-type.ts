@@ -36,4 +36,13 @@ export interface PostgresManager<
     Types,
     Entity
   > // Entities[EntityName]
+
+  /**
+   * Gets an entity repository by a given entity name and applies given custom repository functions.
+   * This method is used to create custom repositories.
+   */
+  repository<Entity extends AnyEntity, CustomRepository>(
+    entity: () => Entity,
+    custom: CustomRepository & ThisType<PostgresRepository<Types, Entity>>,
+  ): PostgresRepository<Types, Entity> & CustomRepository
 }

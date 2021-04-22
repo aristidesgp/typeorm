@@ -3,6 +3,7 @@ import { Postgres } from "../postgres"
 
 export function AlbumEntity() {
   return Postgres.entity({
+    // activeRecord: true,
     columns: {
       id: {
         type: "int",
@@ -15,7 +16,7 @@ export function AlbumEntity() {
     relations: {
       photos: {
         type: "one-to-many",
-        inverse: "album",
+        inverse: "album" as const,
         reference: PhotoEntity,
       },
     },
@@ -84,60 +85,6 @@ export function ProfileEmbed() {
 
 export function UserEntity() {
   return Postgres.entity({
-    // repository: {},
-    virtualMethods: {
-      walkHome() {
-        console.log("walking home...")
-        return true
-      },
-    },
-    virtualEagerProperties: {
-      async fullName(manager) {
-        return "Dima Dima"
-      },
-    },
-    virtualLazyProperties: {
-      async photosCount(manager) {
-        const result = await manager.findBy(PhotoEntity, {
-          select: {
-            album: {
-              id: true,
-              photos: {
-                id: true,
-                filename: true,
-                album: true,
-              },
-            },
-          },
-          where: {
-            id: 1,
-          },
-        })
-        console.log(result)
-        return 1
-      },
-    },
-    // virtualLazyProperties: model<{
-    //   id: number
-    //   name: string
-    //   haha: string
-    //   fullName(): string
-    // }>(),
-    // virtualEagerProperties: model<{
-    //   id: number
-    //   name: string
-    //   haha: string
-    //   fullName(): string
-    // }>(),
-    // virtualMethods: model<{
-    //   fullName(): string
-    // }>(),
-    // model: model<{
-    //   id: number
-    //   name: string
-    //   haha: string
-    //   fullName(): string
-    // }>(),
     columns: {
       id: {
         type: "int",
@@ -184,6 +131,38 @@ export function UserEntity() {
     },
     embeds: {
       profile: ProfileEmbed(),
+    },
+    virtualMethods: {
+      walkHome() {
+        console.log("walking home...")
+        return true
+      },
+    },
+    virtualEagerProperties: {
+      async fullName(manager) {
+        return "Dima Dima"
+      },
+    },
+    virtualLazyProperties: {
+      async photosCount(manager) {
+        const result = await manager.findBy(PhotoEntity, {
+          select: {
+            album: {
+              id: true,
+              photos: {
+                id: true,
+                filename: true,
+                album: true,
+              },
+            },
+          },
+          where: {
+            id: 1,
+          },
+        })
+        console.log(result)
+        return 1
+      },
     },
   })
 }
@@ -275,7 +254,11 @@ const myDataSource = DataSource.create({
   }),
 })
 
-// const UserRepository = myDataSource.manager.repository(UserEntity)
+const UserRepository = myDataSource.manager.repository(UserEntity, {
+  async allUsers() {
+    return this.find({})
+  },
+})
 
 async function test() {
   // console.log(UserRepository.allUsers())
@@ -329,9 +312,9 @@ async function test() {
     .increment({ id: 1 }, "profile.maritalStatus", 1)
 
   const c = myDataSource.manager.repository(UserEntity).create({
-    name: "Olim",
+    name: "Timber",
     profile: {
-      bio: "soset",
+      bio: "trees",
     },
   })
   console.log(c)
@@ -407,13 +390,15 @@ async function test() {
     select: {
       id: true,
       photosCount: true,
-      // photosCount: true,
     },
     where: {
       name: "Umed",
     },
   })
   console.log(users)
+
+  const allUsers = await UserRepository.allUsers()
+  console.log(allUsers)
 
   // const a1 = await myDataSource.manager.findOneByIdOrFail(PhotoEntity, 1)
   // console.log(a1)
