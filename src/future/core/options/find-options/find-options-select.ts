@@ -3,6 +3,7 @@ import {
   AnyEntity,
   ColumnCompileType,
   EntityPropertiesItem,
+  EntityPropsMode,
   EntityPropsWithModel,
   ReferencedEntity,
 } from "../../entity"
@@ -61,10 +62,11 @@ export type FindOptionsSelect<
 export type FindReturnTypeProperty<
   Types extends DriverTypes,
   Entity extends AnyEntity,
-  Selection, // if something went wrong use it: extends FindOptionsSelect<Source, Entity>,
-  P extends keyof EntityPropsWithModel<Entity>,
-  Property extends EntityPropsWithModel<Entity>[P]["property"],
-  ParentPartiallySelected extends boolean
+  Selection extends FindOptionsSelect<Entity>,
+  P, // extends string, // & keyof EntityPropsWithModel<Entity, any>,
+  // Property extends EntityPropsWithModel<Entity, any>[P]["property"],
+  ParentPartiallySelected extends boolean,
+  PropsMode extends EntityPropsMode
 > = P extends string & keyof Entity["columns"] // if property is a column, just return it's type inferred from a driver column types defined in the entity
   ? ColumnCompileType<
       Entity["driver"]["types"],
@@ -75,31 +77,38 @@ export type FindReturnTypeProperty<
   : P extends keyof Entity["embeds"] // if selected property is an embed, we just go recursively
   ? FindReturnType<
       Types,
-      Entity["embeds"][Property],
-      Selection[Property],
-      ParentPartiallySelected
+      Entity["embeds"][P],
+      Selection[P],
+      ParentPartiallySelected,
+      PropsMode
     >
   : P extends keyof Entity["relations"] // if selected property is relation
-  ? Selection[Property] extends object // relation selection can be defined two ways: // 1. we can select some properties of the related object
-    ? Entity["relations"][Property]["type"] extends
-        | "many-to-many"
-        | "one-to-many"
+  ? Selection[P] extends object // relation selection can be defined two ways: // 1. we can select some properties of the related object
+    ? Entity["relations"][P]["type"] extends "many-to-many" | "one-to-many"
       ? FindReturnType<
           Types,
-          ReferencedEntity<Entity, Property>,
-          Selection[Property],
-          false
+          ReferencedEntity<Entity, P>,
+          Selection[P],
+          false,
+          PropsMode
         >[]
       : FindReturnType<
           Types,
-          ReferencedEntity<Entity, Property>,
-          Selection[Property],
-          false
+          ReferencedEntity<Entity, P>,
+          Selection[P],
+          false,
+          PropsMode
         >
-    : Selection[Property] extends true // 2. we can select the whole related object (means its columns) by using relation: true
+    : Selection[P] extends true // 2. we can select the whole related object (means its columns) by using relation: true
     ? Entity["relations"][P]["type"] extends "many-to-many" | "one-to-many" // Entity["model"]["type"][P] extends Array<infer U> ?
-      ? FindReturnType<Types, ReferencedEntity<Entity, Property>, {}, false>[]
-      : FindReturnType<Types, ReferencedEntity<Entity, Property>, {}, false>
+      ? FindReturnType<
+          Types,
+          ReferencedEntity<Entity, P>,
+          {},
+          false,
+          PropsMode
+        >[]
+      : FindReturnType<Types, ReferencedEntity<Entity, P>, {}, false, PropsMode>
     : never
   : P extends keyof Entity["model"]["type"]
   ? Entity["model"]["type"][P]
@@ -186,57 +195,57 @@ export type FindReturnType<
   Types extends DriverTypes,
   Entity extends AnyEntity,
   Selection, // if something went wrong use it: extends FindOptionsSelect<Source, Entity>,
-  ParentPartiallySelected extends boolean
+  ParentPartiallySelected extends boolean,
+  PropsMode extends EntityPropsMode
 > =
   // this case is possible in embed, when parent selected set of columns,
   // we need to tell to child (embed) to select only what was selected, to prevent selection of every column
   ParentPartiallySelected extends true
     ? {
-        [P in keyof EntityPropsWithModel<Entity> as P extends EntitySelectionTruthyKeys<
+        [P in keyof EntityPropsWithModel<
           Entity,
-          Selection
-        >
+          PropsMode
+        > as P extends EntitySelectionTruthyKeys<Entity, Selection>
           ? P
           : never]: FindReturnTypeProperty<
           Types,
           Entity,
           Selection,
           P,
-          EntityPropsWithModel<Entity>[P]["property"],
-          true
+          true,
+          PropsMode
         >
       }
     : // if no columns were specified in selection, it means we need to select every column
     OnlyColumnKeys<Selection, Entity> extends never
     ? {
-        [P in keyof EntityPropsWithModel<Entity> as P extends EntitySelectionAllColumns<
-          Types,
+        [P in keyof EntityPropsWithModel<
           Entity,
-          Selection
-        >
+          PropsMode
+        > as P extends EntitySelectionAllColumns<Types, Entity, Selection>
           ? P
           : never]: FindReturnTypeProperty<
           Types,
           Entity,
           Selection,
           P,
-          EntityPropsWithModel<Entity>[P]["property"],
-          false
+          false,
+          PropsMode
         >
       }
     : // otherwise it means only set of columns were selected, and we should only select them
       {
-        [P in keyof EntityPropsWithModel<Entity> as P extends EntitySelectionTruthyKeys<
+        [P in keyof EntityPropsWithModel<
           Entity,
-          Selection
-        >
+          PropsMode
+        > as P extends EntitySelectionTruthyKeys<Entity, Selection>
           ? P
           : never]: FindReturnTypeProperty<
           Types,
           Entity,
           Selection,
           P,
-          EntityPropsWithModel<Entity>[P]["property"],
-          true
+          true,
+          PropsMode
         >
       }

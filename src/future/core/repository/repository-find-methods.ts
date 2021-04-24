@@ -28,7 +28,7 @@ export interface RepositoryFindMethods<
    */
   find<Where extends WhereOperatorOptions<Types, Entity>>(
     where: Where,
-  ): Promise<FindReturnType<Types, Entity, {}, false>[]>
+  ): Promise<FindReturnType<Types, Entity, {}, false, "all">[]>
 
   /**
    * Finds entities by a given find options.
@@ -40,7 +40,8 @@ export interface RepositoryFindMethods<
       Types,
       Entity,
       ForceCastIfUndefined<Options["select"], {}>,
-      false
+      false,
+      "all"
     >[]
   >
 
@@ -50,7 +51,7 @@ export interface RepositoryFindMethods<
    */
   findOne<Where extends WhereOptions<Types, Entity>>(
     where: Where,
-  ): Promise<FindReturnType<Types, Entity, {}, false> | null>
+  ): Promise<FindReturnType<Types, Entity, {}, false, "all"> | null>
 
   /**
    * Finds first entity matching given find options.
@@ -62,7 +63,8 @@ export interface RepositoryFindMethods<
     Types,
     Entity,
     ForceCastIfUndefined<Options["select"], {}>,
-    false
+    false,
+    "all"
   > | null>
 
   /**
@@ -71,7 +73,7 @@ export interface RepositoryFindMethods<
    */
   findOneOrFail<Where extends WhereOptions<Types, Entity>>(
     where: Where,
-  ): Promise<FindReturnType<Types, Entity, {}, false>>
+  ): Promise<FindReturnType<Types, Entity, {}, false, "all">>
 
   /**
    * Finds first entity matching given find options.
@@ -84,7 +86,8 @@ export interface RepositoryFindMethods<
       Types,
       Entity,
       ForceCastIfUndefined<Options["select"], {}>,
-      false
+      false,
+      "all"
     >
   >
 
@@ -95,7 +98,7 @@ export interface RepositoryFindMethods<
    */
   findAndCount<Where extends WhereOptions<Types, Entity>>(
     where: Where,
-  ): Promise<[FindReturnType<Types, Entity, {}, false>[], number]>
+  ): Promise<[FindReturnType<Types, Entity, {}, false, "all">[], number]>
 
   /**
    * Counts entities matching given find options.
@@ -110,9 +113,11 @@ export interface RepositoryFindMethods<
         Types,
         Entity,
         ForceCastIfUndefined<Options["select"], {}>,
-        false
+        false,
+        "all"
       >[],
       number,
+      "all",
     ]
   >
 

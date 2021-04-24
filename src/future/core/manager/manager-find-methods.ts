@@ -27,7 +27,7 @@ export interface ManagerFindMethods<Types extends DriverTypes> {
   find<Entity extends AnyEntity, Where extends WhereOptions<Types, Entity>>(
     entityRef: () => Entity,
     where: Where,
-  ): Promise<FindReturnType<Types, Entity, {}, false>[]>
+  ): Promise<FindReturnType<Types, Entity, {}, false, "all">[]>
 
   /**
    * Finds entities by a given find options.
@@ -43,7 +43,8 @@ export interface ManagerFindMethods<Types extends DriverTypes> {
       Types,
       Entity,
       ForceCastIfUndefined<Options["select"], {}>,
-      false
+      false,
+      "all"
     >[]
   >
 
@@ -54,7 +55,7 @@ export interface ManagerFindMethods<Types extends DriverTypes> {
   findOne<Entity extends AnyEntity, Where extends WhereOptions<Types, Entity>>(
     entityRef: () => Entity,
     where: Where,
-  ): Promise<FindReturnType<Types, Entity, {}, false> | null>
+  ): Promise<FindReturnType<Types, Entity, {}, false, "all"> | null>
 
   /**
    * Finds first entity matching given find options.
@@ -70,7 +71,8 @@ export interface ManagerFindMethods<Types extends DriverTypes> {
     Types,
     Entity,
     ForceCastIfUndefined<Options["select"], {}>,
-    false
+    false,
+    "all"
   > | null>
 
   /**
@@ -83,7 +85,7 @@ export interface ManagerFindMethods<Types extends DriverTypes> {
   >(
     entityRef: () => Entity,
     where: Where,
-  ): Promise<FindReturnType<Types, Entity, {}, false>>
+  ): Promise<FindReturnType<Types, Entity, {}, false, "all">>
 
   /**
    * Finds first entity matching given find options.
@@ -100,7 +102,8 @@ export interface ManagerFindMethods<Types extends DriverTypes> {
       Types,
       Entity,
       ForceCastIfUndefined<Options["select"], {}>,
-      false
+      false,
+      "all"
     >
   >
 
@@ -115,7 +118,7 @@ export interface ManagerFindMethods<Types extends DriverTypes> {
   >(
     entityRef: () => Entity,
     where: Where,
-  ): Promise<[FindReturnType<Types, Entity, {}, false>[], number]>
+  ): Promise<[FindReturnType<Types, Entity, {}, false, "all">[], number]>
 
   /**
    * Counts entities matching given find options.
@@ -134,7 +137,8 @@ export interface ManagerFindMethods<Types extends DriverTypes> {
         Types,
         Entity,
         ForceCastIfUndefined<Options["select"], {}>,
-        false
+        false,
+        "all"
       >[],
       number,
     ]

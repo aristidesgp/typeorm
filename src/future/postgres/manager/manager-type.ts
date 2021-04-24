@@ -1,6 +1,5 @@
 import {
   AnyEntity,
-  AnyRepositoryList,
   DriverTypes,
   ManagerBase,
   ManagerBasicMethods,
@@ -13,8 +12,7 @@ import { Releasable } from "../../core/connection"
 import { PostgresRepository } from "../repository"
 
 export interface PostgresManager<
-  Types extends DriverTypes,
-  Repositories extends AnyRepositoryList
+  Types extends DriverTypes
 > extends ManagerBase<Types>,
     ManagerBasicMethods<Types>,
     ManagerCommonRdbmsMethods<Types>,

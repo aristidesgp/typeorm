@@ -1,7 +1,9 @@
 import { DriverTypes } from "../driver"
 import {
   AnyEntity,
+  EntityModelForCreate,
   EntityModelPartial,
+  EntityModelVirtuals,
   EntityPrimaryColumnTypeMap,
 } from "../entity"
 import { UnionToIntersection } from "../util"
@@ -29,7 +31,7 @@ export interface ManagerBasicMethods<Types extends DriverTypes> {
    */
   getId<
     Entity extends AnyEntity,
-    Model extends EntityModelPartial<Types, Entity>
+    Model extends EntityModelForCreate<Types, Entity>
   >(
     entity: () => Entity,
     model: Model,
@@ -40,18 +42,18 @@ export interface ManagerBasicMethods<Types extends DriverTypes> {
    */
   create<
     Entity extends AnyEntity,
-    Model extends EntityModelPartial<Types, Entity>
+    Model extends EntityModelForCreate<Types, Entity>
   >(
     entity: () => Entity,
     model: Model,
-  ): Model
+  ): Model & EntityModelVirtuals<Types, Entity>
 
   /**
    * Merges multiple entities (or entity-like objects) into a given entity.
    */
   merge<
     Entity extends AnyEntity,
-    Models extends EntityModelPartial<Types, Entity>[]
+    Models extends EntityModelForCreate<Types, Entity>[]
   >(
     entity: () => Entity,
     ...models: Models

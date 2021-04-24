@@ -216,41 +216,17 @@ export function CarEntity() {
 // usage example
 // -----------------------------------------------------------------
 
-const entities = Postgres.entities({
-  UserEntity: UserEntity(),
-  PhotoEntity: PhotoEntity(),
-  AlbumEntity: AlbumEntity(),
-  CarEntity: CarEntity(),
-})
-
-// const UserResolver = entities.resolve(UserEntity, (manager) => ({
-//   async haha() {
-//     return manager.repository(UserEntity).find({})
-//   },
-// }))
-//
-// const UserRepositoryMethods = entities.repository("UserEntity", {
-//   async allUsers() {
-//     return this.findBy({
-//       where: {
-//         id: 1,
-//       },
-//     })
-//   },
-// })
-
 const myDataSource = DataSource.create({
   type: Postgres({
     username: "",
     password: "",
     database: "",
-    entities: entities,
-    resolvers: [
-      /*UserResolver*/
-    ],
-    repositories: {
-      // ...UserRepositoryMethods,
-    },
+    entities: Postgres.entities({
+      UserEntity: UserEntity(),
+      PhotoEntity: PhotoEntity(),
+      AlbumEntity: AlbumEntity(),
+      CarEntity: CarEntity(),
+    }),
   }),
 })
 
@@ -386,10 +362,15 @@ async function test() {
   })
   console.log(g)
 
+  const newUser = myDataSource.manager.create(UserEntity, {
+    name: "ModelZ",
+  })
+  console.log(newUser)
+
   const users = await myDataSource.manager.findBy(UserEntity, {
     select: {
       id: true,
-      photosCount: true,
+      // photosCount: true,
     },
     where: {
       name: "Umed",

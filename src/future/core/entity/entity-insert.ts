@@ -85,5 +85,6 @@ export type EntityModelAfterInsert<
       EntityGeneratedColumnTypeMap<Types, Entity> &
         EntityDefaultColumnTypeMap<Types, Entity>
     >,
-    false
+    false,
+    "all"
   >
