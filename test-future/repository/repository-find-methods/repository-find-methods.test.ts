@@ -1,23 +1,23 @@
-import { Postgres } from "../../../src/future/postgres"
+import { AssertTrue, IsExact } from "conditional-type-checks"
+import { DataSource } from "../../../src/future/core"
+import { postgres } from "../../../src/future/postgres"
 import {
-  UserEntity,
   PhotoEntity,
+  UserEntity,
   WorkerEntity,
 } from "./repository-find-methods-entities"
-import { IsExact, AssertTrue } from "conditional-type-checks"
-import { DataSource } from "../../../src/future/core"
 
 describe("repository-basic-methods", () => {
   const myDataSource = DataSource.create({
-    type: Postgres({
+    type: postgres({
       database: "",
       username: "",
       password: "",
-      entities: Postgres.entities({
+      entities: {
         UserEntity: UserEntity(),
         PhotoEntity: PhotoEntity(),
         WorkerEntity: WorkerEntity(),
-      }),
+      },
     }),
   })
 

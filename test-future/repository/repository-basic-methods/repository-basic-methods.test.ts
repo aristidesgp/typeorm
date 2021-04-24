@@ -4,22 +4,23 @@ import {
   StudentEntity,
   WorkerEntity,
 } from "./repository-basic-methods-entities"
-import { Postgres } from "../../../src/future/postgres"
 import { IsExact, AssertTrue } from "conditional-type-checks"
 import { DataSource } from "../../../src/future/core"
+import { postgres } from "../../../src/future/postgres"
+import { EmployerEntity, StudentEntity, UserEntity, WorkerEntity } from "./User"
 
 describe("repository-basic-methods", () => {
   const myDataSource = DataSource.create({
-    type: Postgres({
+    type: postgres({
       database: "",
       username: "",
       password: "",
-      entities: Postgres.entities({
+      entities: {
         UserEntity: UserEntity(),
         EmployerEntity: EmployerEntity(),
         WorkerEntity: WorkerEntity(),
         StudentEntity: StudentEntity(),
-      }),
+      },
     }),
   })
 

@@ -1,28 +1,44 @@
-import { AnyEntityList, EntityCollection } from "../../core"
+import { AnyModel, Model } from "../../../repository/model"
+import {
+  EntityColumnList,
+  EntityCore,
+  EntityEmbedList,
+  EntityMethods,
+  EntityProperties,
+  EntityRelationList,
+  ForceCastIfUndefined,
+} from "../../core"
+import { PostgresDriver, PostgresDriverTypes } from "../driver"
 
-export interface PostgresEntityList<Entities extends AnyEntityList>
-  extends EntityCollection<Entities> {
-  /**
-   * Logic for entity properties and methods resolving.
-
-  resolve<EntityName extends keyof Entities>(
-    entity: EntityName,
-    resolver: (
-      manager: PostgresManager<PostgresDriverTypes, {}>,
-    ) => EntityResolveMap<PostgresDriverTypes, Entities[EntityName]>,
-  ): EntityResolver<Entities[EntityName]>*/
-  /**
-   * Creates a custom repository for a given entity.
-
-  repository<EntityName extends keyof CustomRepository>(
-    entity: EntityName,
-    custom: CustomRepository &
-      ThisType<PostgresRepository<PostgresDriverTypes, Entities[EntityName]>>,
-  ): {
-    [P in EntityName]: PostgresRepository<
-      PostgresDriverTypes,
-      Entities[EntityName]
-    > &
-      CustomRepository
-  }*/
+export function entity<
+  GivenModel,
+  Columns extends EntityColumnList<PostgresDriverTypes> | undefined,
+  Relations extends EntityRelationList | undefined,
+  Embeds extends EntityEmbedList<PostgresDriver<any>> | undefined,
+  VirtualMethods extends EntityMethods | undefined,
+  VirtualLazyProperties extends
+    | EntityProperties<PostgresDriver<any>>
+    | undefined,
+  VirtualEagerProperties extends
+    | EntityProperties<PostgresDriver<any>>
+    | undefined
+>(options: {
+  model?: GivenModel
+  columns?: Columns
+  relations?: Relations
+  embeds?: Embeds
+  virtualMethods?: VirtualMethods
+  virtualLazyProperties?: VirtualLazyProperties
+  virtualEagerProperties?: VirtualEagerProperties
+}): EntityCore<
+  PostgresDriver<any>,
+  GivenModel extends AnyModel ? GivenModel : Model<undefined>,
+  Columns extends EntityColumnList<any> ? Columns : {},
+  ForceCastIfUndefined<Relations, {}>,
+  ForceCastIfUndefined<Embeds, {}>,
+  ForceCastIfUndefined<VirtualMethods, {}>,
+  ForceCastIfUndefined<VirtualLazyProperties, {}>,
+  ForceCastIfUndefined<VirtualEagerProperties, {}>
+> {
+  return undefined as any
 }

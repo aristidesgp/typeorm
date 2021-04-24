@@ -1,12 +1,10 @@
-import { Postgres } from "../../../src/future/postgres"
-
 export enum Role {
   Admin,
   User,
 }
 
 export function UserEntity() {
-  return Postgres.entity({
+  return entity({
     columns: {
       id: {
         type: "int",

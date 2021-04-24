@@ -3,20 +3,20 @@ import {
   PhotoEntity,
   AlbumEntity,
 } from "./manager-basic-methods-entities"
-import { Postgres } from "../../../src/future/postgres"
 import { DataSource } from "../../../src/future/core"
+import { postgres } from "../../../src/future/postgres"
 
 describe("manager basic methods", () => {
   const myDataSource = DataSource.create({
-    type: Postgres({
+    type: postgres({
       database: "",
       username: "",
       password: "",
-      entities: Postgres.entities({
+      entities: {
         UserEntity: UserEntity(),
         PhotoEntity: PhotoEntity(),
         AlbumEntity: AlbumEntity(),
-      }),
+      },
     }),
   })
 

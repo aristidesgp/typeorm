@@ -1,12 +1,10 @@
-import { Postgres } from "../../../src/future/postgres"
-
 export enum Role {
   Admin,
   User,
 }
 
 export function ProfileEmbed() {
-  return Postgres.entity({
+  return entity({
     columns: {
       bio: {
         type: "varchar",
@@ -25,7 +23,7 @@ export function ProfileEmbed() {
 }
 
 export function UserEntity() {
-  return Postgres.entity({
+  return entity({
     columns: {
       id: {
         type: "int",
@@ -50,7 +48,7 @@ export function UserEntity() {
 }
 
 export function WorkerProfilePrimary() {
-  return Postgres.entity({
+  return entity({
     columns: {
       bio: {
         type: "varchar",
@@ -71,7 +69,7 @@ export function WorkerProfilePrimary() {
 }
 
 export function WorkerEntity() {
-  return Postgres.entity({
+  return entity({
     columns: {
       id: {
         type: "int",
@@ -95,7 +93,7 @@ export function WorkerEntity() {
 }
 
 export function EmployerProfileEmbed() {
-  return Postgres.entity({
+  return entity({
     columns: {
       bio: {
         type: "varchar",
@@ -115,7 +113,7 @@ export function EmployerProfileEmbed() {
 }
 
 export function EmployerEntity() {
-  return Postgres.entity({
+  return entity({
     columns: {
       id: {
         type: "int",
@@ -139,7 +137,7 @@ export function EmployerEntity() {
 }
 
 export function EducationEmbed() {
-  return Postgres.entity({
+  return entity({
     columns: {
       name: {
         type: "varchar",
@@ -159,7 +157,7 @@ export function EducationEmbed() {
 }
 
 export function StudentProfileEmbed() {
-  return Postgres.entity({
+  return entity({
     columns: {
       bio: {
         type: "varchar",
@@ -182,7 +180,7 @@ export function StudentProfileEmbed() {
 }
 
 export function StudentEntity() {
-  return Postgres.entity({
+  return entity({
     columns: {
       id: {
         type: "int",

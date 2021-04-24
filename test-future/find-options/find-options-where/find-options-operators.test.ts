@@ -1,11 +1,11 @@
 import {
   And,
   Any,
-  WhereOptions,
-  Or,
   DataSource,
+  Or,
+  WhereOptions,
 } from "../../../src/future/core"
-import { Postgres } from "../../../src/future/postgres"
+import { postgres } from "../../../src/future/postgres"
 import {
   UserEntity,
   PhotoEntity,
@@ -14,15 +14,15 @@ import {
 
 describe("find-options > operators", () => {
   const myDataSource = DataSource.create({
-    type: Postgres({
+    type: postgres({
       database: "",
       username: "",
       password: "",
-      entities: Postgres.entities({
+      entities: {
         UserEntity: UserEntity(),
         PhotoEntity: PhotoEntity(),
         AlbumEntity: AlbumEntity(),
-      }),
+      },
     }),
   })
 

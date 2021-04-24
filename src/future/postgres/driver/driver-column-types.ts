@@ -2,7 +2,7 @@ import {
   PersistenceWithChunkOptions,
   PersistenceWithListenersOptions,
   PersistenceWithTransactionOptions,
-} from "../../core/options/persistence-options"
+} from "../../core"
 
 export interface PostgresColumnTypes {
   int: { type: number }

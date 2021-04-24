@@ -1,8 +1,8 @@
 import { DataSource } from "../core"
-import { Postgres } from "../postgres"
+import { entity, postgres } from "../postgres"
 
 export function AlbumEntity() {
-  return Postgres.entity({
+  return entity({
     // activeRecord: true,
     columns: {
       id: {
@@ -24,7 +24,7 @@ export function AlbumEntity() {
 }
 
 export function PhotoEntity() {
-  return Postgres.entity({
+  return entity({
     columns: {
       id: {
         primary: true,
@@ -52,7 +52,7 @@ export function PhotoEntity() {
 }
 
 export function ProfileEmbed() {
-  return Postgres.entity({
+  return entity({
     columns: {
       passportId: {
         type: "varchar",
@@ -84,7 +84,7 @@ export function ProfileEmbed() {
 }
 
 export function UserEntity() {
-  return Postgres.entity({
+  return entity({
     columns: {
       id: {
         type: "int",
@@ -168,7 +168,7 @@ export function UserEntity() {
 }
 
 export function CarInfoEmbed() {
-  return Postgres.entity({
+  return entity({
     columns: {
       vin: {
         primary: true,
@@ -186,7 +186,7 @@ export function CarInfoEmbed() {
 }
 
 export function CarEntity() {
-  return Postgres.entity({
+  return entity({
     columns: {
       id: {
         type: "int",
@@ -217,16 +217,16 @@ export function CarEntity() {
 // -----------------------------------------------------------------
 
 const myDataSource = DataSource.create({
-  type: Postgres({
+  type: postgres({
     username: "",
     password: "",
     database: "",
-    entities: Postgres.entities({
+    entities: {
       UserEntity: UserEntity(),
       PhotoEntity: PhotoEntity(),
       AlbumEntity: AlbumEntity(),
       CarEntity: CarEntity(),
-    }),
+    },
   }),
 })
 

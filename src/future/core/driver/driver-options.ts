@@ -1,22 +1,16 @@
-import { AnyEntityCollection, AnyRepositoryList } from "../entity"
+import { AnyEntityList } from "../entity"
 
 /**
  * Any DataSourceOptions. Helper type.
  */
-export type AnyDriverOptions = BaseDriverOptions<
-  AnyEntityCollection,
-  AnyRepositoryList
->
+export type AnyDriverOptions = BaseDriverOptions<AnyEntityList>
 
 /**
  * Options passed to the DataSource.
  */
-export interface BaseDriverOptions<
-  Collection extends AnyEntityCollection,
-  CustomRepositories extends AnyRepositoryList
-> {
+export interface BaseDriverOptions<Entities extends AnyEntityList> {
   /**
    * List of entities to be used in this data source.
    */
-  entities: Collection
+  entities: Entities
 }

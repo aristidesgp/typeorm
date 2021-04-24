@@ -1,4 +1,3 @@
-import { Postgres } from "../../../src/future/postgres"
 import {
   UserEntity,
   PhotoEntity,
@@ -6,18 +5,21 @@ import {
 } from "./find-options-common-entities"
 import { DataSource } from "../../../src/future/core"
 import { AssertTrue, IsExact } from "conditional-type-checks"
+import { DataSource } from "../../../src/future/core"
+import { postgres } from "../../../src/future/postgres"
+import { AlbumEntity, PhotoEntity, UserEntity } from "../../entity/User"
 
 describe("FindOptionsBuilder > select", () => {
   const myDataSource = DataSource.create({
-    type: Postgres({
+    type: postgres({
       database: "",
       username: "",
       password: "",
-      entities: Postgres.entities({
+      entities: {
         UserEntity: UserEntity(),
         PhotoEntity: PhotoEntity(),
         AlbumEntity: AlbumEntity(),
-      }),
+      },
     }),
   })
 

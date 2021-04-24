@@ -1,5 +1,5 @@
 import { Any, DataSource } from "../../../src/future/core"
-import { Postgres } from "../../../src/future/postgres"
+import { postgres } from "../../../src/future/postgres"
 import {
   UserEntity,
   PhotoEntity,
@@ -8,15 +8,15 @@ import {
 
 describe("find-options > expressions", () => {
   const myDataSource = DataSource.create({
-    type: Postgres({
+    type: postgres({
       database: "",
       username: "",
       password: "",
-      entities: Postgres.entities({
+      entities: {
         UserEntity: UserEntity(),
         PhotoEntity: PhotoEntity(),
         AlbumEntity: AlbumEntity(),
-      }),
+      },
     }),
   })
 

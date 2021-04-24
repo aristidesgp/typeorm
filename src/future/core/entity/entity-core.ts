@@ -51,19 +51,6 @@ export interface EntityCore<
   columnsEmbedsRelations: Columns & Embeds & Relations
 }
 
-export type EntityResolver<Entity extends AnyEntity> = {}
-
-export type EntityCustomRepository<
-  Entity extends AnyEntity,
-  CustomRepository
-> = {
-  entity: Entity
-  repository: CustomRepository
-}
-
-export type AnyEntityCollection = EntityCollection<AnyEntityList>
-//ø
-
 export type AnyRepositoryList = {
   [entityName: string]: any
 }
