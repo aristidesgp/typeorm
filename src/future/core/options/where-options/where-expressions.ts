@@ -1,10 +1,9 @@
-import { DriverTypes } from "../../driver"
 import { AnyEntity } from "../../entity/entity-core"
 import { WhereExpression, WhereOptions } from "./where-options"
 
-export function Or<Types extends DriverTypes, Entity extends AnyEntity>(
-  ...args: WhereOptions<Types, Entity>[]
-): WhereExpression<Types, Entity> {
+export function Or<Entity extends AnyEntity>(
+  ...args: WhereOptions<Entity>[]
+): WhereExpression<Entity> {
   return {
     "@type": "WhereExpression",
     kind: "or",
@@ -14,9 +13,9 @@ export function Or<Types extends DriverTypes, Entity extends AnyEntity>(
   }
 }
 
-export function And<Types extends DriverTypes, Entity extends AnyEntity>(
-  ...args: WhereOptions<Types, Entity>[]
-): WhereExpression<Types, Entity> {
+export function And<Entity extends AnyEntity>(
+  ...args: WhereOptions<Entity>[]
+): WhereExpression<Entity> {
   return {
     "@type": "WhereExpression",
     kind: "and",
@@ -26,9 +25,9 @@ export function And<Types extends DriverTypes, Entity extends AnyEntity>(
   }
 }
 
-export function Not<Types extends DriverTypes, Entity extends AnyEntity>(
-  ...args: WhereOptions<Types, Entity>[]
-): WhereExpression<Types, Entity> {
+export function Not<Entity extends AnyEntity>(
+  ...args: WhereOptions<Entity>[]
+): WhereExpression<Entity> {
   return {
     "@type": "WhereExpression",
     kind: "not",
@@ -38,9 +37,9 @@ export function Not<Types extends DriverTypes, Entity extends AnyEntity>(
   }
 }
 
-export function Xor<Types extends DriverTypes, Entity extends AnyEntity>(
-  ...args: WhereOptions<Types, Entity>[]
-): WhereExpression<Types, Entity> {
+export function Xor<Entity extends AnyEntity>(
+  ...args: WhereOptions<Entity>[]
+): WhereExpression<Entity> {
   return {
     "@type": "WhereExpression",
     kind: "xor",

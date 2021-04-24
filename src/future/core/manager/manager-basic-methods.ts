@@ -1,4 +1,4 @@
-import { DriverTypes } from "../driver"
+import { AnyDriver } from "../driver"
 import {
   AnyEntity,
   EntityModelForCreate,
@@ -13,14 +13,14 @@ import { UnionToIntersection } from "../util"
  *
  * todo: check if we can implement proper typing for save(models), remove(models), etc.
  */
-export interface ManagerBasicMethods<Types extends DriverTypes> {
+export interface ManagerBasicMethods<Driver extends AnyDriver> {
   /**
    * Checks if entity has an id.
    * If entity has multiple ids, it will check them all.
    */
   hasId<Entity extends AnyEntity>(
     entity: () => Entity,
-    model: EntityModelPartial<Types, Entity>,
+    model: EntityModelPartial<Entity>,
   ): boolean
 
   /**
@@ -29,31 +29,25 @@ export interface ManagerBasicMethods<Types extends DriverTypes> {
    * if entity contains a single primary id - directly value will be returned.
    * Returns null if entity doesn't have at least one of its ids.
    */
-  getId<
-    Entity extends AnyEntity,
-    Model extends EntityModelForCreate<Types, Entity>
-  >(
+  getId<Entity extends AnyEntity, Model extends EntityModelForCreate<Entity>>(
     entity: () => Entity,
     model: Model,
-  ): EntityPrimaryColumnTypeMap<Types, Entity>
+  ): EntityPrimaryColumnTypeMap<Entity>
 
   /**
    * Creates a new entity instance.
    */
-  create<
-    Entity extends AnyEntity,
-    Model extends EntityModelForCreate<Types, Entity>
-  >(
+  create<Entity extends AnyEntity, Model extends EntityModelForCreate<Entity>>(
     entity: () => Entity,
     model: Model,
-  ): Model & EntityModelVirtuals<Types, Entity>
+  ): Model & EntityModelVirtuals<Entity>
 
   /**
    * Merges multiple entities (or entity-like objects) into a given entity.
    */
   merge<
     Entity extends AnyEntity,
-    Models extends EntityModelForCreate<Types, Entity>[]
+    Models extends EntityModelForCreate<Entity>[]
   >(
     entity: () => Entity,
     ...models: Models

@@ -1,11 +1,7 @@
 import { AnyEntity } from "../../core"
-import { PostgresDriverTypes } from "../driver"
 import { PostgresRepository } from "./repository-types"
 
-export function createPostgresRepository(): PostgresRepository<
-  PostgresDriverTypes,
-  AnyEntity
-> {
+export function createPostgresRepository(): PostgresRepository<AnyEntity> {
   function Options() {
     return {} as any
   }

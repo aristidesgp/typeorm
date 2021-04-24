@@ -1,16 +1,13 @@
 import { SelectQueryBuilder } from "../../../query-builder/SelectQueryBuilder"
 import { QueryRunner } from "../../../query-runner/QueryRunner"
-import { DriverTypes, QueryResult, UpdateResult } from "../driver"
+import { QueryResult, UpdateResult } from "../driver"
 import { AnyEntity, EntityColumnPaths } from "../entity"
 import { WhereOptions } from "../options"
 
 /**
  * Interface for repositories that implement common RDBMS methods.
  */
-export interface RepositoryCommonRdbmsMethods<
-  Types extends DriverTypes,
-  Entity extends AnyEntity
-> {
+export interface RepositoryCommonRdbmsMethods<Entity extends AnyEntity> {
   /**
    * Creates a new query builder that can be used to build and execute any SQL query.
    */
@@ -22,7 +19,10 @@ export interface RepositoryCommonRdbmsMethods<
   /**
    * Executes a raw SQL query and returns raw database results.
    */
-  query(query: string, parameters?: any[]): Promise<QueryResult<Types>>
+  query(
+    query: string,
+    parameters?: any[],
+  ): Promise<QueryResult<Entity["driver"]>>
 
   /**
    * Clears all the data from the given table/collection (truncates/drops it).
@@ -36,17 +36,17 @@ export interface RepositoryCommonRdbmsMethods<
    * Increments some column by provided value of the entities matched given conditions.
    */
   increment(
-    where: WhereOptions<Types, Entity>,
+    where: WhereOptions<Entity>,
     columnPath: EntityColumnPaths<Entity>,
     value: number,
-  ): Promise<UpdateResult<Types>>
+  ): Promise<UpdateResult<Entity["driver"]>>
 
   /**
    * Decrements some column by provided value of the entities matched given conditions.
    */
   decrement(
-    where: WhereOptions<Types, Entity>,
+    where: WhereOptions<Entity>,
     columnPath: EntityColumnPaths<Entity>,
     value: number,
-  ): Promise<UpdateResult<Types>>
+  ): Promise<UpdateResult<Entity["driver"]>>
 }

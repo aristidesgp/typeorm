@@ -1,15 +1,11 @@
 import { EntityMetadata } from "../../../metadata/EntityMetadata"
 import { AnyDataSource } from "../data-source"
-import { DriverTypes } from "../driver"
 import { AnyEntity } from "../entity"
 
 /**
  * Base Repository interface for all driver Repository implementations.
  */
-export interface RepositoryBase<
-  Types extends DriverTypes,
-  Entity extends AnyEntity
-> {
+export interface RepositoryBase<Entity extends AnyEntity> {
   /**
    * Unique type identifier.
    */

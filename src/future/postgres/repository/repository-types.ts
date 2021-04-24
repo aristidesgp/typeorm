@@ -13,13 +13,11 @@ import { Releasable } from "../../core/connection"
 /**
  * A single repository managing a particular entity.
  */
-export interface PostgresRepository<
-  Types extends DriverTypes,
-  Entity extends AnyEntity
-> extends RepositoryBase<Types, Entity>,
-    RepositoryBasicMethods<Types, Entity>,
-    RepositoryCommonRdbmsMethods<Types, Entity>,
-    RepositoryFindMethods<Types, Entity>,
-    RepositoryPersistenceMethods<Types, Entity>,
-    RepositoryTreeMethods<Types, Entity>,
+export interface PostgresRepository<Entity extends AnyEntity>
+  extends RepositoryBase<Entity>,
+    RepositoryBasicMethods<Entity>,
+    RepositoryCommonRdbmsMethods<Entity>,
+    RepositoryFindMethods<Entity>,
+    RepositoryPersistenceMethods<Entity>,
+    RepositoryTreeMethods<Entity>,
     Releasable {}

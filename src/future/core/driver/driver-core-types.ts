@@ -34,14 +34,22 @@ export type CoreDriver<
   }
 }
 
-export type QueryResult<Types extends DriverTypes> = Types["queryResult"]
+export type QueryResult<
+  Driver extends AnyDriver
+> = Driver["types"]["queryResult"]
 
-export type InsertResult<Types extends DriverTypes> = Types["insertResult"]
+export type InsertResult<
+  Driver extends AnyDriver
+> = Driver["types"]["insertResult"]
 
-export type UpdateResult<Types extends DriverTypes> = Types["updateResult"]
+export type UpdateResult<
+  Driver extends AnyDriver
+> = Driver["types"]["updateResult"]
 
-export type DeleteResult<Types extends DriverTypes> = Types["deleteResult"]
+export type DeleteResult<
+  Driver extends AnyDriver
+> = Driver["types"]["deleteResult"]
 
 export type IsolationLevels<
-  Types extends DriverTypes
-> = Types["isolationLevels"]
+  Driver extends AnyDriver
+> = Driver["types"]["isolationLevels"]

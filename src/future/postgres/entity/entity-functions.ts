@@ -12,7 +12,7 @@ import { PostgresDriver, PostgresDriverTypes } from "../driver"
 
 export function entity<
   GivenModel,
-  Columns extends EntityColumnList<PostgresDriverTypes> | undefined,
+  Columns extends EntityColumnList<PostgresDriver<any>> | undefined,
   Relations extends EntityRelationList | undefined,
   Embeds extends EntityEmbedList<PostgresDriver<any>> | undefined,
   VirtualMethods extends EntityMethods | undefined,
@@ -33,7 +33,7 @@ export function entity<
 }): EntityCore<
   PostgresDriver<any>,
   GivenModel extends AnyModel ? GivenModel : Model<undefined>,
-  Columns extends EntityColumnList<any> ? Columns : {},
+  Columns extends EntityColumnList<PostgresDriver<any>> ? Columns : {},
   ForceCastIfUndefined<Relations, {}>,
   ForceCastIfUndefined<Embeds, {}>,
   ForceCastIfUndefined<VirtualMethods, {}>,

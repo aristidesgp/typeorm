@@ -1,10 +1,10 @@
 import { AnyDataSource } from "../data-source"
-import { DriverTypes } from "../driver"
+import { AnyDriver } from "../driver"
 
 /**
  * Base Manager interface for all driver Manager implementations.
  */
-export interface ManagerBase<Types extends DriverTypes> {
+export interface ManagerBase<Driver extends AnyDriver> {
   /**
    * Unique type identifier.
    */

@@ -1,7 +1,7 @@
 import { SelectQueryBuilder } from "../../../query-builder/SelectQueryBuilder"
 import { QueryRunner } from "../../../query-runner/QueryRunner"
 import {
-  DriverTypes,
+  AnyDriver,
   IsolationLevels,
   QueryResult,
   UpdateResult,
@@ -12,7 +12,7 @@ import { WhereOptions } from "../options"
 /**
  * Interface for managers that implement common RDBMS methods.
  */
-export interface ManagerCommonRdbmsMethods<Types extends DriverTypes> {
+export interface ManagerCommonRdbmsMethods<Driver extends AnyDriver> {
   /**
    * Creates a new query builder that can be used to build and execute any SQL query.
    */
@@ -25,7 +25,10 @@ export interface ManagerCommonRdbmsMethods<Types extends DriverTypes> {
   /**
    * Executes a raw SQL query and returns raw database results.
    */
-  query(query: string, parameters?: any[]): Promise<QueryResult<Types>>
+  query(
+    query: string,
+    parameters?: any[],
+  ): Promise<QueryResult<Driver["types"]>>
 
   /**
    * Wraps given function execution (and all operations made there) in a transaction.
@@ -40,7 +43,7 @@ export interface ManagerCommonRdbmsMethods<Types extends DriverTypes> {
    * All database operations must be executed using provided entity manager.
    */
   transaction<Result>(
-    isolationLevel: IsolationLevels<Types>,
+    isolationLevel: IsolationLevels<Driver["types"]>,
     runInTransaction: (entityManager: this) => Promise<Result>,
   ): Promise<Result>
 
@@ -57,18 +60,18 @@ export interface ManagerCommonRdbmsMethods<Types extends DriverTypes> {
    */
   increment<Entity extends AnyEntity>(
     entity: () => Entity,
-    where: WhereOptions<Types, Entity>,
+    where: WhereOptions<Entity>,
     columnPath: EntityColumnPaths<Entity>,
     value: number,
-  ): Promise<UpdateResult<Types>>
+  ): Promise<UpdateResult<Driver["types"]>>
 
   /**
    * Decrements some column by provided value of the entities matched given conditions.
    */
   decrement<Entity extends AnyEntity>(
     entity: () => Entity,
-    where: WhereOptions<Types, Entity>,
+    where: WhereOptions<Entity>,
     columnPath: EntityColumnPaths<Entity>,
     value: number,
-  ): Promise<UpdateResult<Types>>
+  ): Promise<UpdateResult<Driver["types"]>>
 }

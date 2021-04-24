@@ -1,6 +1,5 @@
 import {
   AnyEntity,
-  DriverTypes,
   ManagerBase,
   ManagerBasicMethods,
   ManagerCommonRdbmsMethods,
@@ -9,17 +8,17 @@ import {
   ManagerTreeMethods,
 } from "../../core"
 import { Releasable } from "../../core/connection"
+import { PostgresDriver } from "../driver"
 import { PostgresRepository } from "../repository"
 
-export interface PostgresManager<
-  Types extends DriverTypes
-> extends ManagerBase<Types>,
-    ManagerBasicMethods<Types>,
-    ManagerCommonRdbmsMethods<Types>,
-    ManagerFindMethods<Types>,
-    ManagerPersistenceMethods<Types>,
+export interface PostgresManager
+  extends ManagerBase<PostgresDriver<any>>,
+    ManagerBasicMethods<PostgresDriver<any>>,
+    ManagerCommonRdbmsMethods<PostgresDriver<any>>,
+    ManagerFindMethods<PostgresDriver<any>>,
+    ManagerPersistenceMethods<PostgresDriver<any>>,
     // ManagerRepositoryMethods<Types, Entities>,
-    ManagerTreeMethods<Types>,
+    ManagerTreeMethods<PostgresDriver<any>>,
     Releasable {
   /**
    * Gets the entity repository by a given entity name.
@@ -30,10 +29,7 @@ export interface PostgresManager<
     entity: () => Entity,
   ): /*EntityName extends keyof Repositories
     ? Repositories[EntityName]
-    : */ PostgresRepository<
-    Types,
-    Entity
-  > // Entities[EntityName]
+    : */ PostgresRepository<Entity> // Entities[EntityName]
 
   /**
    * Gets an entity repository by a given entity name and applies given custom repository functions.
@@ -41,6 +37,6 @@ export interface PostgresManager<
    */
   repository<Entity extends AnyEntity, CustomRepository>(
     entity: () => Entity,
-    custom: CustomRepository & ThisType<PostgresRepository<Types, Entity>>,
-  ): PostgresRepository<Types, Entity> & CustomRepository
+    custom: CustomRepository & ThisType<PostgresRepository<Entity>>,
+  ): PostgresRepository<Entity> & CustomRepository
 }

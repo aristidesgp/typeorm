@@ -8,7 +8,7 @@ export interface PostgresDriver<
   Options extends PostgresDriverOptions<AnyEntityList>
 > extends CoreDriver<
     Options,
-    PostgresManager<PostgresDriverTypes>,
+    PostgresManager,
     PostgresQueryRunner,
     PostgresDriverTypes
   > {}

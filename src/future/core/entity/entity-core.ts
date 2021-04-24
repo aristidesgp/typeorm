@@ -16,7 +16,7 @@ export type AnyEntityFactory = () => AnyEntity
 export type AnyEntity = EntityCore<
   AnyDriver,
   AnyModel,
-  EntityColumnList<AnyDriver["types"]>,
+  EntityColumnList<AnyDriver>,
   EntityRelationList,
   EntityEmbedList<AnyDriver>,
   EntityMethods,
@@ -31,7 +31,7 @@ export type AnyEntity = EntityCore<
 export interface EntityCore<
   Driver extends AnyDriver,
   Model extends AnyModel,
-  Columns extends EntityColumnList<Driver["types"]>,
+  Columns extends EntityColumnList<Driver>,
   Relations extends EntityRelationList,
   Embeds extends EntityEmbedList<Driver>,
   VirtualMethods extends EntityMethods,

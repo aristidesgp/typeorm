@@ -1,4 +1,3 @@
-import { DriverTypes } from "../../driver"
 import {
   AnyEntity,
   ColumnCompileType,
@@ -51,7 +50,6 @@ export type FindOptionsSelect<Entity extends AnyEntity> = {
   }
 
 export type FindReturnTypeProperty<
-  Types extends DriverTypes,
   Entity extends AnyEntity,
   Selection extends FindOptionsSelect<Entity>,
   P, // extends string, // & keyof EntityPropsWithModel<Entity, any>,
@@ -59,15 +57,9 @@ export type FindReturnTypeProperty<
   ParentPartiallySelected extends boolean,
   PropsMode extends EntityPropsMode
 > = P extends string & keyof Entity["columns"] // if property is a column, just return it's type inferred from a driver column types defined in the entity
-  ? ColumnCompileType<
-      Entity["driver"]["types"],
-      Entity["model"],
-      P,
-      Entity["columns"][P]
-    >
+  ? ColumnCompileType<Entity, P>
   : P extends keyof Entity["embeds"] // if selected property is an embed, we just go recursively
   ? FindReturnType<
-      Types,
       Entity["embeds"][P],
       Selection[string & P] extends object ? Selection[string & P] : {},
       ParentPartiallySelected,
@@ -77,14 +69,12 @@ export type FindReturnTypeProperty<
   ? Selection[P] extends object // relation selection can be defined two ways: // 1. we can select some properties of the related object
     ? Entity["relations"][P]["type"] extends "many-to-many" | "one-to-many"
       ? FindReturnType<
-          Types,
           ReferencedEntity<Entity, P>,
           Selection[string & P] extends object ? Selection[string & P] : {},
           false,
           PropsMode
         >[]
       : FindReturnType<
-          Types,
           ReferencedEntity<Entity, P>,
           Selection[string & P] extends object ? Selection[string & P] : {},
           false,
@@ -92,14 +82,8 @@ export type FindReturnTypeProperty<
         >
     : Selection[P] extends true // 2. we can select the whole related object (means its columns) by using relation: true
     ? Entity["relations"][P]["type"] extends "many-to-many" | "one-to-many" // Entity["model"]["type"][P] extends Array<infer U> ?
-      ? FindReturnType<
-          Types,
-          ReferencedEntity<Entity, P>,
-          {},
-          false,
-          PropsMode
-        >[]
-      : FindReturnType<Types, ReferencedEntity<Entity, P>, {}, false, PropsMode>
+      ? FindReturnType<ReferencedEntity<Entity, P>, {}, false, PropsMode>[]
+      : FindReturnType<ReferencedEntity<Entity, P>, {}, false, PropsMode>
     : never
   : P extends keyof Entity["model"]["type"]
   ? Entity["model"]["type"][P]
@@ -170,7 +154,6 @@ export type EntitySelectionTruthyKeys<
  * Helper type to mark non-selected properties as "never".
  */
 export type EntitySelectionAllColumns<
-  Types extends DriverTypes,
   Entity extends AnyEntity,
   Selection extends FindOptionsSelect<Entity>
 > = keyof (Entity["columns"] &
@@ -186,7 +169,6 @@ export type EntitySelectionAllColumns<
   Entity["virtualMethods"])
 
 export type FindReturnType<
-  Types extends DriverTypes,
   Entity extends AnyEntity,
   Selection extends FindOptionsSelect<Entity>, // if something went wrong use it: extends FindOptionsSelect<Source, Entity>,
   ParentPartiallySelected extends boolean,
@@ -202,7 +184,6 @@ export type FindReturnType<
         > as P extends EntitySelectionTruthyKeys<Entity, Selection>
           ? P
           : never]: FindReturnTypeProperty<
-          Types,
           Entity,
           Selection,
           P,
@@ -216,10 +197,9 @@ export type FindReturnType<
         [P in keyof EntityPropsWithModel<
           Entity,
           PropsMode
-        > as P extends EntitySelectionAllColumns<Types, Entity, Selection>
+        > as P extends EntitySelectionAllColumns<Entity, Selection>
           ? P
           : never]: FindReturnTypeProperty<
-          Types,
           Entity,
           Selection,
           P,
@@ -235,7 +215,6 @@ export type FindReturnType<
         > as P extends EntitySelectionTruthyKeys<Entity, Selection>
           ? P
           : never]: FindReturnTypeProperty<
-          Types,
           Entity,
           Selection,
           P,

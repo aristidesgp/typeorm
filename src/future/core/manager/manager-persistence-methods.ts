@@ -1,4 +1,4 @@
-import { DriverTypes } from "../driver"
+import { AnyDriver } from "../driver"
 import { AnyEntity } from "../entity/entity-core"
 import { EntityModelAfterInsert } from "../entity/entity-insert"
 import { EntityModelPartial } from "../entity/entity-model"
@@ -17,45 +17,36 @@ import {
 /**
  * Interface for managers that implement persistence / alteration operations.
  */
-export interface ManagerPersistenceMethods<Types extends DriverTypes> {
+export interface ManagerPersistenceMethods<Driver extends AnyDriver> {
   /**
    * Inserts a new entity into the database.
    * Database error will be thrown if entity already exists in the database.
    * Returns a copy of the model with the default / primary column values.
    */
-  insert<
-    Entity extends AnyEntity,
-    Model extends EntityModelPartial<Types, Entity>
-  >(
+  insert<Entity extends AnyEntity, Model extends EntityModelPartial<Entity>>(
     entity: () => Entity,
     model: Model,
-    options?: InsertOptions<Types, Entity>,
-  ): Promise<EntityModelAfterInsert<Types, Entity, Model>>
+    options?: InsertOptions<Entity>,
+  ): Promise<EntityModelAfterInsert<Entity, Model>>
 
   /**
    * Inserts entities in bulk.
    * Database error will be thrown if any of entity exist in the database.
    */
-  insert<
-    Entity extends AnyEntity,
-    Model extends EntityModelPartial<Types, Entity>
-  >(
+  insert<Entity extends AnyEntity, Model extends EntityModelPartial<Entity>>(
     entity: () => Entity,
     models: Model[],
-    options?: InsertOptions<Types, Entity>,
-  ): Promise<void> // [...EntityModelJustInserted<Types, Entity, Model>[]]
+    options?: InsertOptions<Entity>,
+  ): Promise<void> // [...EntityModelJustInserted<Entity, Model>[]]
 
   /**
    * Updates entity in the database.
    * If entity does not exist in the database - error will be thrown.
    */
-  update<
-    Entity extends AnyEntity,
-    Model extends EntityModelPartial<Types, Entity>
-  >(
+  update<Entity extends AnyEntity, Model extends EntityModelPartial<Entity>>(
     entity: () => Entity,
     model: Model,
-    options?: UpdateOptions<Types, Entity>,
+    options?: UpdateOptions<Entity>,
   ): Promise<void>
 
   /**
@@ -64,31 +55,25 @@ export interface ManagerPersistenceMethods<Types extends DriverTypes> {
    */
   updateBy<Entity extends AnyEntity>(
     entity: () => Entity,
-    options: UpdateByOptions<Types, Entity>,
+    options: UpdateByOptions<Entity>,
   ): Promise<void>
 
   /**
    * Removes a given entity from the database.
    */
-  delete<
-    Entity extends AnyEntity,
-    Model extends EntityModelPartial<Types, Entity>
-  >(
+  delete<Entity extends AnyEntity, Model extends EntityModelPartial<Entity>>(
     entity: () => Entity,
     model: Model,
-    options?: DeleteOptions<Types, Entity>,
+    options?: DeleteOptions<Entity>,
   ): Promise<void>
 
   /**
    * Removes given entities from the database.
    */
-  delete<
-    Entity extends AnyEntity,
-    Model extends EntityModelPartial<Types, Entity>
-  >(
+  delete<Entity extends AnyEntity, Model extends EntityModelPartial<Entity>>(
     entity: () => Entity,
     models: Model[],
-    options?: DeleteOptions<Types, Entity>,
+    options?: DeleteOptions<Entity>,
   ): Promise<void>
 
   /**
@@ -96,31 +81,25 @@ export interface ManagerPersistenceMethods<Types extends DriverTypes> {
    */
   deleteBy<Entity extends AnyEntity>(
     entity: () => Entity,
-    options: DeleteByOptions<Types, Entity>,
+    options: DeleteByOptions<Entity>,
   ): Promise<void>
 
   /**
    * Marks given entity as "soft deleted".
    */
-  archive<
-    Entity extends AnyEntity,
-    Model extends EntityModelPartial<Types, Entity>
-  >(
+  archive<Entity extends AnyEntity, Model extends EntityModelPartial<Entity>>(
     entity: () => Entity,
     model: Model,
-    options?: ArchiveOptions<Types, Entity>,
+    options?: ArchiveOptions<Entity>,
   ): Promise<void>
 
   /**
    * Marks given entities as "soft deleted".
    */
-  archive<
-    Entity extends AnyEntity,
-    Model extends EntityModelPartial<Types, Entity>
-  >(
+  archive<Entity extends AnyEntity, Model extends EntityModelPartial<Entity>>(
     entity: () => Entity,
     models: Model[],
-    options?: ArchiveOptions<Types, Entity>,
+    options?: ArchiveOptions<Entity>,
   ): Promise<void>
 
   /**
@@ -128,31 +107,25 @@ export interface ManagerPersistenceMethods<Types extends DriverTypes> {
    */
   archiveBy<Entity extends AnyEntity>(
     entity: () => Entity,
-    options: ArchiveByOptions<Types, Entity>,
+    options: ArchiveByOptions<Entity>,
   ): Promise<void>
 
   /**
    * Unarchives given entity previously archived (e.g. restore "soft-removed" entity).
    */
-  unarchive<
-    Entity extends AnyEntity,
-    Model extends EntityModelPartial<Types, Entity>
-  >(
+  unarchive<Entity extends AnyEntity, Model extends EntityModelPartial<Entity>>(
     entity: () => Entity,
     model: Model,
-    options?: UnarchiveOptions<Types, Entity>,
+    options?: UnarchiveOptions<Entity>,
   ): Promise<void>
 
   /**
    * Unarchives given entities previously archived (e.g. restore "soft-removed" entity).
    */
-  unarchive<
-    Entity extends AnyEntity,
-    Model extends EntityModelPartial<Types, Entity>
-  >(
+  unarchive<Entity extends AnyEntity, Model extends EntityModelPartial<Entity>>(
     entity: () => Entity,
     models: Model[],
-    options?: UnarchiveOptions<Types, Entity>,
+    options?: UnarchiveOptions<Entity>,
   ): Promise<void>
 
   /**
@@ -160,6 +133,6 @@ export interface ManagerPersistenceMethods<Types extends DriverTypes> {
    */
   unarchiveBy<Entity extends AnyEntity>(
     entity: () => Entity,
-    options: UnarchiveByOptions<Types, Entity>,
+    options: UnarchiveByOptions<Entity>,
   ): Promise<void>
 }
