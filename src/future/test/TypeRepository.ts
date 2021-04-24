@@ -204,7 +204,7 @@ export function CarEntity() {
     relations: {
       photo: {
         type: "many-to-one",
-        reference: "PhotoEntity" as const,
+        reference: PhotoEntity,
       },
     },
     embeds: {
@@ -222,10 +222,10 @@ const myDataSource = DataSource.create({
     password: "",
     database: "",
     entities: {
-      UserEntity: UserEntity(),
-      PhotoEntity: PhotoEntity(),
-      AlbumEntity: AlbumEntity(),
-      CarEntity: CarEntity(),
+      UserEntity,
+      PhotoEntity,
+      AlbumEntity,
+      CarEntity,
     },
   }),
 })

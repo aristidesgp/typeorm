@@ -64,7 +64,7 @@ export interface EntityCollection<Entities extends AnyEntityList> {
  * List of named entities.
  */
 export type AnyEntityList = {
-  [name: string]: AnyEntity
+  [name: string]: () => AnyEntity
 }
 
 /**
