@@ -28,8 +28,11 @@ const users = await manager.find(UserEntity, {
 -   Where options loads rows wich equals to specific parameters. For example:
 
 ```typescript
-const users = await manager.findBy(UserEntity, {
-    where: { id: 1 },
+const users = await manager.find(UserEntity, {
+    avatar: {
+        id: 1,
+        filename: "1",
+    },
 });
 ```
 
