@@ -1,24 +1,25 @@
-import { postgres } from "../../../src/future/postgres"
-import { AlbumEntity } from "../../entity/Album"
-import { PhotoEntity } from "../../entity/Photo"
-import { UserEntity } from "../../entity/User"
+import { Postgres } from "../../../src/future/postgres"
+import { UserEntity, PhotoEntity, AlbumEntity } from "../../entity/User"
 import { DataSource } from "../../../src/future/core"
 import { AssertTrue, IsExact } from "conditional-type-checks"
 
 describe("FindOptionsBuilder > select", () => {
   const myDataSource = DataSource.create({
-    type: postgres({
-      entities: {
-        UserEntity,
-        PhotoEntity,
-        AlbumEntity,
-      },
+    type: Postgres({
+      database: "",
+      username: "",
+      password: "",
+      entities: Postgres.entities({
+        UserEntity: UserEntity(),
+        PhotoEntity: PhotoEntity(),
+        AlbumEntity: AlbumEntity(),
+      }),
     }),
   })
 
   test("select basic properties", () => {
     const selection = myDataSource.manager
-      .repository("UserEntity")
+      .repository(UserEntity)
       .findOptions.select({
         id: true,
         name: true,
@@ -36,7 +37,7 @@ describe("FindOptionsBuilder > select", () => {
       >
     >
 
-    myDataSource.manager.repository("UserEntity").findOptions.select({
+    myDataSource.manager.repository(UserEntity).findOptions.select({
       // @ts-expect-error
       id: 1,
       // @ts-expect-error
@@ -50,7 +51,7 @@ describe("FindOptionsBuilder > select", () => {
 
   test("select complete relation", () => {
     const selection = myDataSource.manager
-      .repository("UserEntity")
+      .repository(UserEntity)
       .findOptions.select({
         id: true,
         name: true,
@@ -72,7 +73,7 @@ describe("FindOptionsBuilder > select", () => {
       >
     >
 
-    myDataSource.manager.repository("UserEntity").findOptions.select({
+    myDataSource.manager.repository(UserEntity).findOptions.select({
       id: true,
       //@ts-expect-error
       photos: "myphoto",
@@ -83,7 +84,7 @@ describe("FindOptionsBuilder > select", () => {
 
   test("select relation properties", () => {
     const selection = myDataSource.manager
-      .repository("UserEntity")
+      .repository(UserEntity)
       .findOptions.select({
         id: true,
         name: true,
@@ -113,7 +114,7 @@ describe("FindOptionsBuilder > select", () => {
       >
     >
 
-    myDataSource.manager.repository("UserEntity").findOptions.select({
+    myDataSource.manager.repository(UserEntity).findOptions.select({
       id: true,
       photos: {
         //@ts-expect-error
@@ -132,7 +133,7 @@ describe("FindOptionsBuilder > select", () => {
 
   test("select embed properties", () => {
     const selection = myDataSource.manager
-      .repository("UserEntity")
+      .repository(UserEntity)
       .findOptions.select({
         id: true,
         name: true,
@@ -158,7 +159,7 @@ describe("FindOptionsBuilder > select", () => {
       >
     >
 
-    myDataSource.manager.repository("UserEntity").findOptions.select({
+    myDataSource.manager.repository(UserEntity).findOptions.select({
       id: false,
       name: true,
       profile: {

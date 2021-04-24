@@ -45,7 +45,7 @@ describe("repository-basic-methods", () => {
     })
 
     test("simple columns selection", async () => {
-      const found = await myDataSource.manager.repository(UserEntity).find({
+      const found = await myDataSource.manager.repository(UserEntity).findBy({
         select: {
           id: true,
           name: true,
@@ -68,7 +68,7 @@ describe("repository-basic-methods", () => {
     })
 
     test("select columns from embed", async () => {
-      const found = await myDataSource.manager.repository(UserEntity).find({
+      const found = await myDataSource.manager.repository(UserEntity).findBy({
         select: {
           id: true,
           profile: {
@@ -91,7 +91,7 @@ describe("repository-basic-methods", () => {
     })
 
     test("select only columns from embed", async () => {
-      const found = await myDataSource.manager.repository(UserEntity).find({
+      const found = await myDataSource.manager.repository(UserEntity).findBy({
         select: {
           profile: {
             bio: true,
@@ -112,7 +112,7 @@ describe("repository-basic-methods", () => {
     })
 
     test("selecting relations without any columns specified must return all standard columns", async () => {
-      const found = await myDataSource.manager.repository(UserEntity).find({
+      const found = await myDataSource.manager.repository(UserEntity).findBy({
         select: {
           avatar: true,
         },
@@ -142,7 +142,7 @@ describe("repository-basic-methods", () => {
     })
 
     test("selecting relations without any columns specified must return all standard columns", async () => {
-      const found = await myDataSource.manager.repository(UserEntity).find({
+      const found = await myDataSource.manager.repository(UserEntity).findBy({
         select: {
           avatar: {
             id: true,
@@ -173,7 +173,7 @@ describe("repository-basic-methods", () => {
     })
 
     test("select the whole relation", async () => {
-      const found = await myDataSource.manager.repository(UserEntity).find({
+      const found = await myDataSource.manager.repository(UserEntity).findBy({
         select: {
           id: true,
           avatar: true,
@@ -195,7 +195,7 @@ describe("repository-basic-methods", () => {
     })
 
     test("select some relation columns", async () => {
-      const found = await myDataSource.manager.repository(UserEntity).find({
+      const found = await myDataSource.manager.repository(UserEntity).findBy({
         select: {
           id: true,
           avatar: {
@@ -218,7 +218,7 @@ describe("repository-basic-methods", () => {
     })
 
     test("select some embed's relation columns", async () => {
-      const found = await myDataSource.manager.repository(UserEntity).find({
+      const found = await myDataSource.manager.repository(UserEntity).findBy({
         select: {
           id: true,
           profile: {
@@ -243,7 +243,7 @@ describe("repository-basic-methods", () => {
     })
 
     test("select embed's the wole relation", async () => {
-      const found = await myDataSource.manager.repository(UserEntity).find({
+      const found = await myDataSource.manager.repository(UserEntity).findBy({
         select: {
           id: true,
           profile: {
@@ -266,7 +266,7 @@ describe("repository-basic-methods", () => {
     })
 
     test("select some embed's nested embeds columns", async () => {
-      const found = await myDataSource.manager.repository(WorkerEntity).find({
+      const found = await myDataSource.manager.repository(WorkerEntity).findBy({
         select: {
           id: true,
           workerProfile: {
@@ -299,7 +299,7 @@ describe("repository-basic-methods", () => {
     })
 
     test("select embed's nested embeds columns and embed's nested embeds the whole relations", async () => {
-      const found = await myDataSource.manager.repository(WorkerEntity).find({
+      const found = await myDataSource.manager.repository(WorkerEntity).findBy({
         select: {
           id: true,
           workerProfile: {
@@ -342,7 +342,7 @@ describe("repository-basic-methods", () => {
     })
 
     test("select embed's nested embeds columns and embed's nested embeds some relations columns", async () => {
-      const found = await myDataSource.manager.repository(WorkerEntity).find({
+      const found = await myDataSource.manager.repository(WorkerEntity).findBy({
         select: {
           id: true,
           workerProfile: {

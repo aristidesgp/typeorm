@@ -1,24 +1,25 @@
-import { postgres } from "../../../src/future/postgres"
-import { AlbumEntity } from "../../entity/Album"
-import { PhotoEntity } from "../../entity/Photo"
-import { UserEntity } from "../../entity/User"
+import { Postgres } from "../../../src/future/postgres"
+import { UserEntity, PhotoEntity, AlbumEntity } from "../../entity/User"
 import { DataSource } from "../../../src/future/core"
 import { AssertTrue, IsExact } from "conditional-type-checks"
 
 describe("FindOptionsBuilder > select", () => {
   const myDataSource = DataSource.create({
-    type: postgres({
-      entities: {
-        UserEntity,
-        PhotoEntity,
-        AlbumEntity,
-      },
+    type: Postgres({
+      database: "",
+      username: "",
+      password: "",
+      entities: Postgres.entities({
+        UserEntity: UserEntity(),
+        PhotoEntity: PhotoEntity(),
+        AlbumEntity: AlbumEntity(),
+      }),
     }),
   })
 
   test("order basic properties", () => {
     const order = myDataSource.manager
-      .repository("UserEntity")
+      .repository(UserEntity)
       .findOptions.order({
         id: "asc",
       })
@@ -32,7 +33,7 @@ describe("FindOptionsBuilder > select", () => {
       >
     >
 
-    myDataSource.manager.repository("UserEntity").findOptions.order({
+    myDataSource.manager.repository(UserEntity).findOptions.order({
       // @ts-expect-error
       id: 1,
       // @ts-expect-error
@@ -45,7 +46,7 @@ describe("FindOptionsBuilder > select", () => {
 
   test("order complete relation", () => {
     const order = myDataSource.manager
-      .repository("UserEntity")
+      .repository(UserEntity)
       .findOptions.order({
         id: "asc",
         name: "desc",
@@ -65,7 +66,7 @@ describe("FindOptionsBuilder > select", () => {
       >
     >
 
-    myDataSource.manager.repository("UserEntity").findOptions.order({
+    myDataSource.manager.repository(UserEntity).findOptions.order({
       id: "asc",
       photos: "myphoto",
       //@ts-expect-error
@@ -75,7 +76,7 @@ describe("FindOptionsBuilder > select", () => {
 
   test("order relation properties", () => {
     const order = myDataSource.manager
-      .repository("UserEntity")
+      .repository(UserEntity)
       .findOptions.order({
         id: "asc",
         name: "desc",
@@ -105,7 +106,7 @@ describe("FindOptionsBuilder > select", () => {
       >
     >
 
-    myDataSource.manager.repository("UserEntity").findOptions.order({
+    myDataSource.manager.repository(UserEntity).findOptions.order({
       id: "asc",
       photos: {
         //@ts-expect-error
@@ -123,7 +124,7 @@ describe("FindOptionsBuilder > select", () => {
 
   test("order embed properties", () => {
     const order = myDataSource.manager
-      .repository("UserEntity")
+      .repository(UserEntity)
       .findOptions.order({
         id: "asc",
         name: "desc",
@@ -149,7 +150,7 @@ describe("FindOptionsBuilder > select", () => {
       >
     >
 
-    myDataSource.manager.repository("UserEntity").findOptions.order({
+    myDataSource.manager.repository(UserEntity).findOptions.order({
       id: "asc",
       name: "desc",
       profile: {

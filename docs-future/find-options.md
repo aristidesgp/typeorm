@@ -217,7 +217,7 @@ Returns:
 ]
 ```
 
--   Select options with specific columns and specific уьиув columns loads columns from select and уьиув columns from select. For example:
+-   Select options with specific columns and specific embed columns loads columns from select and embed columns from select. For example:
 
 ```typescript
 const users = await manager.findBy(UserEntity, {
