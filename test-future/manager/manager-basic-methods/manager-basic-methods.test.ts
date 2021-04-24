@@ -1,4 +1,4 @@
-import { UserEntity, PhotoEntity, AlbumEntity } from "../../entity/User"
+import { UserEntity, PhotoEntity, AlbumEntity } from "../../"
 import { Postgres } from "../../../src/future/postgres"
 import { DataSource } from "../../../src/future/core"
 

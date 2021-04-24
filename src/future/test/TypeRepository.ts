@@ -370,6 +370,9 @@ async function test() {
   const users = await myDataSource.manager.findBy(UserEntity, {
     select: {
       id: true,
+      avatar: {
+        id: true,
+      },
       // photosCount: true,
     },
     where: {

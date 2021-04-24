@@ -105,7 +105,7 @@ export type EntityColumnTypeMapByNames<
 /**
  * Returns columns type map with columns where "generated" set to true.
  *
- * Columns value map is an object where every column name is followed by a computed column type.
+ * Columns type map is an object where every column name is followed by a computed column type.
  * Examples:
  *
  *  - for { id: { type: "varchar", primary: true }, name: { "varchar", primary: true }, age: { type: "int" } }
@@ -137,7 +137,7 @@ export type EntityGeneratedColumnTypeMap<
 /**
  * Returns columns type map with columns where "default" is set.
  *
- * Columns value map is an object where every column name is followed by a computed column type.
+ * Columns type map is an object where every column name is followed by a computed column type.
  * Examples:
  *
  *  - for { id: { type: "varchar", primary: true }, name: { "varchar", primary: true }, age: { type: "int" } }

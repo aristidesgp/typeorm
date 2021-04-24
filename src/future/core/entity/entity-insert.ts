@@ -81,10 +81,12 @@ export type EntityModelAfterInsert<
   FindReturnType<
     Types,
     Entity,
-    SelectAll<
+    /*SelectAll<
+      Entity,
       EntityGeneratedColumnTypeMap<Types, Entity> &
         EntityDefaultColumnTypeMap<Types, Entity>
-    >,
+    >*/
+    {}, // todo: fix SelectAll please
     false,
     "all"
   >

@@ -122,12 +122,13 @@ export function UserEntity() {
     relations: {
       avatar: {
         type: "many-to-one",
-        reference: PhotoEntity(),
+        inverse: "",
+        reference: PhotoEntity,
       },
       photos: {
         type: "one-to-many",
         inverse: "",
-        reference: PhotoEntity(),
+        reference: PhotoEntity,
       },
     },
     embeds: {

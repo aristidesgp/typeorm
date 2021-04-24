@@ -34,16 +34,16 @@ import { ForceCastIfExtends } from "../../util"
  *   }
  * })
  */
-export type FindOptionsSelect<Entity extends AnyEntity> = object &
+export type FindOptionsSelect<Entity extends AnyEntity> = {
+  [P in keyof Entity["columns"]]?: true | false
+} &
   {
-    [P in keyof Entity["columns"]]?: boolean
-  } &
-  {
-    [P in keyof Entity["virtualLazyProperties"]]?: boolean
+    [P in keyof Entity["virtualLazyProperties"]]?: true | false
   } &
   {
     [P in keyof Entity["relations"]]?:
-      | boolean
+      | true
+      | false
       | FindOptionsSelect<ReferencedEntity<Entity, P>>
   } &
   {
@@ -69,7 +69,7 @@ export type FindReturnTypeProperty<
   ? FindReturnType<
       Types,
       Entity["embeds"][P],
-      Selection[P],
+      Selection[string & P] extends object ? Selection[string & P] : {},
       ParentPartiallySelected,
       PropsMode
     >
@@ -79,14 +79,14 @@ export type FindReturnTypeProperty<
       ? FindReturnType<
           Types,
           ReferencedEntity<Entity, P>,
-          Selection[P],
+          Selection[string & P] extends object ? Selection[string & P] : {},
           false,
           PropsMode
         >[]
       : FindReturnType<
           Types,
           ReferencedEntity<Entity, P>,
-          Selection[P],
+          Selection[string & P] extends object ? Selection[string & P] : {},
           false,
           PropsMode
         >
@@ -152,7 +152,10 @@ export type OnlyColumnKeys<Selection, Entity extends AnyEntity> = {
 /**
  * Helper type to mark non-selected properties as "never".
  */
-export type EntitySelectionTruthyKeys<Entity extends AnyEntity, Selection> =
+export type EntitySelectionTruthyKeys<
+  Entity extends AnyEntity,
+  Selection extends FindOptionsSelect<Entity>
+> =
   | {
       [P in keyof Selection]: Selection[P] extends true
         ? P
@@ -185,7 +188,7 @@ export type EntitySelectionAllColumns<
 export type FindReturnType<
   Types extends DriverTypes,
   Entity extends AnyEntity,
-  Selection, // if something went wrong use it: extends FindOptionsSelect<Source, Entity>,
+  Selection extends FindOptionsSelect<Entity>, // if something went wrong use it: extends FindOptionsSelect<Source, Entity>,
   ParentPartiallySelected extends boolean,
   PropsMode extends EntityPropsMode
 > =
