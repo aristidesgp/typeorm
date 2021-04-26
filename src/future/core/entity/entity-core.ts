@@ -8,8 +8,6 @@ import {
 import { EntityEmbedList } from "./entity-embeds"
 import { EntityRelation, EntityRelationList } from "./entity-relations"
 
-export type AnyEntityFactory = () => AnyEntity
-
 /**
  * Represents any entity. Convenience type.
  */
@@ -51,21 +49,18 @@ export interface EntityCore<
   columnsEmbedsRelations: Columns & Embeds & Relations
 }
 
-export type AnyRepositoryList = {
-  [entityName: string]: any
-}
-
-export interface EntityCollection<Entities extends AnyEntityList> {
-  "@type": "EntityCollection"
-  entities: Entities
-}
-
 /**
  * List of named entities.
  */
 export type AnyEntityList = {
-  [name: string]: () => AnyEntity
+  [name: string]: EntityReference
 }
+
+/**
+ * Function that returns entity.
+ * Used for referencing entities because of circular problems.
+ */
+export type EntityReference = () => AnyEntity
 
 /**
  * Extracts entity that was referenced in a given entity relation.
@@ -77,29 +72,3 @@ export type ReferencedEntity<
 > = Entity["relations"][RelationName] extends EntityRelation<any>
   ? ReturnType<Entity["relations"][RelationName]["reference"]>
   : never
-/* Entity["relations"][RelationName]["reference"] extends string
-  ? Entities[Entity["relations"][RelationName]["reference"]]
-  :*/
-
-/**
- * Entity reference can either be an entity name, either reference to entity declaration.
-
-export type EntityReference<Entities extends AnyEntityList> =
-  | keyof Entities
-  | ValueOf<Entities>
-  | (() => ValueOf<Entities>) */
-
-/**
- * Resolves given entity or entity name to the entity.
- * If given value is entity name, finds entity with such name and returns it.
- * If given value is entity itself, simply returns it.
-
-export type EntityPointer<
-  Reference extends EntityReference<Entities>
-> = Reference extends AnyEntity
-  ? Entities[Reference]
-  : Reference extends ValueOf<Entities>
-  ? Reference
-  : Reference extends () => infer U
-  ? U
-  : never */

@@ -13,9 +13,9 @@ describe("find-options > common cases", () => {
       username: "",
       password: "",
       entities: {
-        UserEntity: UserEntity(),
-        PhotoEntity: PhotoEntity(),
-        AlbumEntity: AlbumEntity(),
+        UserEntity,
+        PhotoEntity,
+        AlbumEntity,
       },
     }),
   })

@@ -1,9 +1,11 @@
-import { UserEntity, PhotoEntity, AlbumEntity } from "./User"
 import { DataSource } from "../../../src/future/core"
 import { AssertTrue, IsExact } from "conditional-type-checks"
-import { DataSource } from "../../../src/future/core"
 import { postgres } from "../../../src/future/postgres"
-import { AlbumEntity, PhotoEntity, UserEntity } from "../../entity/User"
+import {
+  AlbumEntity,
+  PhotoEntity,
+  UserEntity,
+} from "./find-options-order-entities"
 
 describe("FindOptionsBuilder > select", () => {
   const myDataSource = DataSource.create({
@@ -12,9 +14,9 @@ describe("FindOptionsBuilder > select", () => {
       username: "",
       password: "",
       entities: {
-        UserEntity: UserEntity(),
-        PhotoEntity: PhotoEntity(),
-        AlbumEntity: AlbumEntity(),
+        UserEntity,
+        PhotoEntity,
+        AlbumEntity,
       },
     }),
   })

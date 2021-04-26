@@ -19,16 +19,16 @@ describe("find-options > operators", () => {
       username: "",
       password: "",
       entities: {
-        UserEntity: UserEntity(),
-        PhotoEntity: PhotoEntity(),
-        AlbumEntity: AlbumEntity(),
+        UserEntity,
+        PhotoEntity,
+        AlbumEntity,
       },
     }),
   })
 
   describe("Any()", () => {
     test("check if column type is correct", () => {
-      const correct: WhereOptions<typeof myDataSource, typeof UserEntity> = Or({
+      const correct: WhereOptions<ReturnType<typeof UserEntity>> = Or({
         id: Any(1),
         name: Any("1"),
         active: Any(true),
@@ -50,14 +50,12 @@ describe("find-options > operators", () => {
 
     test("check if relation column type is correct", () => {
       //@ts-ignore
-      const correct: WhereOptions<typeof myDataSource, typeof UserEntity> = And(
-        {
-          avatar: Or({
-            id: Any(1),
-            filename: Any("1"),
-          }),
-        },
-      )
+      const correct: WhereOptions<ReturnType<typeof UserEntity>> = And({
+        avatar: Or({
+          id: Any(1),
+          filename: Any("1"),
+        }),
+      })
       //@ts-ignore
       const correct2: WhereOptions<
         typeof myDataSource,
@@ -85,15 +83,13 @@ describe("find-options > operators", () => {
 
     test("check if embed column type is correct", () => {
       //@ts-ignore
-      const correct: WhereOptions<typeof myDataSource, typeof UserEntity> = And(
-        {
-          profile: Or({
-            bio: Any("1"),
-            adult: Any(true),
-            kids: Any(1),
-          }),
-        },
-      )
+      const correct: WhereOptions<ReturnType<typeof UserEntity>> = And({
+        profile: Or({
+          bio: Any("1"),
+          adult: Any(true),
+          kids: Any(1),
+        }),
+      })
 
       //@ts-ignore
       const incorrect: WhereOptions<

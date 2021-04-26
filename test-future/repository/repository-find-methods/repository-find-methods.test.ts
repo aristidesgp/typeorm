@@ -14,9 +14,9 @@ describe("repository-basic-methods", () => {
       username: "",
       password: "",
       entities: {
-        UserEntity: UserEntity(),
-        PhotoEntity: PhotoEntity(),
-        WorkerEntity: WorkerEntity(),
+        UserEntity,
+        PhotoEntity,
+        WorkerEntity,
       },
     }),
   })

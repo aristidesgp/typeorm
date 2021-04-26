@@ -9,7 +9,7 @@ describe("repository-basic-methods", () => {
       username: "",
       password: "",
       entities: {
-        UserEntity: UserEntity(),
+        UserEntity,
       },
     }),
   })

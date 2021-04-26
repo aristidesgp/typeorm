@@ -1,3 +1,5 @@
+import { entity } from "../../../src/future/postgres"
+
 export enum Role {
   Admin,
   User,

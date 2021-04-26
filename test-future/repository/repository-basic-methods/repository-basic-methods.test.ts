@@ -7,7 +7,6 @@ import {
 import { IsExact, AssertTrue } from "conditional-type-checks"
 import { DataSource } from "../../../src/future/core"
 import { postgres } from "../../../src/future/postgres"
-import { EmployerEntity, StudentEntity, UserEntity, WorkerEntity } from "./User"
 
 describe("repository-basic-methods", () => {
   const myDataSource = DataSource.create({
@@ -16,10 +15,10 @@ describe("repository-basic-methods", () => {
       username: "",
       password: "",
       entities: {
-        UserEntity: UserEntity(),
-        EmployerEntity: EmployerEntity(),
-        WorkerEntity: WorkerEntity(),
-        StudentEntity: StudentEntity(),
+        UserEntity,
+        EmployerEntity,
+        WorkerEntity,
+        StudentEntity,
       },
     }),
   })

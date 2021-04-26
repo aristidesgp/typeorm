@@ -1,4 +1,4 @@
-import { Postgres } from "../../../src/future/postgres"
+import { entity } from "../../../src/future/postgres"
 
 export enum Role {
   Admin,
@@ -6,7 +6,7 @@ export enum Role {
 }
 
 export function EducationEmbed() {
-  return Postgres.entity({
+  return entity({
     columns: {
       name: {
         type: "varchar",
@@ -26,7 +26,7 @@ export function EducationEmbed() {
 }
 
 export function ExpirienceEmbed() {
-  return Postgres.entity({
+  return entity({
     columns: {
       name: {
         type: "varchar",
@@ -46,7 +46,7 @@ export function ExpirienceEmbed() {
 }
 
 export function ProfileEmbed() {
-  return Postgres.entity({
+  return entity({
     columns: {
       bio: {
         type: "varchar",
@@ -72,7 +72,7 @@ export function ProfileEmbed() {
 }
 
 export function WorkerProfileEmbed() {
-  return Postgres.entity({
+  return entity({
     columns: {
       bio: {
         type: "varchar",
@@ -102,7 +102,7 @@ export function WorkerProfileEmbed() {
 }
 
 export function UserEntity() {
-  return Postgres.entity({
+  return entity({
     columns: {
       id: {
         type: "int",
@@ -137,7 +137,7 @@ export function UserEntity() {
 }
 
 export function WorkerEntity() {
-  return Postgres.entity({
+  return entity({
     columns: {
       id: {
         type: "int",
@@ -172,7 +172,7 @@ export function WorkerEntity() {
 }
 
 export function PhotoEntity() {
-  return Postgres.entity({
+  return entity({
     columns: {
       id: {
         type: "int",
@@ -194,7 +194,7 @@ export function PhotoEntity() {
 }
 
 export function AlbumEntity() {
-  return Postgres.entity({
+  return entity({
     columns: {
       id: {
         type: "int",

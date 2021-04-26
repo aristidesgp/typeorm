@@ -13,9 +13,9 @@ describe("manager basic methods", () => {
       username: "",
       password: "",
       entities: {
-        UserEntity: UserEntity(),
-        PhotoEntity: PhotoEntity(),
-        AlbumEntity: AlbumEntity(),
+        UserEntity,
+        PhotoEntity,
+        AlbumEntity,
       },
     }),
   })

@@ -1,5 +1,5 @@
 import { EntityColumnPaths } from "./entity-columns"
-import { AnyEntityFactory } from "./entity-core"
+import { EntityReference } from "./entity-core"
 
 /**
  * List of entity relations.
@@ -26,7 +26,7 @@ export type EntityRelationList = {
  * main difference is that for one-to-one relationship "owner" contains a foreign key,
  * and for many-to-many table name prefix is generated started from "owner"'s table name.
  */
-export type EntityRelation<Reference extends AnyEntityFactory> =
+export type EntityRelation<Reference extends EntityReference> =
   | EntityRelationOneToMany<Reference>
   | EntityRelationManyToManyOwner<Reference>
   | EntityRelationManyToManyNotOwner<Reference>
@@ -37,7 +37,7 @@ export type EntityRelation<Reference extends AnyEntityFactory> =
 /**
  * one-to-many relation options.
  */
-export type EntityRelationOneToMany<Reference extends AnyEntityFactory> = {
+export type EntityRelationOneToMany<Reference extends EntityReference> = {
   type: "one-to-many"
   inverse: EntityColumnPaths<ReturnType<Reference>>
   reference: Reference
@@ -46,9 +46,7 @@ export type EntityRelationOneToMany<Reference extends AnyEntityFactory> = {
 /**
  * many-to-many "owner" relation options.
  */
-export type EntityRelationManyToManyOwner<
-  Reference extends AnyEntityFactory
-> = {
+export type EntityRelationManyToManyOwner<Reference extends EntityReference> = {
   type: "many-to-many"
   owner: true
   inverse?: EntityColumnPaths<ReturnType<Reference>>
@@ -60,7 +58,7 @@ export type EntityRelationManyToManyOwner<
  * many-to-many "not owner" relation options.
  */
 export type EntityRelationManyToManyNotOwner<
-  Reference extends AnyEntityFactory
+  Reference extends EntityReference
 > = {
   type: "many-to-many"
   owner: false
@@ -71,7 +69,7 @@ export type EntityRelationManyToManyNotOwner<
 /**
  * one-to-one "owner" relation options.
  */
-export type EntityRelationOneToOneOwner<Reference extends AnyEntityFactory> = {
+export type EntityRelationOneToOneOwner<Reference extends EntityReference> = {
   type: "one-to-one"
   owner: true
   reference: Reference
@@ -86,7 +84,7 @@ export type EntityRelationOneToOneOwner<Reference extends AnyEntityFactory> = {
  * one-to-one "not owner" relation options.
  */
 export type EntityRelationOneToOneNotOwner<
-  Reference extends AnyEntityFactory
+  Reference extends EntityReference
 > = {
   type: "one-to-one"
   owner: false
@@ -97,7 +95,7 @@ export type EntityRelationOneToOneNotOwner<
 /**
  * many-to-one relation options.
  */
-export type EntityRelationManyToOne<Reference extends AnyEntityFactory> = {
+export type EntityRelationManyToOne<Reference extends EntityReference> = {
   type: "many-to-one"
   reference: Reference
   inverse?: EntityColumnPaths<ReturnType<Reference>>
