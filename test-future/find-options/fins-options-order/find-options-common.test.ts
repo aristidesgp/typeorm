@@ -1,5 +1,5 @@
 import { Postgres } from "../../../src/future/postgres"
-import { UserEntity, PhotoEntity, AlbumEntity } from "../../entity/User"
+import { UserEntity, PhotoEntity, AlbumEntity } from "./User"
 import { DataSource } from "../../../src/future/core"
 import { AssertTrue, IsExact } from "conditional-type-checks"
 

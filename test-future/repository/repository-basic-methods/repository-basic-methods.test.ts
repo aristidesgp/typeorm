@@ -1,4 +1,9 @@
-import { UserEntity, EmployerEntity, StudentEntity, WorkerEntity } from "./User"
+import {
+  UserEntity,
+  EmployerEntity,
+  StudentEntity,
+  WorkerEntity,
+} from "./repository-basic-methods-entities"
 import { Postgres } from "../../../src/future/postgres"
 import { IsExact, AssertTrue } from "conditional-type-checks"
 import { DataSource } from "../../../src/future/core"

@@ -1,4 +1,8 @@
-import { UserEntity, PhotoEntity, AlbumEntity } from "../../"
+import {
+  UserEntity,
+  PhotoEntity,
+  AlbumEntity,
+} from "./manager-basic-methods-entities"
 import { Postgres } from "../../../src/future/postgres"
 import { DataSource } from "../../../src/future/core"
 

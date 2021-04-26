@@ -1,6 +1,10 @@
 import { DataSource } from "../../../src/future/core"
 import { Postgres } from "../../../src/future/postgres"
-import { UserEntity, PhotoEntity, AlbumEntity } from "../../entity/User"
+import {
+  UserEntity,
+  PhotoEntity,
+  AlbumEntity,
+} from "./find-options-where-entities"
 
 describe("find-options > common cases", () => {
   const myDataSource = DataSource.create({
