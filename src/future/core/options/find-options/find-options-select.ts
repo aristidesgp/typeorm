@@ -43,10 +43,11 @@ export type FindOptionsSelect<Entity extends AnyEntity> = {
     [P in keyof Entity["relations"]]?:
       | true
       | false
-      | FindOptionsSelect<ReferencedEntity<Entity, P>>
+      | (object & FindOptionsSelect<ReferencedEntity<Entity, P>>)
   } &
   {
-    [P in keyof Entity["embeds"]]?: FindOptionsSelect<Entity["embeds"][P]>
+    [P in keyof Entity["embeds"]]?: object &
+      FindOptionsSelect<Entity["embeds"][P]>
   }
 
 export type FindReturnTypeProperty<

@@ -158,7 +158,7 @@ describe("repository-basic-methods", () => {
         IsExact<typeof userPartialEntity.name, string>
       >
       type userPartialEntityActiveAssert = AssertTrue<
-        IsExact<typeof userPartialEntity.active, boolean>
+        IsExact<typeof userPartialEntity.active, true>
       >
       type userPartialEntityAllPropertiesAssert = AssertTrue<
         IsExact<keyof typeof userPartialEntity, "id" | "name" | "active">

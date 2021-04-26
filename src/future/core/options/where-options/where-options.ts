@@ -55,9 +55,9 @@ export type WhereOptionsOperatorProperty<
       | WhereOperator<Entity, ColumnCompileType<Entity, P>>
       | WhereExpression<Entity>
   : P extends keyof Entity["embeds"]
-  ? WhereOptions<Entity["embeds"][P]>
+  ? object & WhereOptions<Entity["embeds"][P]>
   : P extends keyof Entity["relations"]
-  ? WhereOptions<ReferencedEntity<Entity, P>>
+  ? object & WhereOptions<ReferencedEntity<Entity, P>>
   : never
 
 export type WhereOperatorOptions<Entity extends AnyEntity> = {

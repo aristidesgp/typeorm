@@ -35,10 +35,7 @@ describe("find-options > operators", () => {
         // phones: ["true", "asd"], TODO
       })
       //@ts-ignore
-      const incorrect: WhereOptions<
-        typeof myDataSource,
-        typeof UserEntity
-      > = Or({
+      const incorrect: WhereOptions<ReturnType<typeof UserEntity>> = Or({
         //@ts-expect-error
         id: Any("1"),
         //@ts-expect-error
@@ -57,10 +54,7 @@ describe("find-options > operators", () => {
         }),
       })
       //@ts-ignore
-      const correct2: WhereOptions<
-        typeof myDataSource,
-        typeof UserEntity
-      > = And({
+      const correct2: WhereOptions<ReturnType<typeof UserEntity>> = And({
         avatar: Or({
           id: Any(1),
           filename: Any(null),
@@ -68,10 +62,7 @@ describe("find-options > operators", () => {
       })
 
       //@ts-ignore
-      const incorrect: WhereOptions<
-        typeof myDataSource,
-        typeof UserEntity
-      > = And({
+      const incorrect: WhereOptions<ReturnType<typeof UserEntity>> = And({
         avatar: Or({
           //@ts-expect-error
           id: Any("1"),
@@ -92,10 +83,7 @@ describe("find-options > operators", () => {
       })
 
       //@ts-ignore
-      const incorrect: WhereOptions<
-        typeof myDataSource,
-        typeof UserEntity
-      > = And({
+      const incorrect: WhereOptions<ReturnType<typeof UserEntity>> = And({
         profile: Or({
           //@ts-expect-error
           bio: Any(1),
