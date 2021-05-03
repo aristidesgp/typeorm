@@ -1,4 +1,5 @@
 import {
+  ActiveRecordMethods,
   AnyEntity,
   ColumnCompileType,
   EntityPropertiesItem,
@@ -43,11 +44,10 @@ export type FindOptionsSelect<Entity extends AnyEntity> = {
     [P in keyof Entity["relations"]]?:
       | true
       | false
-      | (object & FindOptionsSelect<ReferencedEntity<Entity, P>>)
+      | FindOptionsSelect<ReferencedEntity<Entity, P>>
   } &
   {
-    [P in keyof Entity["embeds"]]?: object &
-      FindOptionsSelect<Entity["embeds"][P]>
+    [P in keyof Entity["embeds"]]?: FindOptionsSelect<Entity["embeds"][P]>
   }
 
 export type FindReturnTypeProperty<
@@ -118,6 +118,8 @@ export type FindReturnTypeProperty<
           EntityPropertiesItem<any>
         >
       >
+  : P extends keyof ActiveRecordMethods<Entity>
+  ? ActiveRecordMethods<Entity>[P]
   : never
 
 export type OnlyColumnKeys<Selection, Entity extends AnyEntity> = {
@@ -150,6 +152,7 @@ export type EntitySelectionTruthyKeys<
     }[keyof Selection]
   | keyof Entity["virtualEagerProperties"]
   | keyof Entity["virtualMethods"]
+  | keyof ActiveRecordMethods<Entity>
 
 /**
  * Helper type to mark non-selected properties as "never".
@@ -167,7 +170,8 @@ export type EntitySelectionAllColumns<
   } &
   Entity["embeds"] &
   Entity["virtualEagerProperties"] &
-  Entity["virtualMethods"])
+  Entity["virtualMethods"] &
+  ActiveRecordMethods<Entity>)
 
 export type FindReturnType<
   Entity extends AnyEntity,

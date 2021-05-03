@@ -6,11 +6,13 @@ import {
   EntityMethods,
   EntityProperties,
   EntityRelationList,
+  EntityType,
   ForceCastIfUndefined,
 } from "../../core"
 import { PostgresDriver, PostgresDriverTypes } from "../driver"
 
 export function entity<
+  Type extends EntityType,
   GivenModel,
   Columns extends EntityColumnList<PostgresDriver<any>> | undefined,
   Relations extends EntityRelationList | undefined,
@@ -23,6 +25,7 @@ export function entity<
     | EntityProperties<PostgresDriver<any>>
     | undefined
 >(options: {
+  type?: Type
   model?: GivenModel
   columns?: Columns
   relations?: Relations
@@ -31,6 +34,7 @@ export function entity<
   virtualLazyProperties?: VirtualLazyProperties
   virtualEagerProperties?: VirtualEagerProperties
 }): EntityCore<
+  Type extends EntityType ? Type : "classic",
   PostgresDriver<any>,
   GivenModel extends AnyModel ? GivenModel : Model<undefined>,
   Columns extends EntityColumnList<PostgresDriver<any>> ? Columns : {},

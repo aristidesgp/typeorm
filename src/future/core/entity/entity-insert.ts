@@ -43,10 +43,12 @@ export type EntityModelForInsert<Entity extends AnyEntity> = FlatTypeHint<
         : P extends keyof Entity["embeds"]
         ? EntityModelForInsert<Entity["embeds"][P]>
         : P extends keyof Entity["relations"]
-        ? EntityRelationReferencedColumnTypeMap<
-            ReferencedEntity<Entity, P>,
-            Entity["relations"][P]
-          >
+        ?
+            | EntityRelationReferencedColumnTypeMap<
+                ReferencedEntity<Entity, P>,
+                Entity["relations"][P]
+              >
+            | undefined
         : never
     }
   >

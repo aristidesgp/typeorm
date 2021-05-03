@@ -1,4 +1,4 @@
-import { DataSource } from "../core"
+import { DataSource, EntityRelationReferencedColumnTypeMap } from "../core"
 import { entity, postgres } from "../postgres"
 
 export function AlbumEntity() {
@@ -85,6 +85,7 @@ export function ProfileEmbed() {
 
 export function UserEntity() {
   return entity({
+    type: "active-record",
     columns: {
       id: {
         type: "int",
@@ -124,7 +125,7 @@ export function UserEntity() {
           ],
           inverseColumns: [
             { referencedColumn: "filename" } as const,
-            { referencedColumn: "id" } as const,
+            // { referencedColumn: "id" } as const,
           ],
         },
       },
@@ -370,16 +371,34 @@ async function test() {
   const users = await myDataSource.manager.findBy(UserEntity, {
     select: {
       id: true,
-      avatar: {
-        id: true,
-      },
-      // photosCount: true,
     },
     where: {
       name: "Umed",
     },
   })
-  console.log(users)
+
+  const avatar = await users[0].loadAvatar()
+  console.log(avatar.filename)
+  const photos = await users[0].loadPhotos()
+  console.log(photos)
+  const photosCount = await users[0].countPhotos()
+  console.log(photosCount)
+
+  type tt1 = EntityRelationReferencedColumnTypeMap<
+    ReturnType<typeof PhotoEntity>,
+    ReturnType<typeof UserEntity>["relations"]["avatar"]
+  >
+  type tt2 = EntityRelationReferencedColumnTypeMap<
+    ReturnType<typeof PhotoEntity>,
+    ReturnType<typeof UserEntity>["relations"]["photos"]
+  >
+
+  await users[0].addPhotos([
+    {
+      filename: "wow",
+    },
+  ])
+  console.log(photosCount)
 
   const allUsers = await UserRepository.allUsers()
   console.log(allUsers)

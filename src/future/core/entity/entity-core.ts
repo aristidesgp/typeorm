@@ -12,6 +12,7 @@ import { EntityRelation, EntityRelationList } from "./entity-relations"
  * Represents any entity. Convenience type.
  */
 export type AnyEntity = EntityCore<
+  EntityType,
   AnyDriver,
   AnyModel,
   EntityColumnList<AnyDriver>,
@@ -27,6 +28,7 @@ export type AnyEntity = EntityCore<
  * Drivers must build their entities and return this interface.
  */
 export interface EntityCore<
+  Type extends EntityType,
   Driver extends AnyDriver,
   Model extends AnyModel,
   Columns extends EntityColumnList<Driver>,
@@ -37,6 +39,7 @@ export interface EntityCore<
   VirtualEagerProperties extends EntityProperties<Driver>
 > {
   "@type": "Entity"
+  type: Type
   driver: Driver
   model: Model
   virtualMethods: VirtualMethods
@@ -48,6 +51,8 @@ export interface EntityCore<
   columnsEmbeds: Columns & Embeds
   columnsEmbedsRelations: Columns & Embeds & Relations
 }
+
+export type EntityType = "classic" | "active-record"
 
 /**
  * List of named entities.

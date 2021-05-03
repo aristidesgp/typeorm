@@ -84,15 +84,13 @@ export type EntityRelationReferencedColumnTypeMap<
   Relation extends EntityRelation<any>
 > = Relation extends EntityRelationManyToManyOwner<any>
   ? Relation["referencedTable"] extends EntityRelationReferencedTable
-    ?
-        | EntityRelationReferencedColumnMixedTypeMap<
-            ReferencedEntity,
-            ForceCastIfExtends<
-              Relation["referencedTable"],
-              EntityRelationReferencedTable
-            >["inverseColumns"]
-          >[]
-        | undefined
+    ? EntityRelationReferencedColumnMixedTypeMap<
+        ReferencedEntity,
+        ForceCastIfExtends<
+          Relation["referencedTable"],
+          EntityRelationReferencedTable
+        >["inverseColumns"]
+      >[]
     : EntityPrimaryColumnTypeMap<ReferencedEntity>[] | undefined
   : Relation extends EntityRelationManyToManyNotOwner<any>
   ? Relation["inverse"] extends keyof ReferencedEntity["relations"]
@@ -105,37 +103,31 @@ export type EntityRelationReferencedColumnTypeMap<
         >["ownerColumns"] extends
           | EntityRelationReferencedColumn
           | [...EntityRelationReferencedColumn[]]
-        ?
-            | EntityRelationReferencedColumnMixedTypeMap<
-                ReferencedEntity,
-                ForceCastIfExtends<
-                  ReferencedEntity["relations"][string &
-                    Relation["inverse"]]["referencedTable"],
-                  EntityRelationReferencedTable
-                >["ownerColumns"]
-              >[]
-            | undefined
-        : EntityPrimaryColumnTypeMap<ReferencedEntity>[] | undefined
+        ? EntityRelationReferencedColumnMixedTypeMap<
+            ReferencedEntity,
+            ForceCastIfExtends<
+              ReferencedEntity["relations"][string &
+                Relation["inverse"]]["referencedTable"],
+              EntityRelationReferencedTable
+            >["ownerColumns"]
+          >[]
+        : EntityPrimaryColumnTypeMap<ReferencedEntity>[]
       : never
     : never
   : Relation extends EntityRelationManyToOne<any>
-  ?
-      | EntityRelationReferencedColumnMixedTypeMap<
-          ReferencedEntity,
-          Relation["referencedColumns"]
-        >
-      | undefined
+  ? EntityRelationReferencedColumnMixedTypeMap<
+      ReferencedEntity,
+      Relation["referencedColumns"]
+    >
   : Relation extends EntityRelationOneToMany<any>
-  ? EntityPrimaryColumnTypeMap<ReferencedEntity>[] | undefined
+  ? EntityPrimaryColumnTypeMap<ReferencedEntity>[]
   : Relation extends EntityRelationOneToOneOwner<any>
-  ?
-      | EntityRelationReferencedColumnMixedTypeMap<
-          ReferencedEntity,
-          Relation["referencedColumns"]
-        >
-      | undefined
+  ? EntityRelationReferencedColumnMixedTypeMap<
+      ReferencedEntity,
+      Relation["referencedColumns"]
+    >
   : Relation extends EntityRelationOneToOneNotOwner<any>
-  ? EntityPrimaryColumnTypeMap<ReferencedEntity>[] | undefined
+  ? EntityPrimaryColumnTypeMap<ReferencedEntity>[]
   : never
 
 /**
