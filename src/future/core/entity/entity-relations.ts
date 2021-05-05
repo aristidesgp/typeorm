@@ -39,7 +39,7 @@ export type EntityRelation<Reference extends EntityReference> =
  */
 export type EntityRelationOneToMany<Reference extends EntityReference> = {
   type: "one-to-many"
-  inverse: EntityColumnPaths<ReturnType<Reference>>
+  inverse: string
   reference: Reference
 }
 
@@ -49,7 +49,7 @@ export type EntityRelationOneToMany<Reference extends EntityReference> = {
 export type EntityRelationManyToManyOwner<Reference extends EntityReference> = {
   type: "many-to-many"
   owner: true
-  inverse?: EntityColumnPaths<ReturnType<Reference>>
+  inverse?: string
   reference: Reference
   referencedTable?: EntityRelationReferencedTable
 }
@@ -62,7 +62,7 @@ export type EntityRelationManyToManyNotOwner<
 > = {
   type: "many-to-many"
   owner: false
-  inverse: EntityColumnPaths<ReturnType<Reference>>
+  inverse: string
   reference: Reference
 }
 
@@ -73,7 +73,7 @@ export type EntityRelationOneToOneOwner<Reference extends EntityReference> = {
   type: "one-to-one"
   owner: true
   reference: Reference
-  inverse?: EntityColumnPaths<ReturnType<Reference>>
+  inverse?: string
   nullable?: boolean
   referencedColumns?:
     | EntityRelationReferencedColumn
@@ -89,7 +89,7 @@ export type EntityRelationOneToOneNotOwner<
   type: "one-to-one"
   owner: false
   reference: Reference
-  inverse: EntityColumnPaths<ReturnType<Reference>>
+  inverse: string
 }
 
 /**
@@ -98,7 +98,7 @@ export type EntityRelationOneToOneNotOwner<
 export type EntityRelationManyToOne<Reference extends EntityReference> = {
   type: "many-to-one"
   reference: Reference
-  inverse?: EntityColumnPaths<ReturnType<Reference>>
+  inverse?: string
   nullable?: boolean
   referencedColumns?:
     | EntityRelationReferencedColumn
