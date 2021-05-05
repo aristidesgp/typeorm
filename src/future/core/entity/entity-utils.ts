@@ -151,7 +151,8 @@ export type EntityPropsWithModel<
           type: "virtualEagerProperties"
           property: P
         }
-      }
+      } &
+      ActiveRecordMethods<Entity>
   : PropsMode extends "virtuals"
   ? {
       [P in keyof Entity["virtualMethods"]]: {
