@@ -1,3 +1,4 @@
+import { AnyDriver } from "../../driver"
 import { AnyEntity } from "../../entity"
 import { WhereOptions } from "../where-options"
 
@@ -5,61 +6,78 @@ import { WhereOptions } from "../where-options"
  * Entity insert options.
  */
 export type InsertOptions<
+  Driver extends AnyDriver,
   Entity extends AnyEntity
-> = Entity["driver"]["types"]["insertOptions"]
+> = Driver["types"]["insertOptions"]
 
 /**
  * Entity update options.
  */
 export type UpdateOptions<
+  Driver extends AnyDriver,
   Entity extends AnyEntity
-> = Entity["driver"]["types"]["updateOptions"]
+> = Driver["types"]["updateOptions"]
 
 /**
  * Entity update by options.
  */
-export type UpdateByOptions<Entity extends AnyEntity> = {
-  where: WhereOptions<Entity>
-} & Entity["driver"]["types"]["updateByOptions"]
+export type UpdateByOptions<
+  Driver extends AnyDriver,
+  Entity extends AnyEntity
+> = {
+  where: WhereOptions<Driver, Entity>
+} & Driver["types"]["updateByOptions"]
 
 /**
  * Entity delete options.
  */
 export type DeleteOptions<
+  Driver extends AnyDriver,
   Entity extends AnyEntity
-> = Entity["driver"]["types"]["deleteOptions"]
+> = Driver["types"]["deleteOptions"]
 
 /**
  * Entity delete by options.
  */
-export type DeleteByOptions<Entity extends AnyEntity> = {
-  where: WhereOptions<Entity>
-} & Entity["driver"]["types"]["deleteByOptions"]
+export type DeleteByOptions<
+  Driver extends AnyDriver,
+  Entity extends AnyEntity
+> = {
+  where: WhereOptions<Driver, Entity>
+} & Driver["types"]["deleteByOptions"]
 
 /**
  * Archive (soft-remove) options.
  */
 export type ArchiveOptions<
+  Driver extends AnyDriver,
   Entity extends AnyEntity
-> = Entity["driver"]["types"]["archiveOptions"]
+> = Driver["types"]["archiveOptions"]
 
 /**
  * Archive (soft-remove) options.
  */
-export type ArchiveByOptions<Entity extends AnyEntity> = {
-  where: WhereOptions<Entity>
-} & Entity["driver"]["types"]["archiveByOptions"]
+export type ArchiveByOptions<
+  Driver extends AnyDriver,
+  Entity extends AnyEntity
+> = {
+  where: WhereOptions<Driver, Entity>
+} & Driver["types"]["archiveByOptions"]
 
 /**
  * Entities unarchive options.
  */
 export type UnarchiveOptions<
+  Driver extends AnyDriver,
   Entity extends AnyEntity
-> = Entity["driver"]["types"]["unarchiveOptions"]
+> = Driver["types"]["unarchiveOptions"]
 
 /**
  * Entities unarchive options.
  */
-export type UnarchiveByOptions<Entity extends AnyEntity> = {
-  where: WhereOptions<Entity>
-} & Entity["driver"]["types"]["unarchiveByOptions"]
+export type UnarchiveByOptions<
+  Driver extends AnyDriver,
+  Entity extends AnyEntity
+> = {
+  where: WhereOptions<Driver, Entity>
+} & Driver["types"]["unarchiveByOptions"]

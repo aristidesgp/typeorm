@@ -1,3 +1,4 @@
+import { AnyDriver } from "../../driver"
 import { AnyEntity } from "../../entity"
 import { WhereOptions } from "../where-options"
 import { FindOptionsCache } from "./find-options-cache"
@@ -5,16 +6,19 @@ import { FindOptionsCache } from "./find-options-cache"
 /**
  * Defines a special criteria to find specific entity.
  */
-export interface FindOptionsCount<Entity extends AnyEntity> {
+export interface FindOptionsCount<
+  Driver extends AnyDriver,
+  Entity extends AnyEntity
+> {
   /**
    * Conditions applied to a query on what needs to be selected from the database.
    */
-  where?: WhereOptions<Entity>
+  where?: WhereOptions<Driver, Entity>
 
   /**
    * Indicates what locking mode should be used.
    */
-  lock?: Entity["driver"]["types"]["lockTypes"]
+  lock?: Driver["types"]["lockTypes"]
 
   /**
    * Whatever cache should be enabled for query or not.

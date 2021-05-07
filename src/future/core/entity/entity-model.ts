@@ -1,34 +1,49 @@
 import { DeepPartial } from "../../../common/DeepPartial"
+import { AnyDriver } from "../driver"
 import { FindReturnType } from "../options"
-import { AnyEntity } from "./entity-core"
+import { AnyEntity, AnyEntityCore, EntityInstance } from "./entity-core"
 
 /**
  * Type signature of a given entity.
  */
-export type EntityModel<Entity extends AnyEntity> = FindReturnType<
-  Entity,
-  {},
-  false,
-  "all"
->
+export type EntityModel<
+  Driver extends AnyDriver,
+  Entity extends AnyEntity
+> = Entity extends AnyEntityCore
+  ? FindReturnType<Driver, Entity, {}, false, "all">
+  : Entity extends EntityInstance
+  ? Entity
+  : unknown
 
 /**
  * Partially type signature of a given entity.
  */
-export type EntityModelPartial<Entity extends AnyEntity> = DeepPartial<
-  FindReturnType<Entity, {}, false, "all">
->
+export type EntityModelPartial<
+  Driver extends AnyDriver,
+  Entity extends AnyEntity
+> = Entity extends AnyEntityCore
+  ? DeepPartial<EntityModel<Driver, Entity>>
+  : DeepPartial<Entity>
 
-export type EntityModelForCreate<Entity extends AnyEntity> = DeepPartial<
-  FindReturnType<Entity, {}, false, "create">
->
+export type EntityModelCreateType<
+  Driver extends AnyDriver,
+  Entity extends AnyEntity,
+  Model extends EntityModelForCreate<Driver, Entity>
+> = Entity extends AnyEntityCore
+  ? Model & EntityModelVirtuals<Driver, Entity>
+  : Entity
 
-export type EntityModelVirtuals<Entity extends AnyEntity> = FindReturnType<
-  Entity,
-  {},
-  false,
-  "virtuals"
->
+export type EntityModelForCreate<
+  Driver extends AnyDriver,
+  Entity extends AnyEntity
+> = Entity extends AnyEntityCore
+  ? DeepPartial<FindReturnType<Driver, Entity, {}, false, "create">>
+  : DeepPartial<Entity>
+
+export type EntityModelVirtuals<
+  Driver extends AnyDriver,
+  Entity extends AnyEntityCore
+> = FindReturnType<Driver, Entity, {}, false, "virtuals">
 
 // export type EntityModelCreate<
 //   Types extends DriverTypes,

@@ -1,6 +1,18 @@
 import { DataSource, EntityRelationReferencedColumnTypeMap } from "../core"
 import { entity, postgres } from "../postgres"
 
+export class Photo {
+  id: number
+  filename: string
+  album: Album
+}
+
+export class Album {
+  id: number
+  name: string
+  photos: Photo[]
+}
+
 export function AlbumEntity() {
   return entity({
     // activeRecord: true,
@@ -16,7 +28,7 @@ export function AlbumEntity() {
     relations: {
       photos: {
         type: "one-to-many",
-        inverse: "album" as const,
+        inverse: "album",
         reference: PhotoEntity,
       },
     },
@@ -38,13 +50,13 @@ export function PhotoEntity() {
     relations: {
       album: {
         type: "many-to-one",
-        inverse: "photos" as const,
+        inverse: "photos",
         reference: AlbumEntity,
       },
       users: {
         type: "many-to-many",
         owner: false,
-        inverse: "photos" as const,
+        inverse: "photos",
         reference: UserEntity,
       },
     },
@@ -384,14 +396,14 @@ async function test() {
   const photosCount = await users[0].countPhotos()
   console.log(photosCount)
 
-  type tt1 = EntityRelationReferencedColumnTypeMap<
-    ReturnType<typeof PhotoEntity>,
-    ReturnType<typeof UserEntity>["relations"]["avatar"]
-  >
-  type tt2 = EntityRelationReferencedColumnTypeMap<
-    ReturnType<typeof PhotoEntity>,
-    ReturnType<typeof UserEntity>["relations"]["photos"]
-  >
+  // type tt1 = EntityRelationReferencedColumnTypeMap<
+  //   ReturnType<typeof PhotoEntity>,
+  //   ReturnType<typeof UserEntity>["relations"]["avatar"]
+  // >
+  // type tt2 = EntityRelationReferencedColumnTypeMap<
+  //   ReturnType<typeof PhotoEntity>,
+  //   ReturnType<typeof UserEntity>["relations"]["photos"]
+  // >
 
   await users[0].addPhotos([
     {
@@ -491,16 +503,3 @@ console.log(UserWithAvatarEager)
 
 // entity can have 3 base types:
 // - simple, active-record, class (for decorators)
-// AR methods:
-// hasId()
-// save(Connection)
-// remove()
-// archive()
-// unarchive()
-// reload(FindOptions)
-// load{RelationName}(FindOptions)
-// count{RelationName}(FindOptions)
-// has{RelationName}(FindOptions)
-// count{ManyToMany/OneToMany-RelationName}(FindOptions)
-// add{ManyToMany/OneToMany-RelationName}(RelatedEntityMap)
-// remove{ManyToMany/OneToMany-RelationName}(RelatedEntityMap)

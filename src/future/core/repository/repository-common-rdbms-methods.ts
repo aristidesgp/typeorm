@@ -1,15 +1,20 @@
 import { SelectQueryBuilder } from "../../../query-builder/SelectQueryBuilder"
 import { QueryRunner } from "../../../query-runner/QueryRunner"
-import { QueryResult, UpdateResult } from "../driver"
+import { AnyDriver, QueryResult, UpdateResult } from "../driver"
 import { AnyEntity, EntityColumnPaths } from "../entity"
 import { WhereOptions } from "../options"
 
 /**
  * Interface for repositories that implement common RDBMS methods.
  */
-export interface RepositoryCommonRdbmsMethods<Entity extends AnyEntity> {
+export interface RepositoryCommonRdbmsMethods<
+  Driver extends AnyDriver,
+  Entity extends AnyEntity
+> {
   /**
    * Creates a new query builder that can be used to build and execute any SQL query.
+   *
+   * todo: this probably will be removed since current implementation of the query-builder will be an extension
    */
   createQueryBuilder(
     alias?: string,
@@ -19,10 +24,7 @@ export interface RepositoryCommonRdbmsMethods<Entity extends AnyEntity> {
   /**
    * Executes a raw SQL query and returns raw database results.
    */
-  query(
-    query: string,
-    parameters?: any[],
-  ): Promise<QueryResult<Entity["driver"]>>
+  query(query: string, parameters?: any[]): Promise<QueryResult<Driver>>
 
   /**
    * Clears all the data from the given table/collection (truncates/drops it).
@@ -36,17 +38,17 @@ export interface RepositoryCommonRdbmsMethods<Entity extends AnyEntity> {
    * Increments some column by provided value of the entities matched given conditions.
    */
   increment(
-    where: WhereOptions<Entity>,
+    where: WhereOptions<Driver, Entity>,
     columnPath: EntityColumnPaths<Entity>,
     value: number,
-  ): Promise<UpdateResult<Entity["driver"]>>
+  ): Promise<UpdateResult<Driver>>
 
   /**
    * Decrements some column by provided value of the entities matched given conditions.
    */
   decrement(
-    where: WhereOptions<Entity>,
+    where: WhereOptions<Driver, Entity>,
     columnPath: EntityColumnPaths<Entity>,
     value: number,
-  ): Promise<UpdateResult<Entity["driver"]>>
+  ): Promise<UpdateResult<Driver>>
 }

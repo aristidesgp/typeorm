@@ -1,9 +1,10 @@
-import { AnyEntity } from "../entity"
+import { AnyDriver } from "../driver"
 import {
+  AnyEntity,
   EntityModelAfterInsert,
   EntityModelForInsert,
-} from "../entity/entity-insert"
-import { EntityModelPartial } from "../entity/entity-model"
+  EntityModelPartial,
+} from "../entity"
 import {
   ArchiveByOptions,
   ArchiveOptions,
@@ -19,101 +20,104 @@ import {
 /**
  * Interface for repositories that implement persistence / alteration operations.
  */
-export interface RepositoryPersistenceMethods<Entity extends AnyEntity> {
+export interface RepositoryPersistenceMethods<
+  Driver extends AnyDriver,
+  Entity extends AnyEntity
+> {
   /**
    * Inserts a new entity into the database.
    * Database error will be thrown if entity already exists in the database.
    * Returns a copy of the model with the default / primary column values.
    */
-  insert<Model extends EntityModelForInsert<Entity>>(
+  insert<Model extends EntityModelForInsert<Driver, Entity>>(
     model: Model,
-    options?: InsertOptions<Entity>,
-  ): Promise<EntityModelAfterInsert<Entity, Model>>
+    options?: InsertOptions<Driver, Entity>,
+  ): Promise<EntityModelAfterInsert<Driver, Entity, Model>>
 
   /**
    * Inserts entities in bulk.
    * Database error will be thrown if any of entity exist in the database.
    */
-  insert<Model extends EntityModelPartial<Entity>>(
+  insert<Model extends EntityModelForInsert<Driver, Entity>>(
     models: Model[],
-    options?: InsertOptions<Entity>,
+    options?: InsertOptions<Driver, Entity>,
   ): Promise<void> // [...EntityModelJustInserted<Source, Entity, Model>[]]
 
   /**
    * Updates entity in the database.
    * If entity does not exist in the database - error will be thrown.
    */
-  update<Model extends EntityModelPartial<Entity>>(
+  update<Model extends EntityModelPartial<Driver, Entity>>(
     model: Model,
-    options?: UpdateOptions<Entity>,
+    options?: UpdateOptions<Driver, Entity>,
   ): Promise<void>
 
   /**
    * Updates entities in the database by a given options.
    * If entity does not exist in the database - error will be thrown.
    */
-  updateBy(options: UpdateByOptions<Entity>): Promise<void>
+  updateBy(options: UpdateByOptions<Driver, Entity>): Promise<void>
 
   /**
    * Removes a given entity from the database.
    */
-  delete<Model extends EntityModelPartial<Entity>>(
+  delete<Model extends EntityModelPartial<Driver, Entity>>(
     model: Model,
-    options?: DeleteOptions<Entity>,
+    options?: DeleteOptions<Driver, Entity>,
   ): Promise<void>
 
   /**
    * Removes given entities from the database.
    */
-  delete<Model extends EntityModelPartial<Entity>>(
+  delete<Model extends EntityModelPartial<Driver, Entity>>(
     models: Model[],
-    options?: DeleteOptions<Entity>,
+    options?: DeleteOptions<Driver, Entity>,
   ): Promise<void>
 
   /**
    * Removes entities by a given options.
    */
-  deleteBy(options: DeleteByOptions<Entity>): Promise<void>
+  deleteBy(options: DeleteByOptions<Driver, Entity>): Promise<void>
 
   /**
    * Marks given entity as "soft deleted".
    */
-  archive<Model extends EntityModelPartial<Entity>>(
+  archive<Model extends EntityModelPartial<Driver, Entity>>(
     model: Model,
-    options?: ArchiveOptions<Entity>,
+    options?: ArchiveOptions<Driver, Entity>,
   ): Promise<void>
 
   /**
    * Marks given entities as "soft deleted".
    */
-  archive<Model extends EntityModelPartial<Entity>>(
+  archive<Model extends EntityModelPartial<Driver, Entity>>(
     models: Model[],
-    options?: ArchiveOptions<Entity>,
+    options?: ArchiveOptions<Driver, Entity>,
   ): Promise<void>
 
   /**
    * Marks given entities as "soft deleted" by a given options.
    */
-  archiveBy(options: ArchiveByOptions<Entity>): Promise<void>
+  archiveBy(options: ArchiveByOptions<Driver, Entity>): Promise<void>
 
   /**
    * Unarchives given entity previously archived (e.g. restore "soft-removed" entity).
    */
-  unarchive<Model extends EntityModelPartial<Entity>>(
+  unarchive<Model extends EntityModelPartial<Driver, Entity>>(
     model: Model,
-    options?: UnarchiveOptions<Entity>,
+    options?: UnarchiveOptions<Driver, Entity>,
   ): Promise<void>
 
   /**
-   * Unarchives given entities previously archived (e.g. restore "soft-removed" entity).
+   * Unarchives given entities previously archived (e.g. restore "soft-removed" entities).
    */
-  unarchive<Model extends EntityModelPartial<Entity>>(
+  unarchive<Model extends EntityModelPartial<Driver, Entity>>(
     models: Model[],
-    options?: UnarchiveOptions<Entity>,
+    options?: UnarchiveOptions<Driver, Entity>,
   ): Promise<void>
 
   /**
    * Unarchives given entities by a given options.
    */
-  unarchiveBy(options: UnarchiveByOptions<Entity>): Promise<void>
+  unarchiveBy(options: UnarchiveByOptions<Driver, Entity>): Promise<void>
 }

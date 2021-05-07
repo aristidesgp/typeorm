@@ -1,10 +1,11 @@
 import { AnyDriver } from "../driver"
 import {
-  AnyEntity,
+  EntityFromReference,
+  EntityModelCreateType,
   EntityModelForCreate,
   EntityModelPartial,
-  EntityModelVirtuals,
   EntityPrimaryColumnTypeMap,
+  EntityReference,
 } from "../entity"
 import { UnionToIntersection } from "../util"
 
@@ -18,9 +19,12 @@ export interface ManagerBasicMethods<Driver extends AnyDriver> {
    * Checks if entity has an id.
    * If entity has multiple ids, it will check them all.
    */
-  hasId<Entity extends AnyEntity>(
-    entity: () => Entity,
-    model: EntityModelPartial<Entity>,
+  hasId<
+    Reference extends EntityReference,
+    Entity extends EntityFromReference<Reference>
+  >(
+    entity: Reference,
+    model: EntityModelPartial<Driver, Entity>,
   ): boolean
 
   /**
@@ -29,27 +33,36 @@ export interface ManagerBasicMethods<Driver extends AnyDriver> {
    * if entity contains a single primary id - directly value will be returned.
    * Returns null if entity doesn't have at least one of its ids.
    */
-  getId<Entity extends AnyEntity, Model extends EntityModelForCreate<Entity>>(
-    entity: () => Entity,
+  getId<
+    Reference extends EntityReference,
+    Entity extends EntityFromReference<Reference>,
+    Model extends EntityModelPartial<Driver, Entity>
+  >(
+    entity: Reference,
     model: Model,
-  ): EntityPrimaryColumnTypeMap<Entity>
+  ): EntityPrimaryColumnTypeMap<Driver, Entity>
 
   /**
    * Creates a new entity instance.
    */
-  create<Entity extends AnyEntity, Model extends EntityModelForCreate<Entity>>(
-    entity: () => Entity,
+  create<
+    Reference extends EntityReference,
+    Entity extends EntityFromReference<Reference>,
+    Model extends EntityModelForCreate<Driver, Entity>
+  >(
+    entity: Reference,
     model: Model,
-  ): Model & EntityModelVirtuals<Entity>
+  ): EntityModelCreateType<Driver, Entity, Model>
 
   /**
    * Merges multiple entities (or entity-like objects) into a given entity.
    */
   merge<
-    Entity extends AnyEntity,
-    Models extends EntityModelForCreate<Entity>[]
+    Reference extends EntityReference,
+    Entity extends EntityFromReference<Reference>,
+    Models extends EntityModelForCreate<Driver, Entity>[]
   >(
-    entity: () => Entity,
+    entity: Reference,
     ...models: Models
   ): UnionToIntersection<Models[number]>
 }

@@ -1,9 +1,10 @@
+import { AnyDriver } from "../driver"
 import { ForceCastIfExtends } from "../util"
 import {
   EntityColumnTypeMapByNames,
   EntityPrimaryColumnTypeMap,
 } from "./entity-columns"
-import { AnyEntity } from "./entity-core"
+import { AnyEntityCore } from "./entity-core"
 import {
   EntityRelation,
   EntityRelationManyToManyNotOwner,
@@ -80,18 +81,20 @@ import {
  *
  */
 export type EntityRelationReferencedColumnTypeMap<
-  ReferencedEntity extends AnyEntity,
+  Driver extends AnyDriver,
+  ReferencedEntity extends AnyEntityCore,
   Relation extends EntityRelation<any>
 > = Relation extends EntityRelationManyToManyOwner<any>
   ? Relation["referencedTable"] extends EntityRelationReferencedTable
     ? EntityRelationReferencedColumnMixedTypeMap<
+        Driver,
         ReferencedEntity,
         ForceCastIfExtends<
           Relation["referencedTable"],
           EntityRelationReferencedTable
         >["inverseColumns"]
       >[]
-    : EntityPrimaryColumnTypeMap<ReferencedEntity>[] | undefined
+    : EntityPrimaryColumnTypeMap<Driver, ReferencedEntity>[] | undefined
   : Relation extends EntityRelationManyToManyNotOwner<any>
   ? Relation["inverse"] extends keyof ReferencedEntity["relations"]
     ? ReferencedEntity["relations"][string &
@@ -104,6 +107,7 @@ export type EntityRelationReferencedColumnTypeMap<
           | EntityRelationReferencedColumn
           | [...EntityRelationReferencedColumn[]]
         ? EntityRelationReferencedColumnMixedTypeMap<
+            Driver,
             ReferencedEntity,
             ForceCastIfExtends<
               ReferencedEntity["relations"][string &
@@ -111,36 +115,40 @@ export type EntityRelationReferencedColumnTypeMap<
               EntityRelationReferencedTable
             >["ownerColumns"]
           >[]
-        : EntityPrimaryColumnTypeMap<ReferencedEntity>[]
+        : EntityPrimaryColumnTypeMap<Driver, ReferencedEntity>[]
       : never
     : never
   : Relation extends EntityRelationManyToOne<any>
   ? EntityRelationReferencedColumnMixedTypeMap<
+      Driver,
       ReferencedEntity,
       Relation["referencedColumns"]
     >
   : Relation extends EntityRelationOneToMany<any>
-  ? EntityPrimaryColumnTypeMap<ReferencedEntity>[]
+  ? EntityPrimaryColumnTypeMap<Driver, ReferencedEntity>[]
   : Relation extends EntityRelationOneToOneOwner<any>
   ? EntityRelationReferencedColumnMixedTypeMap<
+      Driver,
       ReferencedEntity,
       Relation["referencedColumns"]
     >
   : Relation extends EntityRelationOneToOneNotOwner<any>
-  ? EntityPrimaryColumnTypeMap<ReferencedEntity>[]
+  ? EntityPrimaryColumnTypeMap<Driver, ReferencedEntity>[]
   : never
 
 /**
  * Helper type for EntityRelationReferencedColumnTypeMap.
  */
 export type EntityRelationReferencedColumnMixedTypeMap<
-  ReferencedEntity extends AnyEntity,
+  Driver extends AnyDriver,
+  ReferencedEntity extends AnyEntityCore,
   ReferencedColumnMixed extends
     | EntityRelationReferencedColumn[]
     | EntityRelationReferencedColumn
     | undefined
 > = ReferencedColumnMixed extends EntityRelationReferencedColumn[]
   ? EntityColumnTypeMapByNames<
+      Driver,
       ReferencedEntity,
       ForceCastIfExtends<
         ReferencedColumnMixed,
@@ -149,10 +157,11 @@ export type EntityRelationReferencedColumnMixedTypeMap<
     >
   : ReferencedColumnMixed extends EntityRelationReferencedColumn
   ? EntityColumnTypeMapByNames<
+      Driver,
       ReferencedEntity,
       ForceCastIfExtends<
         ReferencedColumnMixed,
         EntityRelationReferencedColumn
       >["referencedColumn"]
     >
-  : EntityPrimaryColumnTypeMap<ReferencedEntity>
+  : EntityPrimaryColumnTypeMap<Driver, ReferencedEntity>

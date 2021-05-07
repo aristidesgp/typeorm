@@ -1,7 +1,7 @@
 import { AnyModel } from "../../../repository/model"
 import { AnyDriver, DriverTypes } from "../driver"
 import { FlatTypeHint, ForceCastIfNoKeys, NonNever, ValueOf } from "../util"
-import { AnyEntity } from "./entity-core"
+import { AnyEntity, AnyEntityCore } from "./entity-core"
 import { EntityProps } from "./entity-utils"
 
 /**
@@ -46,27 +46,32 @@ export type EntityMethods = {
  *       also add support for manually specified types (maybe through the function)
  */
 export type ColumnCompileType<
+  Driver extends AnyDriver,
   Entity extends AnyEntity,
   ColumnName extends string
-> = HasEntityModelColumnType<Entity["model"], ColumnName> extends true
-  ? Entity["columns"][ColumnName]["array"] extends true
-    ? Entity["columns"][ColumnName]["nullable"] extends true
-      ? Entity["model"]["type"][ColumnName][] | null
+> = Entity extends AnyEntityCore
+  ? HasEntityModelColumnType<Entity["model"], ColumnName> extends true
+    ? Entity["columns"][ColumnName]["array"] extends true
+      ? Entity["columns"][ColumnName]["nullable"] extends true
+        ? Entity["model"]["type"][ColumnName][] | null
+        : Entity["model"]["type"][ColumnName]
+      : Entity["columns"][ColumnName]["nullable"] extends true
+      ? Entity["model"]["type"][ColumnName] | null
       : Entity["model"]["type"][ColumnName]
+    : Entity["columns"][ColumnName]["array"] extends true
+    ? Entity["columns"][ColumnName]["nullable"] extends true
+      ?
+          | Driver["types"]["columnTypes"][Entity["columns"][ColumnName]["type"]]["type"][]
+          | null
+      : Driver["types"]["columnTypes"][Entity["columns"][ColumnName]["type"]]["type"]
     : Entity["columns"][ColumnName]["nullable"] extends true
-    ? Entity["model"]["type"][ColumnName] | null
-    : Entity["model"]["type"][ColumnName]
-  : Entity["columns"][ColumnName]["array"] extends true
-  ? Entity["columns"][ColumnName]["nullable"] extends true
     ?
-        | Entity["driver"]["types"]["columnTypes"][Entity["columns"][ColumnName]["type"]]["type"][]
+        | Driver["types"]["columnTypes"][Entity["columns"][ColumnName]["type"]]["type"]
         | null
-    : Entity["driver"]["types"]["columnTypes"][Entity["columns"][ColumnName]["type"]]["type"]
-  : Entity["columns"][ColumnName]["nullable"] extends true
-  ?
-      | Entity["driver"]["types"]["columnTypes"][Entity["columns"][ColumnName]["type"]]["type"]
-      | null
-  : Entity["driver"]["types"]["columnTypes"][Entity["columns"][ColumnName]["type"]]["type"]
+    : Driver["types"]["columnTypes"][Entity["columns"][ColumnName]["type"]]["type"]
+  : ColumnName extends keyof Entity
+  ? Entity[ColumnName]
+  : unknown
 
 /**
  * Checks if entity model has given property name defined.
@@ -83,15 +88,16 @@ export type HasEntityModelColumnType<
 /**
  * Returns object consist of columns and their types based on a given entity column names.
  * Careful! Marks column compile types as non-nullable.
- * This was made so because there is a requirement of that in the place where it is currently used.
+ * Such design was chosen because of the requirements where it is currently used.
  */
 export type EntityColumnTypeMapByNames<
-  Entity extends AnyEntity,
+  Driver extends AnyDriver,
+  Entity extends AnyEntityCore,
   ColumnNames extends string
 > = FlatTypeHint<
   {
     [P in ColumnNames]: P extends keyof Entity["columns"]
-      ? NonNullable<ColumnCompileType<Entity, P>>
+      ? NonNullable<ColumnCompileType<Driver, Entity, P>>
       : unknown
   }
 >
@@ -109,16 +115,16 @@ export type EntityColumnTypeMapByNames<
  *    value will be: { id: string }
  */
 export type EntityGeneratedColumnTypeMap<
-  Types extends DriverTypes,
-  Entity extends AnyEntity
+  Driver extends AnyDriver,
+  Entity extends AnyEntityCore
 > = NonNever<
   {
     [P in keyof EntityProps<Entity>]: P extends string & keyof Entity["columns"]
       ? Entity["columns"][P]["generated"] extends true
-        ? ColumnCompileType<Entity, P>
+        ? ColumnCompileType<Driver, Entity, P>
         : never
       : P extends keyof Entity["embeds"]
-      ? EntityGeneratedColumnTypeMap<Types, Entity["embeds"][P]>
+      ? EntityGeneratedColumnTypeMap<Driver, Entity["embeds"][P]>
       : never
   }
 >
@@ -136,16 +142,16 @@ export type EntityGeneratedColumnTypeMap<
  *    value will be: { id: string }
  */
 export type EntityDefaultColumnTypeMap<
-  Types extends DriverTypes,
-  Entity extends AnyEntity
+  Driver extends AnyDriver,
+  Entity extends AnyEntityCore
 > = NonNever<
   {
     [P in keyof EntityProps<Entity>]: P extends string & keyof Entity["columns"]
       ? Entity["columns"][P]["default"] extends string | number | boolean
-        ? ColumnCompileType<Entity, P>
+        ? ColumnCompileType<Driver, Entity, P>
         : never
       : P extends keyof Entity["embeds"]
-      ? EntityDefaultColumnTypeMap<Types, Entity["embeds"][P]>
+      ? EntityDefaultColumnTypeMap<Driver, Entity["embeds"][P]>
       : never
   }
 >
@@ -159,16 +165,22 @@ export type EntityColumnPaths<
   Entity extends AnyEntity,
   Parent extends string = "",
   Deepness extends string = "."
-> = ValueOf<
-  {
-    [P in keyof EntityProps<Entity>]?: P extends string &
-      keyof Entity["columns"]
-      ? `${Parent}${P}`
-      : P extends string & keyof Entity["embeds"]
-      ? EntityColumnPaths<Entity["embeds"][P], `${Parent}${P}.`, `${Deepness}.`>
-      : never
-  }
->
+> = Entity extends AnyEntityCore
+  ? ValueOf<
+      {
+        [P in keyof EntityProps<Entity>]?: P extends string &
+          keyof Entity["columns"]
+          ? `${Parent}${P}`
+          : P extends string & keyof Entity["embeds"]
+          ? EntityColumnPaths<
+              Entity["embeds"][P],
+              `${Parent}${P}.`,
+              `${Deepness}.`
+            >
+          : never
+      }
+    >
+  : string
 
 /**
  * Returns a type map entity columns with primary set to true.
@@ -190,32 +202,39 @@ export type EntityColumnPaths<
  *  - we use EntityPrimaryColumnValueMapAsCondition helper to simply code a bit
  */
 export type EntityPrimaryColumnTypeMap<
+  Driver extends AnyDriver,
   Entity extends AnyEntity,
   Deepness extends string = "."
-> = ForceCastIfNoKeys<
-  FlatTypeHint<
-    {
-      [P in keyof Entity["columnsEmbeds"] as EntityPrimariesValueMapAsCondition<
-        Entity,
-        P
-      > extends true
-        ? P
-        : never]: P extends string & keyof Entity["columns"]
-        ? ColumnCompileType<Entity, P>
-        : P extends keyof Entity["embeds"]
-        ? EntityPrimaryColumnTypeMap<Entity["embeds"][P], `${Deepness}.`>
-        : never
-    }
-  >,
-  unknown
->
+> = Entity extends AnyEntityCore
+  ? ForceCastIfNoKeys<
+      FlatTypeHint<
+        {
+          [P in keyof Entity["columnsEmbeds"] as EntityPrimariesValueMapAsCondition<
+            Entity,
+            P
+          > extends true
+            ? P
+            : never]: P extends string & keyof Entity["columns"]
+            ? ColumnCompileType<Driver, Entity, P>
+            : P extends keyof Entity["embeds"]
+            ? EntityPrimaryColumnTypeMap<
+                Driver,
+                Entity["embeds"][P],
+                `${Deepness}.`
+              >
+            : never
+        }
+      >,
+      unknown
+    >
+  : unknown
 
 /**
  * Returns all primary column names of a given entity.
  * Returns only primary column names of a "first" level of entity - only from columns.
  * Does not return primary column names from the entity embeds.
  */
-export type EntityColumnsPrimaryNames<Entity extends AnyEntity> = keyof {
+export type EntityColumnsPrimaryNames<Entity extends AnyEntityCore> = keyof {
   [P in keyof Entity["columns"] as Entity["columns"][P]["primary"] extends true
     ? P
     : never]: true
@@ -231,7 +250,7 @@ export type EntityColumnsPrimaryNames<Entity extends AnyEntity> = keyof {
  *  - check for EntityColumnsPrimaryNames is used to exclude empty embeds without primaries
  */
 export type EntityPrimariesValueMapAsCondition<
-  Entity extends AnyEntity,
+  Entity extends AnyEntityCore,
   Key extends keyof Entity["columnsEmbeds"],
   Deepness extends string = "."
 > = Key extends keyof Entity["columns"]

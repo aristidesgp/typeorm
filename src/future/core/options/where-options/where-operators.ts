@@ -1,4 +1,4 @@
-import { AnyEntity } from "../../entity/entity-core"
+import { AnyEntity, AnyEntityCore } from "../../entity/entity-core"
 import { WhereOperator } from "./index"
 
 export function Any<Entity extends AnyEntity, ValueType>(
@@ -159,7 +159,7 @@ export function Escaped<Entity extends AnyEntity, ValueType>(
 }
 
 export function Column<Entity extends AnyEntity, ValueType>(
-  name: keyof Entity["columns"],
+  name: Entity extends AnyEntityCore ? keyof Entity["columns"] : string,
   // alias?: string
 ): WhereOperator<Entity, ValueType> {
   return {

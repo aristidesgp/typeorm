@@ -6,7 +6,12 @@ import {
   QueryResult,
   UpdateResult,
 } from "../driver"
-import { AnyEntity, EntityColumnPaths } from "../entity"
+import {
+  AnyEntity,
+  EntityColumnPaths,
+  EntityFromReference,
+  EntityReference,
+} from "../entity"
 import { WhereOptions } from "../options"
 
 /**
@@ -16,8 +21,11 @@ export interface ManagerCommonRdbmsMethods<Driver extends AnyDriver> {
   /**
    * Creates a new query builder that can be used to build and execute any SQL query.
    */
-  createQueryBuilder<Entity extends AnyEntity>(
-    entity: () => Entity,
+  createQueryBuilder<
+    Reference extends EntityReference,
+    Entity extends EntityFromReference<Reference>
+  >(
+    entity: Reference,
     alias?: string,
     queryRunner?: QueryRunner,
   ): SelectQueryBuilder<Entity>
@@ -53,14 +61,22 @@ export interface ManagerCommonRdbmsMethods<Driver extends AnyDriver> {
    * Note: on some drivers this method uses TRUNCATE and may not work as you expect in transactions.
    * @see https://stackoverflow.com/a/5972738/925151
    */
-  clear<Entity extends AnyEntity>(entity: () => Entity): Promise<void>
+  clear<
+    Reference extends EntityReference,
+    Entity extends EntityFromReference<Reference>
+  >(
+    entity: Reference,
+  ): Promise<void>
 
   /**
    * Increments some column by provided value of the entities matched given conditions.
    */
-  increment<Entity extends AnyEntity>(
-    entity: () => Entity,
-    where: WhereOptions<Entity>,
+  increment<
+    Reference extends EntityReference,
+    Entity extends EntityFromReference<Reference>
+  >(
+    entity: Reference,
+    where: WhereOptions<Driver, Entity>,
     columnPath: EntityColumnPaths<Entity>,
     value: number,
   ): Promise<UpdateResult<Driver["types"]>>
@@ -68,9 +84,12 @@ export interface ManagerCommonRdbmsMethods<Driver extends AnyDriver> {
   /**
    * Decrements some column by provided value of the entities matched given conditions.
    */
-  decrement<Entity extends AnyEntity>(
-    entity: () => Entity,
-    where: WhereOptions<Entity>,
+  decrement<
+    Reference extends EntityReference,
+    Entity extends EntityFromReference<Reference>
+  >(
+    entity: Reference,
+    where: WhereOptions<Driver, Entity>,
     columnPath: EntityColumnPaths<Entity>,
     value: number,
   ): Promise<UpdateResult<Driver["types"]>>

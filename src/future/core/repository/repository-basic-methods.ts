@@ -1,5 +1,8 @@
+import { AnyDriver } from "../driver"
 import {
   AnyEntity,
+  EntityModelCreateType,
+  EntityModelForCreate,
   EntityModelPartial,
   EntityPrimaryColumnTypeMap,
 } from "../entity"
@@ -8,31 +11,36 @@ import { UnionToIntersection } from "../util"
 /**
  * Interface for repositories that implement basic entity methods supported by all drivers.
  */
-export interface RepositoryBasicMethods<Entity extends AnyEntity> {
+export interface RepositoryBasicMethods<
+  Driver extends AnyDriver,
+  Entity extends AnyEntity
+> {
   /**
    * Checks if entity has an id.
    * If entity has multiple ids, it will check them all.
    */
-  hasId(model: EntityModelPartial<Entity>): boolean
+  hasId(model: EntityModelPartial<Driver, Entity>): boolean
 
   /**
    * Gets entity id.
    * Returns *mixed* id - if entity contains multiple primary ids - object will be returned,
    * if entity contains a single primary id - directly value will be returned.
    */
-  getId<Model extends EntityModelPartial<Entity>>(
+  getId<Model extends EntityModelPartial<Driver, Entity>>(
     model: Model,
-  ): EntityPrimaryColumnTypeMap<Entity>
+  ): EntityPrimaryColumnTypeMap<Driver, Entity>
 
   /**
    * Creates a new entity instance.
    */
-  create<Model extends EntityModelPartial<Entity>>(model: Model): Model
+  create<Model extends EntityModelForCreate<Driver, Entity>>(
+    model: Model,
+  ): EntityModelCreateType<Driver, Entity, Model>
 
   /**
    * Merges multiple entities (or entity-like objects) into a given entity.
    */
-  merge<Models extends EntityModelPartial<Entity>[]>(
+  merge<Models extends EntityModelForCreate<Driver, Entity>[]>(
     ...models: Models
   ): UnionToIntersection<Models[number]>
 }

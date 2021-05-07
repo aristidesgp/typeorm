@@ -1,5 +1,7 @@
 import {
   AnyEntity,
+  EntityFromReference,
+  EntityReference,
   ManagerBase,
   ManagerBasicMethods,
   ManagerCommonRdbmsMethods,
@@ -25,8 +27,11 @@ export interface PostgresManager
    *
    * todo: change current implementation, repository should be inside entity, e.g. Entity["repository"]
    */
-  repository<Entity extends AnyEntity>(
-    entity: () => Entity,
+  repository<
+    Reference extends EntityReference,
+    Entity extends EntityFromReference<Reference>
+  >(
+    entity: Reference,
   ): /*EntityName extends keyof Repositories
     ? Repositories[EntityName]
     : */ PostgresRepository<Entity> // Entities[EntityName]
@@ -35,8 +40,12 @@ export interface PostgresManager
    * Gets an entity repository by a given entity name and applies given custom repository functions.
    * This method is used to create custom repositories.
    */
-  repository<Entity extends AnyEntity, CustomRepository>(
-    entity: () => Entity,
+  repository<
+    Reference extends EntityReference,
+    Entity extends EntityFromReference<Reference>,
+    CustomRepository
+  >(
+    entity: Reference,
     custom: CustomRepository & ThisType<PostgresRepository<Entity>>,
   ): PostgresRepository<Entity> & CustomRepository
 }

@@ -1,5 +1,5 @@
 import { AnyDriver } from "../driver"
-import { AnyEntity } from "./entity-core"
+import { AnyEntityCore } from "./entity-core"
 
 /**
  * List of embeds defined in the entity.
@@ -7,5 +7,5 @@ import { AnyEntity } from "./entity-core"
  * todo: create a separate type for embed and create "EntityLike" type for both of them
  */
 export type EntityEmbedList<Driver extends AnyDriver> = {
-  [key: string]: AnyEntity
+  [key: string]: AnyEntityCore
 }

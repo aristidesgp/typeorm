@@ -1,12 +1,18 @@
+import { AnyDriver } from "../driver"
 import {
+  EntityCoreSelection,
   FindOptions,
   FindOptionsMany,
-  FindOptionsSelect,
   FindReturnType,
 } from "../options"
 import { FindOptionsCount } from "../options/find-options/find-options-count"
-import { ForceCastIfUndefined } from "../util"
-import { AnyEntity, EntityReference, ReferencedEntity } from "./entity-core"
+import {
+  AnyEntity,
+  AnyEntityCore,
+  EntityInstance,
+  EntityReference,
+  ReferencedEntity,
+} from "./entity-core"
 import { EntityRelationReferencedColumnTypeMap } from "./entity-referenced-columns"
 import {
   EntityRelationManyToManyNotOwner,
@@ -19,28 +25,41 @@ import {
 
 export type EntityPropsMode = "all" | "create" | "virtuals"
 
-export type ArrayRelations<Entity extends AnyEntity> = {
-  [P in keyof Entity["relations"] as Entity["relations"][P] extends EntityRelationManyToManyOwner<EntityReference>
-    ? P
-    : Entity["relations"][P] extends EntityRelationManyToManyNotOwner<EntityReference>
-    ? P
-    : Entity["relations"][P] extends EntityRelationOneToMany<EntityReference>
-    ? P
-    : never]: Entity["relations"][P]
-}
+export type ArrayRelations<
+  Entity extends AnyEntity
+> = Entity extends AnyEntityCore
+  ? {
+      [P in keyof Entity["relations"] as Entity["relations"][P] extends EntityRelationManyToManyOwner<EntityReference>
+        ? P
+        : Entity["relations"][P] extends EntityRelationManyToManyNotOwner<EntityReference>
+        ? P
+        : Entity["relations"][P] extends EntityRelationOneToMany<EntityReference>
+        ? P
+        : never]: Entity["relations"][P]
+    }
+  : {
+      [P in keyof Entity as Entity[P] extends Array<any> ? P : never]: Entity[P]
+    }
 
-export type NonArrayRelations<Entity extends AnyEntity> = {
-  [P in keyof Entity["relations"] as Entity["relations"][P] extends EntityRelationOneToOneOwner<EntityReference>
-    ? P
-    : Entity["relations"][P] extends EntityRelationOneToOneNotOwner<EntityReference>
-    ? P
-    : Entity["relations"][P] extends EntityRelationManyToOne<EntityReference>
-    ? P
-    : never]: Entity["relations"][P]
-}
+export type NonArrayRelations<
+  Entity extends AnyEntity
+> = Entity extends AnyEntityCore
+  ? {
+      [P in keyof Entity["relations"] as Entity["relations"][P] extends EntityRelationOneToOneOwner<EntityReference>
+        ? P
+        : Entity["relations"][P] extends EntityRelationOneToOneNotOwner<EntityReference>
+        ? P
+        : Entity["relations"][P] extends EntityRelationManyToOne<EntityReference>
+        ? P
+        : never]: Entity["relations"][P]
+    }
+  : {
+      [P in keyof Entity as Entity[P] extends Array<any> ? never : P]: Entity[P]
+    }
 
 export type ActiveRecordMethods<
-  Entity extends AnyEntity
+  Driver extends AnyDriver,
+  Entity extends AnyEntityCore
 > = Entity["type"] extends "active-record"
   ? {
       save(): Promise<void>
@@ -50,16 +69,19 @@ export type ActiveRecordMethods<
       reload(): Promise<void>
     } & {
       [P in keyof ArrayRelations<Entity> as `load${Capitalize<string & P>}`]: <
-        Options extends FindOptionsMany<Entity>
+        Options extends FindOptionsMany<Driver, Entity>
       >(
         options?: Options,
       ) => Promise<
         FindReturnType<
+          Driver,
           ReferencedEntity<
             Entity,
             P extends keyof Entity["relations"] ? P : never
           >,
-          ForceCastIfUndefined<Options["select"], {}>,
+          Options["select"] extends EntityCoreSelection<Entity>
+            ? Options["select"]
+            : {},
           false,
           "all"
         >[]
@@ -68,15 +90,18 @@ export type ActiveRecordMethods<
       {
         [P in keyof NonArrayRelations<Entity> as `load${Capitalize<
           string & P
-        >}`]: <Options extends FindOptions<Entity>>(
+        >}`]: <Options extends FindOptions<Driver, Entity>>(
           options?: Options,
         ) => Promise<
           FindReturnType<
+            Driver,
             ReferencedEntity<
               Entity,
               P extends keyof Entity["relations"] ? P : never
             >,
-            ForceCastIfUndefined<Options["select"], {}>,
+            Options["select"] extends EntityCoreSelection<Entity>
+              ? Options["select"]
+              : {},
             false,
             "all"
           >
@@ -85,7 +110,7 @@ export type ActiveRecordMethods<
       {
         [P in keyof ArrayRelations<Entity> as `count${Capitalize<
           string & P
-        >}`]: <Options extends FindOptionsCount<Entity>>(
+        >}`]: <Options extends FindOptionsCount<Driver, Entity>>(
           options?: Options,
         ) => Promise<number>
       } &
@@ -93,6 +118,7 @@ export type ActiveRecordMethods<
         [P in keyof ArrayRelations<Entity> as `has${Capitalize<string & P>}`]: (
           entities: P extends keyof Entity["relations"]
             ? EntityRelationReferencedColumnTypeMap<
+                Driver,
                 ReferencedEntity<Entity, P>,
                 Entity["relations"][P]
               >
@@ -103,6 +129,7 @@ export type ActiveRecordMethods<
         [P in keyof ArrayRelations<Entity> as `add${Capitalize<string & P>}`]: (
           entities: P extends keyof Entity["relations"]
             ? EntityRelationReferencedColumnTypeMap<
+                Driver,
                 ReferencedEntity<Entity, P>,
                 Entity["relations"][P]
               >
@@ -115,6 +142,7 @@ export type ActiveRecordMethods<
         >}`]: (
           entities: P extends keyof Entity["relations"]
             ? EntityRelationReferencedColumnTypeMap<
+                Driver,
                 ReferencedEntity<Entity, P>,
                 Entity["relations"][P]
               >
@@ -124,65 +152,82 @@ export type ActiveRecordMethods<
   : {}
 
 export type EntityPropsWithModel<
+  Driver extends AnyDriver,
   Entity extends AnyEntity,
   PropsMode extends EntityPropsMode
-> = PropsMode extends "all"
-  ? EntityProps<Entity> &
-      {
-        [P in keyof Entity["model"]["type"]]: {
-          type: "model"
-          property: P
-        }
-      } &
-      {
+> = Entity extends AnyEntityCore
+  ? PropsMode extends "all"
+    ? EntityProps<Entity> &
+        {
+          [P in keyof Entity["model"]["type"]]: {
+            type: "model"
+            property: P
+          }
+        } &
+        {
+          [P in keyof Entity["virtualMethods"]]: {
+            type: "virtualMethods"
+            property: P
+          }
+        } &
+        {
+          [P in keyof Entity["virtualLazyProperties"]]: {
+            type: "virtualLazyProperties"
+            property: P
+          }
+        } &
+        {
+          [P in keyof Entity["virtualEagerProperties"]]: {
+            type: "virtualEagerProperties"
+            property: P
+          }
+        } &
+        ActiveRecordMethods<Driver, Entity>
+    : PropsMode extends "virtuals"
+    ? {
         [P in keyof Entity["virtualMethods"]]: {
           type: "virtualMethods"
           property: P
         }
-      } &
-      {
-        [P in keyof Entity["virtualLazyProperties"]]: {
-          type: "virtualLazyProperties"
-          property: P
+      }
+    : EntityProps<Entity> &
+        {
+          [P in keyof Entity["model"]["type"]]: {
+            type: "model"
+            property: P
+          }
         }
-      } &
-      {
-        [P in keyof Entity["virtualEagerProperties"]]: {
-          type: "virtualEagerProperties"
-          property: P
-        }
-      } &
-      ActiveRecordMethods<Entity>
-  : PropsMode extends "virtuals"
-  ? {
-      [P in keyof Entity["virtualMethods"]]: {
-        type: "virtualMethods"
+  : {
+      [P in keyof Entity]: {
+        type: "class-property"
         property: P
       }
     }
-  : EntityProps<Entity> &
+
+export type EntityProps<Entity extends AnyEntity> = Entity extends AnyEntityCore
+  ? {
+      [P in keyof Entity["columns"]]: {
+        type: "column"
+        property: P
+      }
+    } &
       {
-        [P in keyof Entity["model"]["type"]]: {
-          type: "model"
+        [P in keyof Entity["relations"]]: {
+          type: "relation"
+          property: P
+        }
+      } &
+      {
+        [P in keyof Entity["embeds"]]: {
+          type: "embed"
           property: P
         }
       }
-
-export type EntityProps<Entity extends AnyEntity> = {
-  [P in keyof Entity["columns"]]: {
-    type: "column"
-    property: P
-  }
-} &
-  {
-    [P in keyof Entity["relations"]]: {
-      type: "relation"
-      property: P
+  : Entity extends EntityInstance
+  ? {
+      [P in keyof Entity]: {
+        type: "class-property"
+        property: P
+      }
     }
-  } &
-  {
-    [P in keyof Entity["embeds"]]: {
-      type: "embed"
-      property: P
-    }
-  }
+  : unknown

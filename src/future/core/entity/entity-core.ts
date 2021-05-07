@@ -8,10 +8,7 @@ import {
 import { EntityEmbedList } from "./entity-embeds"
 import { EntityRelation, EntityRelationList } from "./entity-relations"
 
-/**
- * Represents any entity. Convenience type.
- */
-export type AnyEntity = EntityCore<
+export type AnyEntityCore = EntityCore<
   EntityType,
   AnyDriver,
   AnyModel,
@@ -22,6 +19,14 @@ export type AnyEntity = EntityCore<
   EntityProperties<AnyDriver>,
   EntityProperties<AnyDriver>
 >
+
+/**
+ * Represents any entity. Convenience type.
+ */
+export type AnyEntity = AnyEntityCore | EntityInstance
+
+export type EntityInstance = InstanceType<EntityClass>
+export type EntityClass = new (...args: any) => any // & { driver: AnyDriver }
 
 /**
  * Core entity.
@@ -52,7 +57,7 @@ export interface EntityCore<
   columnsEmbedsRelations: Columns & Embeds & Relations
 }
 
-export type EntityType = "classic" | "active-record"
+export type EntityType = "entity-schema" | "active-record" | "class"
 
 /**
  * List of named entities.
@@ -65,14 +70,22 @@ export type AnyEntityList = {
  * Function that returns entity.
  * Used for referencing entities because of circular problems.
  */
-export type EntityReference = () => AnyEntity
+export type EntityReference = (() => AnyEntityCore) | EntityClass
+
+export type EntityFromReference<
+  Reference extends EntityReference
+> = Reference extends () => infer U
+  ? U
+  : Reference extends EntityClass
+  ? InstanceType<Reference>
+  : unknown
 
 /**
  * Extracts entity that was referenced in a given entity relation.
  * For example for ReferencedEntity<Any, User, "avatar"> returns "Photo" entity.
  */
 export type ReferencedEntity<
-  Entity extends AnyEntity,
+  Entity extends AnyEntityCore,
   RelationName extends keyof Entity["relations"]
 > = Entity["relations"][RelationName] extends EntityRelation<any>
   ? ReturnType<Entity["relations"][RelationName]["reference"]>
