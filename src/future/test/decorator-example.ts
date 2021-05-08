@@ -1,5 +1,5 @@
-import { DataSource, EntityRelationReferencedColumnTypeMap } from "../core"
-import { entityCls, postgres } from "../postgres"
+import { DataSource } from "../core"
+import { postgres } from "../postgres"
 
 export class PhotoEntity {
   id: number

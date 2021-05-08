@@ -8,10 +8,10 @@ import {
 import { FindOptionsCount } from "../options/find-options/find-options-count"
 import {
   AnyEntity,
-  AnyEntityCore,
-  EntityInstance,
+  AnyEntitySchema,
+  EntityClassInstance,
   EntityReference,
-  ReferencedEntity,
+  RelationEntity,
 } from "./entity-core"
 import { EntityRelationReferencedColumnTypeMap } from "./entity-referenced-columns"
 import {
@@ -27,7 +27,7 @@ export type EntityPropsMode = "all" | "create" | "virtuals"
 
 export type ArrayRelations<
   Entity extends AnyEntity
-> = Entity extends AnyEntityCore
+> = Entity extends AnyEntitySchema
   ? {
       [P in keyof Entity["relations"] as Entity["relations"][P] extends EntityRelationManyToManyOwner<EntityReference>
         ? P
@@ -43,7 +43,7 @@ export type ArrayRelations<
 
 export type NonArrayRelations<
   Entity extends AnyEntity
-> = Entity extends AnyEntityCore
+> = Entity extends AnyEntitySchema
   ? {
       [P in keyof Entity["relations"] as Entity["relations"][P] extends EntityRelationOneToOneOwner<EntityReference>
         ? P
@@ -59,7 +59,7 @@ export type NonArrayRelations<
 
 export type ActiveRecordMethods<
   Driver extends AnyDriver,
-  Entity extends AnyEntityCore
+  Entity extends AnyEntitySchema
 > = Entity["type"] extends "active-record"
   ? {
       save(): Promise<void>
@@ -75,7 +75,7 @@ export type ActiveRecordMethods<
       ) => Promise<
         FindReturnType<
           Driver,
-          ReferencedEntity<
+          RelationEntity<
             Entity,
             P extends keyof Entity["relations"] ? P : never
           >,
@@ -95,7 +95,7 @@ export type ActiveRecordMethods<
         ) => Promise<
           FindReturnType<
             Driver,
-            ReferencedEntity<
+            RelationEntity<
               Entity,
               P extends keyof Entity["relations"] ? P : never
             >,
@@ -119,7 +119,7 @@ export type ActiveRecordMethods<
           entities: P extends keyof Entity["relations"]
             ? EntityRelationReferencedColumnTypeMap<
                 Driver,
-                ReferencedEntity<Entity, P>,
+                RelationEntity<Entity, P>,
                 Entity["relations"][P]
               >
             : never,
@@ -130,7 +130,7 @@ export type ActiveRecordMethods<
           entities: P extends keyof Entity["relations"]
             ? EntityRelationReferencedColumnTypeMap<
                 Driver,
-                ReferencedEntity<Entity, P>,
+                RelationEntity<Entity, P>,
                 Entity["relations"][P]
               >
             : never,
@@ -143,7 +143,7 @@ export type ActiveRecordMethods<
           entities: P extends keyof Entity["relations"]
             ? EntityRelationReferencedColumnTypeMap<
                 Driver,
-                ReferencedEntity<Entity, P>,
+                RelationEntity<Entity, P>,
                 Entity["relations"][P]
               >
             : never,
@@ -155,7 +155,7 @@ export type EntityPropsWithModel<
   Driver extends AnyDriver,
   Entity extends AnyEntity,
   PropsMode extends EntityPropsMode
-> = Entity extends AnyEntityCore
+> = Entity extends AnyEntitySchema
   ? PropsMode extends "all"
     ? EntityProps<Entity> &
         {
@@ -204,7 +204,9 @@ export type EntityPropsWithModel<
       }
     }
 
-export type EntityProps<Entity extends AnyEntity> = Entity extends AnyEntityCore
+export type EntityProps<
+  Entity extends AnyEntity
+> = Entity extends AnyEntitySchema
   ? {
       [P in keyof Entity["columns"]]: {
         type: "column"
@@ -223,7 +225,7 @@ export type EntityProps<Entity extends AnyEntity> = Entity extends AnyEntityCore
           property: P
         }
       }
-  : Entity extends EntityInstance
+  : Entity extends EntityClassInstance
   ? {
       [P in keyof Entity]: {
         type: "class-property"

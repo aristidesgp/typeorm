@@ -2,14 +2,14 @@ import { AnyDriver } from "../../driver"
 import {
   ActiveRecordMethods,
   AnyEntity,
-  AnyEntityCore,
+  AnyEntitySchema,
   ColumnCompileType,
-  EntityClass,
-  EntityInstance,
+  EntityClassDefinition,
+  EntityClassInstance,
   EntityPropertiesItem,
   EntityPropsMode,
   EntityPropsWithModel,
-  ReferencedEntity,
+  RelationEntity,
 } from "../../entity"
 import { ForceCastIfExtends } from "../../util"
 
@@ -40,23 +40,23 @@ import { ForceCastIfExtends } from "../../util"
  */
 export type FindOptionsSelect<
   Entity extends AnyEntity
-> = Entity extends AnyEntityCore
+> = Entity extends AnyEntitySchema
   ? EntityCoreSelection<Entity>
-  : Entity extends EntityInstance
+  : Entity extends EntityClassInstance
   ? EntityClassSelection<Entity>
   : unknown
 
-export type EntityClassSelection<Entity extends EntityInstance> = {
+export type EntityClassSelection<Entity extends EntityClassInstance> = {
   [P in keyof Entity]?: Entity[P] extends Array<infer U>
-    ? U extends EntityClass
+    ? U extends EntityClassDefinition
       ? true | false | FindOptionsSelect<InstanceType<U>>
       : true | false
-    : Entity[P] extends EntityClass
+    : Entity[P] extends EntityClassDefinition
     ? true | false | FindOptionsSelect<InstanceType<Entity[P]>>
     : true | false
 }
 
-export type EntityCoreSelection<Entity extends AnyEntityCore> = {
+export type EntityCoreSelection<Entity extends AnyEntitySchema> = {
   [P in keyof Entity["columns"]]?: true | false
 } &
   {
@@ -66,7 +66,7 @@ export type EntityCoreSelection<Entity extends AnyEntityCore> = {
     [P in keyof Entity["relations"]]?:
       | true
       | false
-      | FindOptionsSelect<ReferencedEntity<Entity, P>>
+      | FindOptionsSelect<RelationEntity<Entity, P>>
   } &
   {
     [P in keyof Entity["embeds"]]?: FindOptionsSelect<Entity["embeds"][P]>
@@ -74,7 +74,7 @@ export type EntityCoreSelection<Entity extends AnyEntityCore> = {
 
 export type FindReturnTypeProperty<
   Driver extends AnyDriver,
-  Entity extends AnyEntityCore,
+  Entity extends AnyEntitySchema,
   Selection extends EntityCoreSelection<Entity>,
   P, // extends string, // & keyof EntityPropsWithModel<Entity, any>,
   // Property extends EntityPropsWithModel<Entity, any>[P]["property"],
@@ -95,14 +95,14 @@ export type FindReturnTypeProperty<
     ? Entity["relations"][P]["type"] extends "many-to-many" | "one-to-many"
       ? FindReturnType<
           Driver,
-          ReferencedEntity<Entity, P>,
+          RelationEntity<Entity, P>,
           Selection[string & P] extends object ? Selection[string & P] : {},
           false,
           PropsMode
         >[]
       : FindReturnType<
           Driver,
-          ReferencedEntity<Entity, P>,
+          RelationEntity<Entity, P>,
           Selection[string & P] extends object ? Selection[string & P] : {},
           false,
           PropsMode
@@ -111,14 +111,14 @@ export type FindReturnTypeProperty<
     ? Entity["relations"][P]["type"] extends "many-to-many" | "one-to-many" // Entity["model"]["type"][P] extends Array<infer U> ?
       ? FindReturnType<
           Driver,
-          ReferencedEntity<Entity, P>,
+          RelationEntity<Entity, P>,
           {},
           false,
           PropsMode
         >[]
       : FindReturnType<
           Driver,
-          ReferencedEntity<Entity, P>,
+          RelationEntity<Entity, P>,
           {},
           false,
           PropsMode
@@ -160,7 +160,7 @@ export type FindReturnTypeProperty<
   ? ActiveRecordMethods<Driver, Entity>[P]
   : never
 
-export type OnlyColumnKeys<Selection, Entity extends AnyEntityCore> = {
+export type OnlyColumnKeys<Selection, Entity extends AnyEntitySchema> = {
   [P in keyof Selection]: Selection[P] extends true
     ? P extends keyof Entity["columns"]
       ? P
@@ -179,7 +179,7 @@ export type OnlyColumnKeys<Selection, Entity extends AnyEntityCore> = {
  */
 export type EntitySelectionTruthyKeys<
   Driver extends AnyDriver,
-  Entity extends AnyEntityCore,
+  Entity extends AnyEntitySchema,
   Selection extends EntityCoreSelection<Entity>
 > =
   | {
@@ -198,7 +198,7 @@ export type EntitySelectionTruthyKeys<
  */
 export type EntitySelectionAllColumns<
   Driver extends AnyDriver,
-  Entity extends AnyEntityCore,
+  Entity extends AnyEntitySchema,
   Selection extends EntityCoreSelection<Entity>
 > = keyof (Entity["columns"] &
   {
@@ -217,17 +217,17 @@ export type FindType<
   Driver extends AnyDriver,
   Entity extends AnyEntity,
   Selection extends FindOptionsSelect<Entity> | undefined
-> = Entity extends AnyEntityCore
+> = Entity extends AnyEntitySchema
   ? Selection extends EntityCoreSelection<Entity>
     ? FindReturnType<Driver, Entity, Selection, false, "all">
     : FindReturnType<Driver, Entity, {}, false, "all">
-  : Entity extends EntityInstance
+  : Entity extends EntityClassInstance
   ? Entity
   : unknown
 
 export type FindReturnType<
   Driver extends AnyDriver,
-  Entity extends AnyEntityCore,
+  Entity extends AnyEntitySchema,
   Selection extends EntityCoreSelection<Entity>, // if something went wrong use it: extends FindOptionsSelect<Source, Entity>,
   ParentPartiallySelected extends boolean,
   PropsMode extends EntityPropsMode

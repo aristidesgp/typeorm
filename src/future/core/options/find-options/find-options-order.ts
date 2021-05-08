@@ -1,9 +1,9 @@
 import { AnyDriver } from "../../driver"
 import {
   AnyEntity,
-  AnyEntityCore,
-  EntityClass,
-  ReferencedEntity,
+  AnyEntitySchema,
+  EntityClassDefinition,
+  RelationEntity,
 } from "../../entity"
 
 /**
@@ -12,14 +12,14 @@ import {
 export type FindOptionsOrder<
   Driver extends AnyDriver,
   Entity extends AnyEntity
-> = Entity extends AnyEntityCore
+> = Entity extends AnyEntitySchema
   ? {
       [P in keyof Entity["columns"]]?: Driver["types"]["orderTypes"]
     } &
       {
         [P in keyof Entity["relations"]]?: FindOptionsOrder<
           Driver,
-          ReferencedEntity<Entity, P>
+          RelationEntity<Entity, P>
         >
       } &
       {
@@ -30,10 +30,10 @@ export type FindOptionsOrder<
       }
   : {
       [P in keyof Entity]?: Entity[P] extends Array<infer U>
-        ? U extends EntityClass
+        ? U extends EntityClassDefinition
           ? FindOptionsOrder<Driver, InstanceType<U>>
           : Driver["types"]["orderTypes"]
-        : Entity[P] extends EntityClass
+        : Entity[P] extends EntityClassDefinition
         ? FindOptionsOrder<Driver, InstanceType<Entity[P]>>
         : Driver["types"]["orderTypes"]
     }

@@ -1,7 +1,7 @@
 import { AnyModel } from "../../../repository/model"
 import { AnyDriver, DriverTypes } from "../driver"
 import { FlatTypeHint, ForceCastIfNoKeys, NonNever, ValueOf } from "../util"
-import { AnyEntity, AnyEntityCore } from "./entity-core"
+import { AnyEntity, AnyEntitySchema } from "./entity-core"
 import { EntityProps } from "./entity-utils"
 
 /**
@@ -49,7 +49,7 @@ export type ColumnCompileType<
   Driver extends AnyDriver,
   Entity extends AnyEntity,
   ColumnName extends string
-> = Entity extends AnyEntityCore
+> = Entity extends AnyEntitySchema
   ? HasEntityModelColumnType<Entity["model"], ColumnName> extends true
     ? Entity["columns"][ColumnName]["array"] extends true
       ? Entity["columns"][ColumnName]["nullable"] extends true
@@ -92,7 +92,7 @@ export type HasEntityModelColumnType<
  */
 export type EntityColumnTypeMapByNames<
   Driver extends AnyDriver,
-  Entity extends AnyEntityCore,
+  Entity extends AnyEntitySchema,
   ColumnNames extends string
 > = FlatTypeHint<
   {
@@ -116,7 +116,7 @@ export type EntityColumnTypeMapByNames<
  */
 export type EntityGeneratedColumnTypeMap<
   Driver extends AnyDriver,
-  Entity extends AnyEntityCore
+  Entity extends AnyEntitySchema
 > = NonNever<
   {
     [P in keyof EntityProps<Entity>]: P extends string & keyof Entity["columns"]
@@ -143,7 +143,7 @@ export type EntityGeneratedColumnTypeMap<
  */
 export type EntityDefaultColumnTypeMap<
   Driver extends AnyDriver,
-  Entity extends AnyEntityCore
+  Entity extends AnyEntitySchema
 > = NonNever<
   {
     [P in keyof EntityProps<Entity>]: P extends string & keyof Entity["columns"]
@@ -165,7 +165,7 @@ export type EntityColumnPaths<
   Entity extends AnyEntity,
   Parent extends string = "",
   Deepness extends string = "."
-> = Entity extends AnyEntityCore
+> = Entity extends AnyEntitySchema
   ? ValueOf<
       {
         [P in keyof EntityProps<Entity>]?: P extends string &
@@ -205,7 +205,7 @@ export type EntityPrimaryColumnTypeMap<
   Driver extends AnyDriver,
   Entity extends AnyEntity,
   Deepness extends string = "."
-> = Entity extends AnyEntityCore
+> = Entity extends AnyEntitySchema
   ? ForceCastIfNoKeys<
       FlatTypeHint<
         {
@@ -234,7 +234,7 @@ export type EntityPrimaryColumnTypeMap<
  * Returns only primary column names of a "first" level of entity - only from columns.
  * Does not return primary column names from the entity embeds.
  */
-export type EntityColumnsPrimaryNames<Entity extends AnyEntityCore> = keyof {
+export type EntityColumnsPrimaryNames<Entity extends AnyEntitySchema> = keyof {
   [P in keyof Entity["columns"] as Entity["columns"][P]["primary"] extends true
     ? P
     : never]: true
@@ -250,7 +250,7 @@ export type EntityColumnsPrimaryNames<Entity extends AnyEntityCore> = keyof {
  *  - check for EntityColumnsPrimaryNames is used to exclude empty embeds without primaries
  */
 export type EntityPrimariesValueMapAsCondition<
-  Entity extends AnyEntityCore,
+  Entity extends AnyEntitySchema,
   Key extends keyof Entity["columnsEmbeds"],
   Deepness extends string = "."
 > = Key extends keyof Entity["columns"]

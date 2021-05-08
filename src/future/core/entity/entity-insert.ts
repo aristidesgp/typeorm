@@ -3,7 +3,7 @@ import { AnyDriver } from "../driver"
 import { FindReturnType } from "../options"
 import { FlatTypeHint, UndefinedToOptional } from "../util"
 import { ColumnCompileType, EntityColumn } from "./entity-columns"
-import { AnyEntity, AnyEntityCore, ReferencedEntity } from "./entity-core"
+import { AnyEntity, AnyEntitySchema, RelationEntity } from "./entity-core"
 import { EntityRelationReferencedColumnTypeMap } from "./entity-referenced-columns"
 
 /**
@@ -35,7 +35,7 @@ export type ColumnCompileTypeForInsert<
 export type EntityModelForInsert<
   Driver extends AnyDriver,
   Entity extends AnyEntity
-> = Entity extends AnyEntityCore
+> = Entity extends AnyEntitySchema
   ? FlatTypeHint<
       UndefinedToOptional<
         {
@@ -51,7 +51,7 @@ export type EntityModelForInsert<
             ?
                 | EntityRelationReferencedColumnTypeMap<
                     Driver,
-                    ReferencedEntity<Entity, P>,
+                    RelationEntity<Entity, P>,
                     Entity["relations"][P]
                   >
                 | undefined
@@ -72,7 +72,7 @@ export type EntityModelAfterInsert<
   Driver extends AnyDriver,
   Entity extends AnyEntity,
   Model
-> = Entity extends AnyEntityCore
+> = Entity extends AnyEntitySchema
   ? Model &
       FindReturnType<
         Driver,

@@ -4,7 +4,7 @@ import {
   EntityColumnTypeMapByNames,
   EntityPrimaryColumnTypeMap,
 } from "./entity-columns"
-import { AnyEntityCore } from "./entity-core"
+import { AnyEntitySchema } from "./entity-core"
 import {
   EntityRelation,
   EntityRelationManyToManyNotOwner,
@@ -82,7 +82,7 @@ import {
  */
 export type EntityRelationReferencedColumnTypeMap<
   Driver extends AnyDriver,
-  ReferencedEntity extends AnyEntityCore,
+  ReferencedEntity extends AnyEntitySchema,
   Relation extends EntityRelation<any>
 > = Relation extends EntityRelationManyToManyOwner<any>
   ? Relation["referencedTable"] extends EntityRelationReferencedTable
@@ -141,7 +141,7 @@ export type EntityRelationReferencedColumnTypeMap<
  */
 export type EntityRelationReferencedColumnMixedTypeMap<
   Driver extends AnyDriver,
-  ReferencedEntity extends AnyEntityCore,
+  ReferencedEntity extends AnyEntitySchema,
   ReferencedColumnMixed extends
     | EntityRelationReferencedColumn[]
     | EntityRelationReferencedColumn

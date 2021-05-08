@@ -8,9 +8,26 @@ import {
 import { EntityEmbedList } from "./entity-embeds"
 import { EntityRelation, EntityRelationList } from "./entity-relations"
 
-export type AnyEntityCore = EntityCore<
-  EntityType,
-  AnyDriver,
+/**
+ * Represents any entity - entity schema or class-defined entity.
+ */
+export type AnyEntity = AnyEntitySchema | EntityClassInstance
+
+/**
+ * Entity class returning type, e.g. properties of "User", properties of "Photo", etc.
+ */
+export type EntityClassInstance = InstanceType<EntityClassDefinition>
+
+/**
+ * Entity class function, e.g. "User", "Photo", etc.
+ */
+export type EntityClassDefinition = new (...args: any) => any
+
+/**
+ * Any entity schema.
+ */
+export type AnyEntitySchema = EntitySchema<
+  EntitySchemaType,
   AnyModel,
   EntityColumnList<AnyDriver>,
   EntityRelationList,
@@ -21,31 +38,21 @@ export type AnyEntityCore = EntityCore<
 >
 
 /**
- * Represents any entity. Convenience type.
+ * This type represents entity defined as "entity schema".
+ * There are two ways of entity definition: entity schema and class.
  */
-export type AnyEntity = AnyEntityCore | EntityInstance
-
-export type EntityInstance = InstanceType<EntityClass>
-export type EntityClass = new (...args: any) => any // & { driver: AnyDriver }
-
-/**
- * Core entity.
- * Drivers must build their entities and return this interface.
- */
-export interface EntityCore<
-  Type extends EntityType,
-  Driver extends AnyDriver,
+export interface EntitySchema<
+  Type extends EntitySchemaType,
   Model extends AnyModel,
-  Columns extends EntityColumnList<Driver>,
+  Columns extends EntityColumnList<AnyDriver>,
   Relations extends EntityRelationList,
-  Embeds extends EntityEmbedList<Driver>,
+  Embeds extends EntityEmbedList<AnyDriver>,
   VirtualMethods extends EntityMethods,
-  VirtualLazyProperties extends EntityProperties<Driver>,
-  VirtualEagerProperties extends EntityProperties<Driver>
+  VirtualLazyProperties extends EntityProperties<AnyDriver>,
+  VirtualEagerProperties extends EntityProperties<AnyDriver>
 > {
   "@type": "Entity"
   type: Type
-  driver: Driver
   model: Model
   virtualMethods: VirtualMethods
   virtualLazyProperties: VirtualLazyProperties
@@ -57,35 +64,47 @@ export interface EntityCore<
   columnsEmbedsRelations: Columns & Embeds & Relations
 }
 
-export type EntityType = "entity-schema" | "active-record" | "class"
+/**
+ * There are two types of entity schemas:
+ *
+ * - default
+ * - active-record
+ *
+ * active-record type adds special methods (like "save", "remove", etc.) to your entities.
+ */
+export type EntitySchemaType = "default" | "active-record"
 
 /**
- * List of named entities.
+ * List of named entity definitions.
  */
 export type AnyEntityList = {
   [name: string]: EntityReference
 }
 
 /**
- * Function that returns entity.
- * Used for referencing entities because of circular problems.
+ * Reference to some entity.
+ * Entity schema is wrapped into function because of circular problems.
  */
-export type EntityReference = (() => AnyEntityCore) | EntityClass
+export type EntityReference = (() => AnyEntitySchema) | EntityClassDefinition
 
+/**
+ * Extracts entity from entity reference.
+ */
 export type EntityFromReference<
   Reference extends EntityReference
 > = Reference extends () => infer U
   ? U
-  : Reference extends EntityClass
+  : Reference extends EntityClassDefinition
   ? InstanceType<Reference>
   : unknown
 
 /**
  * Extracts entity that was referenced in a given entity relation.
  * For example for ReferencedEntity<Any, User, "avatar"> returns "Photo" entity.
+ * Used only in entity schemas.
  */
-export type ReferencedEntity<
-  Entity extends AnyEntityCore,
+export type RelationEntity<
+  Entity extends AnyEntitySchema,
   RelationName extends keyof Entity["relations"]
 > = Entity["relations"][RelationName] extends EntityRelation<any>
   ? ReturnType<Entity["relations"][RelationName]["reference"]>

@@ -1,10 +1,10 @@
 import { AnyDriver } from "../../driver"
 import {
   AnyEntity,
-  AnyEntityCore,
+  AnyEntitySchema,
   ColumnCompileType,
   EntityProps,
-  ReferencedEntity,
+  RelationEntity,
 } from "../../entity"
 
 export type WhereExpression<
@@ -54,7 +54,7 @@ export type WhereOptionsOperatorProperty<
   Driver extends AnyDriver,
   Entity extends AnyEntity,
   P extends keyof EntityProps<Entity>
-> = Entity extends AnyEntityCore
+> = Entity extends AnyEntitySchema
   ? P extends string & keyof Entity["columns"]
     ?
         | ColumnCompileType<Driver, Entity, P>
@@ -63,7 +63,7 @@ export type WhereOptionsOperatorProperty<
     : P extends keyof Entity["embeds"]
     ? object & WhereOptions<Driver, Entity["embeds"][P]>
     : P extends keyof Entity["relations"]
-    ? object & WhereOptions<Driver, ReferencedEntity<Entity, P>>
+    ? object & WhereOptions<Driver, RelationEntity<Entity, P>>
     : never
   : P extends keyof Entity
   ?
