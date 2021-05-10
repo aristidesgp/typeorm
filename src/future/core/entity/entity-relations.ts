@@ -1,4 +1,3 @@
-import { EntityColumnPaths } from "./entity-columns"
 import { EntityReference } from "./entity-core"
 
 /**

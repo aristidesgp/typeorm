@@ -83,7 +83,7 @@ export type FindReturnTypeProperty<
 > = P extends string & keyof Entity["columns"] // if property is a column, just return it's type inferred from a driver column types defined in the entity
   ? ColumnCompileType<Driver, Entity, P>
   : P extends keyof Entity["embeds"] // if selected property is an embed, we just go recursively
-  ? FindReturnType<
+  ? EntitySchemaComputedModel<
       Driver,
       Entity["embeds"][P],
       Selection[string & P] extends object ? Selection[string & P] : {},
@@ -93,14 +93,14 @@ export type FindReturnTypeProperty<
   : P extends keyof Entity["relations"] // if selected property is relation
   ? Selection[P] extends object // relation selection can be defined two ways: // 1. we can select some properties of the related object
     ? Entity["relations"][P]["type"] extends "many-to-many" | "one-to-many"
-      ? FindReturnType<
+      ? EntitySchemaComputedModel<
           Driver,
           RelationEntity<Entity, P>,
           Selection[string & P] extends object ? Selection[string & P] : {},
           false,
           PropsMode
         >[]
-      : FindReturnType<
+      : EntitySchemaComputedModel<
           Driver,
           RelationEntity<Entity, P>,
           Selection[string & P] extends object ? Selection[string & P] : {},
@@ -109,14 +109,14 @@ export type FindReturnTypeProperty<
         >
     : Selection[P] extends true // 2. we can select the whole related object (means its columns) by using relation: true
     ? Entity["relations"][P]["type"] extends "many-to-many" | "one-to-many" // Entity["model"]["type"][P] extends Array<infer U> ?
-      ? FindReturnType<
+      ? EntitySchemaComputedModel<
           Driver,
           RelationEntity<Entity, P>,
           {},
           false,
           PropsMode
         >[]
-      : FindReturnType<
+      : EntitySchemaComputedModel<
           Driver,
           RelationEntity<Entity, P>,
           {},
@@ -219,13 +219,13 @@ export type FindType<
   Selection extends FindOptionsSelect<Entity> | undefined
 > = Entity extends AnyEntitySchema
   ? Selection extends EntityCoreSelection<Entity>
-    ? FindReturnType<Driver, Entity, Selection, false, "all">
-    : FindReturnType<Driver, Entity, {}, false, "all">
+    ? EntitySchemaComputedModel<Driver, Entity, Selection, false, "all">
+    : EntitySchemaComputedModel<Driver, Entity, {}, false, "all">
   : Entity extends EntityClassInstance
   ? Entity
   : unknown
 
-export type FindReturnType<
+export type EntitySchemaComputedModel<
   Driver extends AnyDriver,
   Entity extends AnyEntitySchema,
   Selection extends EntityCoreSelection<Entity>, // if something went wrong use it: extends FindOptionsSelect<Source, Entity>,

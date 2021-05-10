@@ -1,11 +1,10 @@
 import { AnyDriver } from "../driver"
 import {
-  AnyEntity,
   EntityFromReference,
+  InsertedEntityModel,
+  EntityModelPartial,
   EntityReference,
-} from "../entity/entity-core"
-import { EntityModelAfterInsert } from "../entity/entity-insert"
-import { EntityModelPartial } from "../entity/entity-model"
+} from "../entity"
 import {
   ArchiveByOptions,
   ArchiveOptions,
@@ -16,7 +15,7 @@ import {
   UnarchiveOptions,
   UpdateByOptions,
   UpdateOptions,
-} from "../options/persistence-options"
+} from "../options"
 
 /**
  * Interface for managers that implement persistence / alteration operations.
@@ -35,7 +34,7 @@ export interface ManagerPersistenceMethods<Driver extends AnyDriver> {
     entity: Reference,
     model: Model,
     options?: InsertOptions<Driver, Entity>,
-  ): Promise<EntityModelAfterInsert<Driver, Entity, Model>>
+  ): Promise<InsertedEntityModel<Driver, Entity, Model>>
 
   /**
    * Inserts entities in bulk.

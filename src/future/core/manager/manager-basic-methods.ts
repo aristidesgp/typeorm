@@ -1,13 +1,13 @@
 import { AnyDriver } from "../driver"
 import {
   EntityFromReference,
-  EntityModelCreateType,
-  EntityModelForCreate,
+  CreatedEntityModel,
+  EntityCreateParams,
+  MergedEntityModel,
   EntityModelPartial,
   EntityPrimaryColumnTypeMap,
   EntityReference,
 } from "../entity"
-import { UnionToIntersection } from "../util"
 
 /**
  * Interface for managers that implement basic entity methods supported by all drivers.
@@ -35,11 +35,10 @@ export interface ManagerBasicMethods<Driver extends AnyDriver> {
    */
   getId<
     Reference extends EntityReference,
-    Entity extends EntityFromReference<Reference>,
-    Model extends EntityModelPartial<Driver, Entity>
+    Entity extends EntityFromReference<Reference>
   >(
     entity: Reference,
-    model: Model,
+    model: EntityModelPartial<Driver, Entity>,
   ): EntityPrimaryColumnTypeMap<Driver, Entity>
 
   /**
@@ -48,11 +47,11 @@ export interface ManagerBasicMethods<Driver extends AnyDriver> {
   create<
     Reference extends EntityReference,
     Entity extends EntityFromReference<Reference>,
-    Model extends EntityModelForCreate<Driver, Entity>
+    Model extends EntityCreateParams<Driver, Entity>
   >(
     entity: Reference,
     model: Model,
-  ): EntityModelCreateType<Driver, Entity, Model>
+  ): CreatedEntityModel<Driver, Entity, Model>
 
   /**
    * Merges multiple entities (or entity-like objects) into a given entity.
@@ -60,9 +59,9 @@ export interface ManagerBasicMethods<Driver extends AnyDriver> {
   merge<
     Reference extends EntityReference,
     Entity extends EntityFromReference<Reference>,
-    Models extends EntityModelForCreate<Driver, Entity>[]
+    Models extends EntityCreateParams<Driver, Entity>[]
   >(
     entity: Reference,
     ...models: Models
-  ): UnionToIntersection<Models[number]>
+  ): MergedEntityModel<Driver, Entity, Models>
 }

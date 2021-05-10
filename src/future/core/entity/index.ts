@@ -1,7 +1,6 @@
 export * from "./entity-columns"
 export * from "./entity-core"
 export * from "./entity-embeds"
-export * from "./entity-insert"
 export * from "./entity-model"
 export * from "./entity-referenced-columns"
 export * from "./entity-relations"

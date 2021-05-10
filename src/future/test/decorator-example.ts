@@ -19,10 +19,6 @@ export class UserEntity {
   photos: PhotoEntity[]
 }
 
-// export const PhotoEntity = () => entityCls(Photo)
-// export const AlbumEntity = () => entityCls(Album)
-// export const UserEntity = () => entityCls(User)
-
 // -----------------------------------------------------------------
 // usage example
 // -----------------------------------------------------------------

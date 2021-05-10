@@ -1,12 +1,12 @@
 import { AnyDriver } from "../driver"
 import {
   AnyEntity,
-  EntityModelCreateType,
-  EntityModelForCreate,
+  CreatedEntityModel,
+  EntityCreateParams,
+  MergedEntityModel,
   EntityModelPartial,
   EntityPrimaryColumnTypeMap,
 } from "../entity"
-import { UnionToIntersection } from "../util"
 
 /**
  * Interface for repositories that implement basic entity methods supported by all drivers.
@@ -26,21 +26,21 @@ export interface RepositoryBasicMethods<
    * Returns *mixed* id - if entity contains multiple primary ids - object will be returned,
    * if entity contains a single primary id - directly value will be returned.
    */
-  getId<Model extends EntityModelPartial<Driver, Entity>>(
-    model: Model,
+  getId(
+    model: EntityModelPartial<Driver, Entity>,
   ): EntityPrimaryColumnTypeMap<Driver, Entity>
 
   /**
    * Creates a new entity instance.
    */
-  create<Model extends EntityModelForCreate<Driver, Entity>>(
+  create<Model extends EntityCreateParams<Driver, Entity>>(
     model: Model,
-  ): EntityModelCreateType<Driver, Entity, Model>
+  ): CreatedEntityModel<Driver, Entity, Model>
 
   /**
    * Merges multiple entities (or entity-like objects) into a given entity.
    */
-  merge<Models extends EntityModelForCreate<Driver, Entity>[]>(
+  merge<Models extends EntityCreateParams<Driver, Entity>[]>(
     ...models: Models
-  ): UnionToIntersection<Models[number]>
+  ): MergedEntityModel<Driver, Entity, Models>
 }

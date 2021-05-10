@@ -3,7 +3,7 @@ import {
   EntityCoreSelection,
   FindOptions,
   FindOptionsMany,
-  FindReturnType,
+  EntitySchemaComputedModel,
 } from "../options"
 import { FindOptionsCount } from "../options/find-options/find-options-count"
 import {
@@ -73,7 +73,7 @@ export type ActiveRecordMethods<
       >(
         options?: Options,
       ) => Promise<
-        FindReturnType<
+        EntitySchemaComputedModel<
           Driver,
           RelationEntity<
             Entity,
@@ -93,7 +93,7 @@ export type ActiveRecordMethods<
         >}`]: <Options extends FindOptions<Driver, Entity>>(
           options?: Options,
         ) => Promise<
-          FindReturnType<
+          EntitySchemaComputedModel<
             Driver,
             RelationEntity<
               Entity,

@@ -1,8 +1,8 @@
 import { AnyDriver } from "../driver"
 import {
   AnyEntity,
-  EntityModelAfterInsert,
-  EntityModelForInsert,
+  InsertedEntityModel,
+  EntityInsertParams,
   EntityModelPartial,
 } from "../entity"
 import {
@@ -29,16 +29,16 @@ export interface RepositoryPersistenceMethods<
    * Database error will be thrown if entity already exists in the database.
    * Returns a copy of the model with the default / primary column values.
    */
-  insert<Model extends EntityModelForInsert<Driver, Entity>>(
+  insert<Model extends EntityInsertParams<Driver, Entity>>(
     model: Model,
     options?: InsertOptions<Driver, Entity>,
-  ): Promise<EntityModelAfterInsert<Driver, Entity, Model>>
+  ): Promise<InsertedEntityModel<Driver, Entity, Model>>
 
   /**
    * Inserts entities in bulk.
    * Database error will be thrown if any of entity exist in the database.
    */
-  insert<Model extends EntityModelForInsert<Driver, Entity>>(
+  insert<Model extends EntityInsertParams<Driver, Entity>>(
     models: Model[],
     options?: InsertOptions<Driver, Entity>,
   ): Promise<void> // [...EntityModelJustInserted<Source, Entity, Model>[]]

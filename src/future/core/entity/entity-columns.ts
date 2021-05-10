@@ -209,7 +209,8 @@ export type EntityPrimaryColumnTypeMap<
   ? ForceCastIfNoKeys<
       FlatTypeHint<
         {
-          [P in keyof Entity["columnsEmbeds"] as EntityPrimariesValueMapAsCondition<
+          [P in keyof (Entity["columns"] &
+            Entity["embeds"]) as EntityPrimariesValueMapAsCondition<
             Entity,
             P
           > extends true
@@ -251,7 +252,7 @@ export type EntityColumnsPrimaryNames<Entity extends AnyEntitySchema> = keyof {
  */
 export type EntityPrimariesValueMapAsCondition<
   Entity extends AnyEntitySchema,
-  Key extends keyof Entity["columnsEmbeds"],
+  Key extends keyof (Entity["columns"] & Entity["embeds"]),
   Deepness extends string = "."
 > = Key extends keyof Entity["columns"]
   ? Entity["columns"][Key]["primary"] extends true

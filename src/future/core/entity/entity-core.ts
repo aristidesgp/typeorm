@@ -60,8 +60,6 @@ export interface EntitySchema<
   columns: Columns
   relations: Relations
   embeds: Embeds
-  columnsEmbeds: Columns & Embeds
-  columnsEmbedsRelations: Columns & Embeds & Relations
 }
 
 /**
