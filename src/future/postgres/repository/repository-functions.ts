@@ -34,12 +34,6 @@ export function createPostgresRepository(): PostgresRepository<AnyEntity> {
     merge() {
       return {} as any
     },
-    createQueryBuilder() {
-      return {} as any
-    },
-    async query() {
-      return {} as any
-    },
     async clear() {
       return {} as any
     },

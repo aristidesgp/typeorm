@@ -1,42 +1,20 @@
-import { SelectQueryBuilder } from "../../../query-builder/SelectQueryBuilder"
-import { QueryRunner } from "../../../query-runner/QueryRunner"
+import { AnyDriver, IsolationLevels, UpdateResult } from "../driver"
 import {
-  AnyDriver,
-  IsolationLevels,
-  QueryResult,
-  UpdateResult,
-} from "../driver"
-import {
-  AnyEntity,
   EntityColumnPaths,
   EntityFromReference,
   EntityReference,
 } from "../entity"
 import { WhereOptions } from "../options"
+import { SqlQueryBuilder } from "../sql-query-builder"
 
 /**
  * Interface for managers that implement common RDBMS methods.
  */
 export interface ManagerCommonRdbmsMethods<Driver extends AnyDriver> {
   /**
-   * Creates a new query builder that can be used to build and execute any SQL query.
-   */
-  createQueryBuilder<
-    Reference extends EntityReference,
-    Entity extends EntityFromReference<Reference>
-  >(
-    entity: Reference,
-    alias?: string,
-    queryRunner?: QueryRunner,
-  ): SelectQueryBuilder<Entity>
-
-  /**
    * Executes a raw SQL query and returns raw database results.
    */
-  query(
-    query: string,
-    parameters?: any[],
-  ): Promise<QueryResult<Driver["types"]>>
+  query(sql: SqlQueryBuilder<Driver>): SqlQueryBuilder<Driver>
 
   /**
    * Wraps given function execution (and all operations made there) in a transaction.

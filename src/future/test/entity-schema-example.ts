@@ -1,4 +1,5 @@
-import { DataSource, EntityRelationReferencedColumnTypeMap } from "../core"
+import { DataSource } from "../core"
+import { sql, sqlFragment } from "../core/sql-query-builder"
 import { entity, postgres } from "../postgres"
 
 export class Photo {
@@ -455,6 +456,32 @@ async function test() {
   // .transaction(async (manager) => {
   //   console.log(manager)
   // })
+
+  const results1 = await myDataSource.manager
+    .query(sql`SELECT * FROM "users"`)
+    .append(sqlFragment` WHERE id > 1000`)
+    .mapTo(UserEntity)
+    .execute()
+
+  const results2 = await myDataSource.manager
+    .query(sql`SELECT * FROM "users"`)
+    .execute<
+      {
+        id: number
+        name: string
+      }[]
+    >()
+
+  const results3 = await myDataSource.manager
+    .query(sql`SELECT * FROM "users"`)
+    .execute<
+      {
+        firstName: string
+        lastName: string
+      }[]
+    >()
+
+  console.log(results1, results2, results3)
 }
 
 test()

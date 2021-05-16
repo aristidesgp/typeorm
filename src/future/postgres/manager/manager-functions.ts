@@ -37,10 +37,7 @@ export function createPostgresManager(
     merge() {
       return {} as any
     },
-    createQueryBuilder() {
-      return {} as any
-    },
-    async query() {
+    query() {
       return {} as any
     },
     async transaction() {
