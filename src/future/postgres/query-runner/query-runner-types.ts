@@ -1,3 +1,3 @@
-import { CoreQueryRunner } from "../../core/query-runner"
+import { ConnectionBase } from "../../core/connection/connection"
 
-export interface PostgresQueryRunner extends CoreQueryRunner {}
+export interface PostgresConnection extends ConnectionBase {}

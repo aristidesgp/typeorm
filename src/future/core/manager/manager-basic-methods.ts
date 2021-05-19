@@ -1,4 +1,4 @@
-import { AnyDriver } from "../driver"
+import { AnyDataSource } from "../data-source"
 import {
   EntityFromReference,
   CreatedEntityModel,
@@ -14,7 +14,7 @@ import {
  *
  * todo: check if we can implement proper typing for save(models), remove(models), etc.
  */
-export interface ManagerBasicMethods<Driver extends AnyDriver> {
+export interface ManagerBasicMethods<DataSource extends AnyDataSource> {
   /**
    * Checks if entity has an id.
    * If entity has multiple ids, it will check them all.
@@ -24,7 +24,7 @@ export interface ManagerBasicMethods<Driver extends AnyDriver> {
     Entity extends EntityFromReference<Reference>
   >(
     entity: Reference,
-    model: EntityModelPartial<Driver, Entity>,
+    model: EntityModelPartial<DataSource, Entity>,
   ): boolean
 
   /**
@@ -38,8 +38,8 @@ export interface ManagerBasicMethods<Driver extends AnyDriver> {
     Entity extends EntityFromReference<Reference>
   >(
     entity: Reference,
-    model: EntityModelPartial<Driver, Entity>,
-  ): EntityPrimaryColumnTypeMap<Driver, Entity>
+    model: EntityModelPartial<DataSource, Entity>,
+  ): EntityPrimaryColumnTypeMap<DataSource, Entity>
 
   /**
    * Creates a new entity instance.
@@ -47,11 +47,11 @@ export interface ManagerBasicMethods<Driver extends AnyDriver> {
   create<
     Reference extends EntityReference,
     Entity extends EntityFromReference<Reference>,
-    Model extends EntityCreateParams<Driver, Entity>
+    Model extends EntityCreateParams<DataSource, Entity>
   >(
     entity: Reference,
     model: Model,
-  ): CreatedEntityModel<Driver, Entity, Model>
+  ): CreatedEntityModel<DataSource, Entity, Model>
 
   /**
    * Merges multiple entities (or entity-like objects) into a given entity.
@@ -59,9 +59,9 @@ export interface ManagerBasicMethods<Driver extends AnyDriver> {
   merge<
     Reference extends EntityReference,
     Entity extends EntityFromReference<Reference>,
-    Models extends EntityCreateParams<Driver, Entity>[]
+    Models extends EntityCreateParams<DataSource, Entity>[]
   >(
     entity: Reference,
     ...models: Models
-  ): MergedEntityModel<Driver, Entity, Models>
+  ): MergedEntityModel<DataSource, Entity, Models>
 }

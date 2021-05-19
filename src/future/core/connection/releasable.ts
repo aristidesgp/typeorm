@@ -1,4 +1,4 @@
-import { QueryRunner } from "../../../query-runner/QueryRunner"
+import { ConnectionBase } from "./connection"
 
 /**
  * If manager / repository / other is created per-connection (query runner), this interface must be followed.
@@ -6,8 +6,8 @@ import { QueryRunner } from "../../../query-runner/QueryRunner"
 export interface Releasable {
   /**
    * Query runner provider used in the context.
-   */
-  readonly queryRunner: QueryRunner
+
+  readonly connection: ConnectionBase*/
 
   /**
    * Releases query runner.

@@ -1,22 +1,41 @@
-import { Logger } from "../../../logger/Logger"
 import { EntityMetadata } from "../../../metadata/EntityMetadata"
-import { NamingStrategyInterface } from "../../../naming-strategy/NamingStrategyInterface"
-import { AnyDriver } from "../driver"
-import { DataSourceOptions } from "./data-source-options-types"
+import { ConnectionBase } from "../connection/connection"
+import { LoggerBase } from "../logger"
+import { ManagerBase } from "../manager"
+import { NamingStrategyBase } from "../naming-strategy"
+import { DataSourceTypes } from "./data-source-column-types"
+import { AnyDataSourceOptions } from "./data-source-options"
 
 /**
- * Any DataSource. Helper type.
+ * Any driver implementation.
+ * Helper type.
+ */
+export type AnyDataSource = CoreDataSource<
+  AnyDataSourceOptions,
+  ManagerBase<any>,
+  ConnectionBase,
+  NamingStrategyBase,
+  any
+>
+
+/**
  *
- * @see CoreDataSource
  */
-export type AnyDataSource = CoreDataSource<AnyDriver>
+export interface CoreDataSource<
+  Options extends AnyDataSourceOptions,
+  Manager extends ManagerBase<any>,
+  Connection extends ConnectionBase,
+  NamingStrategy extends NamingStrategyBase,
+  Types extends DataSourceTypes
+> {
+  // todo: rename to __ or move everything to driver: { } ?
+  connection: Connection
+  types: Types
+  builder: {
+    manager(): Manager
+    connection(): Connection
+  }
 
-/**
- * DataSource is a main entry in the TypeORM-based application.
- * It is a main entry point to establish connections with a chosen database type and execute queries against it.
- * You can have multiple data sources connected to multiple databases in your application.
- */
-export type CoreDataSource<Driver extends AnyDriver> = {
   /**
    * Unique type identifier.
    * Can be used to check if object is an instance of DataSource.
@@ -30,19 +49,14 @@ export type CoreDataSource<Driver extends AnyDriver> = {
   isConnected: boolean
 
   /**
-   * Working with driver used in this data source.
-   */
-  driver: Driver
-
-  /**
    * Options.
    */
-  options: DataSourceOptions<Driver>
+  options: Options
 
   /**
    * Manager.
    */
-  manager: Driver["manager"]
+  manager: Manager
 
   /**
    * All entity metadatas that are registered for this connection.
@@ -52,12 +66,12 @@ export type CoreDataSource<Driver extends AnyDriver> = {
   /**
    * Naming strategy used in the connection.
    */
-  namingStrategy: NamingStrategyInterface
+  namingStrategy: NamingStrategy
 
   /**
    * Logger used to log orm events.
    */
-  logger: Logger
+  logger: LoggerBase
 
   /**
    * Initializes a data source connection.
@@ -67,7 +81,7 @@ export type CoreDataSource<Driver extends AnyDriver> = {
    *
    * Returns self.
    */
-  connect(): Promise<CoreDataSource<Driver>>
+  connect(): Promise<this>
 
   /**
    * Closes any opened connection with a database.
@@ -82,10 +96,8 @@ export type CoreDataSource<Driver extends AnyDriver> = {
    * Can be used only after connection to the database is established.
    *
    * Returns self.
-   *
-   * @param dropBeforeSync If set to true then it drops the database with all its tables and data
    */
-  synchronize(dropBeforeSync: boolean): Promise<void>
+  synchronize(): Promise<void>
 
   /**
    * Creates a query runner used for perform queries on a single database connection.
@@ -97,7 +109,7 @@ export type CoreDataSource<Driver extends AnyDriver> = {
    * If you perform writes you must use master database,
    * if you perform reads you can use slave databases.
    */
-  createQueryRunner(): Driver["queryRunner"]
+  createConnection(): Connection
 
   // subscribers -> needs a re-design, based on observables, maybe driver-specific
   // queryResultCache -> need design
@@ -115,5 +127,24 @@ export type CoreDataSource<Driver extends AnyDriver> = {
   // transaction -> deprecated, manager method should be used instead (reason: reduce confusion, too many ways to do same)
   // query -> deprecated, manager method should be used instead (reason: reduce confusion, too many ways to do same)
   // createQueryBuilder -> deprecated, manager method should be used instead (reason: reduce confusion, too many ways to do same)
-  //
 }
+
+export type QueryResult<
+  DataSource extends AnyDataSource
+> = DataSource["types"]["queryResult"]
+
+export type InsertResult<
+  DataSource extends AnyDataSource
+> = DataSource["types"]["insertResult"]
+
+export type UpdateResult<
+  DataSource extends AnyDataSource
+> = DataSource["types"]["updateResult"]
+
+export type DeleteResult<
+  DataSource extends AnyDataSource
+> = DataSource["types"]["deleteResult"]
+
+export type IsolationLevels<
+  DataSource extends AnyDataSource
+> = DataSource["types"]["isolationLevels"]

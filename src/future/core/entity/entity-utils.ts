@@ -1,4 +1,4 @@
-import { AnyDriver } from "../driver"
+import { AnyDataSource } from "../data-source"
 import {
   EntityCoreSelection,
   FindOptions,
@@ -58,7 +58,7 @@ export type NonArrayRelations<
     }
 
 export type ActiveRecordMethods<
-  Driver extends AnyDriver,
+  DataSource extends AnyDataSource,
   Entity extends AnyEntitySchema
 > = Entity["type"] extends "active-record"
   ? {
@@ -69,12 +69,12 @@ export type ActiveRecordMethods<
       reload(): Promise<void>
     } & {
       [P in keyof ArrayRelations<Entity> as `load${Capitalize<string & P>}`]: <
-        Options extends FindOptionsMany<Driver, Entity>
+        Options extends FindOptionsMany<DataSource, Entity>
       >(
         options?: Options,
       ) => Promise<
         EntitySchemaComputedModel<
-          Driver,
+          DataSource,
           RelationEntity<
             Entity,
             P extends keyof Entity["relations"] ? P : never
@@ -90,11 +90,11 @@ export type ActiveRecordMethods<
       {
         [P in keyof NonArrayRelations<Entity> as `load${Capitalize<
           string & P
-        >}`]: <Options extends FindOptions<Driver, Entity>>(
+        >}`]: <Options extends FindOptions<DataSource, Entity>>(
           options?: Options,
         ) => Promise<
           EntitySchemaComputedModel<
-            Driver,
+            DataSource,
             RelationEntity<
               Entity,
               P extends keyof Entity["relations"] ? P : never
@@ -110,7 +110,7 @@ export type ActiveRecordMethods<
       {
         [P in keyof ArrayRelations<Entity> as `count${Capitalize<
           string & P
-        >}`]: <Options extends FindOptionsCount<Driver, Entity>>(
+        >}`]: <Options extends FindOptionsCount<DataSource, Entity>>(
           options?: Options,
         ) => Promise<number>
       } &
@@ -118,7 +118,7 @@ export type ActiveRecordMethods<
         [P in keyof ArrayRelations<Entity> as `has${Capitalize<string & P>}`]: (
           entities: P extends keyof Entity["relations"]
             ? EntityRelationReferencedColumnTypeMap<
-                Driver,
+                DataSource,
                 RelationEntity<Entity, P>,
                 Entity["relations"][P]
               >
@@ -129,7 +129,7 @@ export type ActiveRecordMethods<
         [P in keyof ArrayRelations<Entity> as `add${Capitalize<string & P>}`]: (
           entities: P extends keyof Entity["relations"]
             ? EntityRelationReferencedColumnTypeMap<
-                Driver,
+                DataSource,
                 RelationEntity<Entity, P>,
                 Entity["relations"][P]
               >
@@ -142,7 +142,7 @@ export type ActiveRecordMethods<
         >}`]: (
           entities: P extends keyof Entity["relations"]
             ? EntityRelationReferencedColumnTypeMap<
-                Driver,
+                DataSource,
                 RelationEntity<Entity, P>,
                 Entity["relations"][P]
               >
@@ -152,7 +152,7 @@ export type ActiveRecordMethods<
   : {}
 
 export type EntityPropsWithModel<
-  Driver extends AnyDriver,
+  DataSource extends AnyDataSource,
   Entity extends AnyEntity,
   PropsMode extends EntityPropsMode
 > = Entity extends AnyEntitySchema
@@ -182,7 +182,7 @@ export type EntityPropsWithModel<
             property: P
           }
         } &
-        ActiveRecordMethods<Driver, Entity>
+        ActiveRecordMethods<DataSource, Entity>
     : PropsMode extends "virtuals"
     ? {
         [P in keyof Entity["virtualMethods"]]: {

@@ -1,6 +1,6 @@
-import { AnyDriver } from "../driver"
+import { AnyDataSource } from "../data-source"
 
 /**
  * Interface for mangers that implement methods working with tree tables / structures.
  */
-export interface ManagerTreeMethods<Driver extends AnyDriver> {}
+export interface ManagerTreeMethods<DataSource extends AnyDataSource> {}

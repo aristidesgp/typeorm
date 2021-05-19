@@ -1,4 +1,4 @@
-import { AnyDriver, UpdateResult } from "../driver"
+import { AnyDataSource, UpdateResult } from "../data-source"
 import { AnyEntity, EntityColumnPaths } from "../entity"
 import { WhereOptions } from "../options"
 
@@ -6,7 +6,7 @@ import { WhereOptions } from "../options"
  * Interface for repositories that implement common RDBMS methods.
  */
 export interface RepositoryCommonRdbmsMethods<
-  Driver extends AnyDriver,
+  DataSource extends AnyDataSource,
   Entity extends AnyEntity
 > {
   /**
@@ -21,17 +21,17 @@ export interface RepositoryCommonRdbmsMethods<
    * Increments some column by provided value of the entities matched given conditions.
    */
   increment(
-    where: WhereOptions<Driver, Entity>,
+    where: WhereOptions<DataSource, Entity>,
     columnPath: EntityColumnPaths<Entity>,
     value: number,
-  ): Promise<UpdateResult<Driver>>
+  ): Promise<UpdateResult<DataSource>>
 
   /**
    * Decrements some column by provided value of the entities matched given conditions.
    */
   decrement(
-    where: WhereOptions<Driver, Entity>,
+    where: WhereOptions<DataSource, Entity>,
     columnPath: EntityColumnPaths<Entity>,
     value: number,
-  ): Promise<UpdateResult<Driver>>
+  ): Promise<UpdateResult<DataSource>>
 }

@@ -1,4 +1,4 @@
-import { AnyDriver } from "../driver"
+import { AnyDataSource } from "../data-source"
 import { AnyEntitySchema } from "./entity-core"
 
 /**
@@ -6,6 +6,6 @@ import { AnyEntitySchema } from "./entity-core"
  *
  * todo: create a separate type for embed and create "EntityLike" type for both of them
  */
-export type EntityEmbedList<Driver extends AnyDriver> = {
+export type EntityEmbedList<DataSource extends AnyDataSource> = {
   [key: string]: AnyEntitySchema
 }

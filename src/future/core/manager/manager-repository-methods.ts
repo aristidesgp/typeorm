@@ -1,6 +1,6 @@
-import { AnyDriver } from "../driver"
+import { AnyDataSource } from "../data-source"
 
 /**
  * Interface for managers supporting repositories.
  */
-export interface ManagerRepositoryMethods<Driver extends AnyDriver> {}
+export interface ManagerRepositoryMethods<DataSource extends AnyDataSource> {}

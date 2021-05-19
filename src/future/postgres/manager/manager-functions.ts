@@ -1,9 +1,6 @@
-import { AnyDataSource } from "../../core"
 import { PostgresManager } from "./manager-type"
 
-export function createPostgresManager(
-  dataSource: AnyDataSource,
-): PostgresManager {
+export function createPostgresManager(): PostgresManager {
   function Options() {
     return {} as any
   }
@@ -20,8 +17,8 @@ export function createPostgresManager(
   return {
     "@type": "Manager",
     findOptions: Options,
-    dataSource: dataSource,
-    queryRunner: null as any,
+    dataSource: null as any,
+    // queryRunner: null as any,
     repository(entity: any) {
       return {} as any
     },

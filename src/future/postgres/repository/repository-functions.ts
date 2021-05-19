@@ -21,7 +21,7 @@ export function createPostgresRepository(): PostgresRepository<AnyEntity> {
     dataSource: null as any,
     metadata: null as any,
     entity: null as any,
-    queryRunner: null as any,
+    // connection: null as any,
     hasId() {
       return {} as any
     },

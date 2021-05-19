@@ -1,5 +1,5 @@
 import { AnyModel } from "../../../repository/model"
-import { AnyDriver } from "../driver"
+import { AnyDataSource } from "../data-source"
 import {
   EntityColumnList,
   EntityMethods,
@@ -29,12 +29,12 @@ export type EntityClassDefinition = new (...args: any) => any
 export type AnyEntitySchema = EntitySchema<
   EntitySchemaType,
   AnyModel,
-  EntityColumnList<AnyDriver>,
+  EntityColumnList<AnyDataSource>,
   EntityRelationList,
-  EntityEmbedList<AnyDriver>,
+  EntityEmbedList<AnyDataSource>,
   EntityMethods,
-  EntityProperties<AnyDriver>,
-  EntityProperties<AnyDriver>
+  EntityProperties<AnyDataSource>,
+  EntityProperties<AnyDataSource>
 >
 
 /**
@@ -44,12 +44,12 @@ export type AnyEntitySchema = EntitySchema<
 export interface EntitySchema<
   Type extends EntitySchemaType,
   Model extends AnyModel,
-  Columns extends EntityColumnList<AnyDriver>,
+  Columns extends EntityColumnList<AnyDataSource>,
   Relations extends EntityRelationList,
-  Embeds extends EntityEmbedList<AnyDriver>,
+  Embeds extends EntityEmbedList<AnyDataSource>,
   VirtualMethods extends EntityMethods,
-  VirtualLazyProperties extends EntityProperties<AnyDriver>,
-  VirtualEagerProperties extends EntityProperties<AnyDriver>
+  VirtualLazyProperties extends EntityProperties<AnyDataSource>,
+  VirtualEagerProperties extends EntityProperties<AnyDataSource>
 > {
   "@type": "Entity"
   type: Type

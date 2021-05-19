@@ -1,5 +1,5 @@
 import { DeepPartial } from "../../../common/DeepPartial"
-import { AnyDriver } from "../driver"
+import { AnyDataSource } from "../data-source"
 import { EntitySchemaComputedModel } from "../options"
 import { FlatTypeHint, UndefinedToOptional, UnionToIntersection } from "../util"
 import { ColumnCompileType, EntityColumn } from "./entity-columns"
@@ -15,10 +15,10 @@ import { EntityRelationReferencedColumnTypeMap } from "./entity-referenced-colum
  * Returns entity type for a given entity.
  */
 export type EntityModel<
-  Driver extends AnyDriver,
+  DataSource extends AnyDataSource,
   Entity extends AnyEntity
 > = Entity extends AnyEntitySchema
-  ? EntitySchemaComputedModel<Driver, Entity, {}, false, "all">
+  ? EntitySchemaComputedModel<DataSource, Entity, {}, false, "all">
   : Entity extends EntityClassInstance
   ? Entity
   : unknown
@@ -27,38 +27,40 @@ export type EntityModel<
  * Deep partial entity type of a given entity.
  */
 export type EntityModelPartial<
-  Driver extends AnyDriver,
+  DataSource extends AnyDataSource,
   Entity extends AnyEntity
-> = DeepPartial<EntityModel<Driver, Entity>>
+> = DeepPartial<EntityModel<DataSource, Entity>>
 
 /**
  * Input model of the "entity create" operation.
  */
 export type EntityCreateParams<
-  Driver extends AnyDriver,
+  DataSource extends AnyDataSource,
   Entity extends AnyEntity
 > = Entity extends AnyEntitySchema
-  ? DeepPartial<EntitySchemaComputedModel<Driver, Entity, {}, false, "create">>
+  ? DeepPartial<
+      EntitySchemaComputedModel<DataSource, Entity, {}, false, "create">
+    >
   : DeepPartial<Entity>
 
 /**
  * Result of the "entity create" operation.
  */
 export type CreatedEntityModel<
-  Driver extends AnyDriver,
+  DataSource extends AnyDataSource,
   Entity extends AnyEntity,
-  Model extends EntityCreateParams<Driver, Entity>
+  Model extends EntityCreateParams<DataSource, Entity>
 > = Entity extends AnyEntitySchema
-  ? Model & EntitySchemaComputedModel<Driver, Entity, {}, false, "virtuals">
+  ? Model & EntitySchemaComputedModel<DataSource, Entity, {}, false, "virtuals">
   : Entity
 
 /**
  * Result of the "entity merge" operation.
  */
 export type MergedEntityModel<
-  Driver extends AnyDriver,
+  DataSource extends AnyDataSource,
   Entity extends AnyEntity,
-  Models extends EntityCreateParams<Driver, Entity>[]
+  Models extends EntityCreateParams<DataSource, Entity>[]
 > = Entity extends AnyEntitySchema
   ? UnionToIntersection<Models[number]>
   : Entity
@@ -77,11 +79,11 @@ export type MergedEntityModel<
  * For entity classes it simply returns entity instance.
  */
 export type InsertedEntityModel<
-  Driver extends AnyDriver,
+  DataSource extends AnyDataSource,
   Entity extends AnyEntity,
   Model
 > = Entity extends AnyEntitySchema
-  ? Model & EntitySchemaComputedModel<Driver, Entity, {}, false, "all"> // todo: fix SelectAll please
+  ? Model & EntitySchemaComputedModel<DataSource, Entity, {}, false, "all"> // todo: fix SelectAll please
   : Entity
 
 /**
@@ -91,7 +93,7 @@ export type InsertedEntityModel<
  * Or nullable columns can be omitted because database will insert NULL for them.
  */
 export type ColumnCompileTypeForInsert<
-  Column extends EntityColumn<AnyDriver>,
+  Column extends EntityColumn<AnyDataSource>,
   CompileType
 > = Column["default"] extends string | number | boolean
   ? CompileType | undefined
@@ -111,7 +113,7 @@ export type ColumnCompileTypeForInsert<
  *  - FlatTypeHint is used to improve type hinting when this type is directly used
  */
 export type EntityInsertParams<
-  Driver extends AnyDriver,
+  DataSource extends AnyDataSource,
   Entity extends AnyEntity
 > = Entity extends AnyEntitySchema
   ? FlatTypeHint<
@@ -122,14 +124,14 @@ export type EntityInsertParams<
             Entity["relations"])]: P extends string & keyof Entity["columns"]
             ? ColumnCompileTypeForInsert<
                 Entity["columns"][P],
-                ColumnCompileType<Driver, Entity, P>
+                ColumnCompileType<DataSource, Entity, P>
               >
             : P extends keyof Entity["embeds"]
-            ? EntityInsertParams<Driver, Entity["embeds"][P]>
+            ? EntityInsertParams<DataSource, Entity["embeds"][P]>
             : P extends keyof Entity["relations"]
             ?
                 | EntityRelationReferencedColumnTypeMap<
-                    Driver,
+                    DataSource,
                     RelationEntity<Entity, P>,
                     Entity["relations"][P]
                   >

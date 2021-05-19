@@ -9,20 +9,20 @@ import {
   EntitySchemaType,
   ForceCastIfUndefined,
 } from "../../core"
-import { PostgresDriver, PostgresDriverTypes } from "../driver"
+import { PostgresDataSource, PostgresDataSourceTypes } from "../data-source"
 
 export function entity<
   Type extends EntitySchemaType,
   GivenModel,
-  Columns extends EntityColumnList<PostgresDriver<any>> | undefined,
+  Columns extends EntityColumnList<PostgresDataSource<any>> | undefined,
   Relations extends EntityRelationList | undefined,
-  Embeds extends EntityEmbedList<PostgresDriver<any>> | undefined,
+  Embeds extends EntityEmbedList<PostgresDataSource<any>> | undefined,
   VirtualMethods extends EntityMethods | undefined,
   VirtualLazyProperties extends
-    | EntityProperties<PostgresDriver<any>>
+    | EntityProperties<PostgresDataSource<any>>
     | undefined,
   VirtualEagerProperties extends
-    | EntityProperties<PostgresDriver<any>>
+    | EntityProperties<PostgresDataSource<any>>
     | undefined
 >(options: {
   type?: Type

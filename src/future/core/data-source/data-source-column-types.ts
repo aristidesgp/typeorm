@@ -1,16 +1,16 @@
-export type DriverColumnTypes = {
-  [databaseTypeName: string]: DriverColumnTypeOptions<any>
+export type DataSourceColumnTypes = {
+  [databaseTypeName: string]: DataSourceColumnTypeOptions<any>
 }
-export type DriverColumnTypeOptions<Type> = {
+export type DataSourceColumnTypeOptions<Type> = {
   type: Type
 }
 
 export type OrderValueTypes = "asc" | "desc"
 
-export type DriverTypes = {
-  columnTypes: any // DriverColumnTypes
+export type DataSourceTypes = {
+  columnTypes: any // DataSourceColumnTypes
   orderTypes: any // OrderValueTypes
-  lockTypes: any // DriverLockTypes
+  lockTypes: any // DataSourceLockTypes
   insertResult: any
   updateResult: any
   deleteResult: any

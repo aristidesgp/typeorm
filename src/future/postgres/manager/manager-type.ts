@@ -10,17 +10,17 @@ import {
   ManagerTreeMethods,
 } from "../../core"
 import { Releasable } from "../../core/connection"
-import { PostgresDriver } from "../driver"
+import { PostgresDataSource } from "../data-source"
 import { PostgresRepository } from "../repository"
 
 export interface PostgresManager
-  extends ManagerBase<PostgresDriver<any>>,
-    ManagerBasicMethods<PostgresDriver<any>>,
-    ManagerCommonRdbmsMethods<PostgresDriver<any>>,
-    ManagerFindMethods<PostgresDriver<any>>,
-    ManagerPersistenceMethods<PostgresDriver<any>>,
+  extends ManagerBase<PostgresDataSource<any>>,
+    ManagerBasicMethods<PostgresDataSource<any>>,
+    ManagerCommonRdbmsMethods<PostgresDataSource<any>>,
+    ManagerFindMethods<PostgresDataSource<any>>,
+    ManagerPersistenceMethods<PostgresDataSource<any>>,
     // ManagerRepositoryMethods<Types, Entities>,
-    ManagerTreeMethods<PostgresDriver<any>>,
+    ManagerTreeMethods<PostgresDataSource<any>>,
     Releasable {
   /**
    * Gets the entity repository by a given entity name.

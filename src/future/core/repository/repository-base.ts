@@ -1,13 +1,12 @@
 import { EntityMetadata } from "../../../metadata/EntityMetadata"
 import { AnyDataSource } from "../data-source"
-import { AnyDriver } from "../driver"
 import { AnyEntity } from "../entity"
 
 /**
  * Base Repository interface for all driver Repository implementations.
  */
 export interface RepositoryBase<
-  Driver extends AnyDriver,
+  DataSource extends AnyDataSource,
   Entity extends AnyEntity
 > {
   /**
@@ -18,7 +17,7 @@ export interface RepositoryBase<
   /**
    * Data source of this repository.
    */
-  dataSource: AnyDataSource // todo: CoreDataSource<Types, Collection>
+  dataSource: DataSource
 
   /**
    * Entity metadata of the entity managed by this repository.

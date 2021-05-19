@@ -1,4 +1,4 @@
-import { AnyDriver } from "../../driver"
+import { AnyDataSource } from "../../data-source"
 import { AnyEntity } from "../../entity"
 import { FindOptions } from "./find-options-one"
 
@@ -6,9 +6,9 @@ import { FindOptions } from "./find-options-one"
  * Extending find options for queries loading multiple items.
  */
 export interface FindOptionsMany<
-  Driver extends AnyDriver,
+  DataSource extends AnyDataSource,
   Entity extends AnyEntity
-> extends FindOptions<Driver, Entity> {
+> extends FindOptions<DataSource, Entity> {
   /**
    * Offset (paginated) where from entities should be taken.
    */

@@ -23,7 +23,7 @@ export type PostgresIsolationLevels =
   | "REPEATABLE READ"
   | "SERIALIZABLE"
 
-export type PostgresDriverTypes = {
+export type PostgresDataSourceTypes = {
   columnTypes: PostgresColumnTypes
   orderTypes: PostgresOrderTypes
   lockTypes: ""

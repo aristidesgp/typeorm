@@ -1,4 +1,4 @@
-import { AnyDriver } from "../../driver"
+import { AnyDataSource } from "../../data-source"
 import {
   AnyEntity,
   AnyEntitySchema,
@@ -10,30 +10,30 @@ import {
  * Ordering options in find options.
  */
 export type FindOptionsOrder<
-  Driver extends AnyDriver,
+  DataSource extends AnyDataSource,
   Entity extends AnyEntity
 > = Entity extends AnyEntitySchema
   ? {
-      [P in keyof Entity["columns"]]?: Driver["types"]["orderTypes"]
+      [P in keyof Entity["columns"]]?: DataSource["types"]["orderTypes"]
     } &
       {
         [P in keyof Entity["relations"]]?: FindOptionsOrder<
-          Driver,
+          DataSource,
           RelationEntity<Entity, P>
         >
       } &
       {
         [P in keyof Entity["embeds"]]?: FindOptionsOrder<
-          Driver,
+          DataSource,
           Entity["embeds"][P]
         >
       }
   : {
       [P in keyof Entity]?: Entity[P] extends Array<infer U>
         ? U extends EntityClassDefinition
-          ? FindOptionsOrder<Driver, InstanceType<U>>
-          : Driver["types"]["orderTypes"]
+          ? FindOptionsOrder<DataSource, InstanceType<U>>
+          : DataSource["types"]["orderTypes"]
         : Entity[P] extends EntityClassDefinition
-        ? FindOptionsOrder<Driver, InstanceType<Entity[P]>>
-        : Driver["types"]["orderTypes"]
+        ? FindOptionsOrder<DataSource, InstanceType<Entity[P]>>
+        : DataSource["types"]["orderTypes"]
     }

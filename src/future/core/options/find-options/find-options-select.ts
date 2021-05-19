@@ -1,4 +1,4 @@
-import { AnyDriver } from "../../driver"
+import { AnyDataSource } from "../../data-source"
 import {
   ActiveRecordMethods,
   AnyEntity,
@@ -73,7 +73,7 @@ export type EntityCoreSelection<Entity extends AnyEntitySchema> = {
   }
 
 export type FindReturnTypeProperty<
-  Driver extends AnyDriver,
+  DataSource extends AnyDataSource,
   Entity extends AnyEntitySchema,
   Selection extends EntityCoreSelection<Entity>,
   P, // extends string, // & keyof EntityPropsWithModel<Entity, any>,
@@ -81,10 +81,10 @@ export type FindReturnTypeProperty<
   ParentPartiallySelected extends boolean,
   PropsMode extends EntityPropsMode
 > = P extends string & keyof Entity["columns"] // if property is a column, just return it's type inferred from a driver column types defined in the entity
-  ? ColumnCompileType<Driver, Entity, P>
+  ? ColumnCompileType<DataSource, Entity, P>
   : P extends keyof Entity["embeds"] // if selected property is an embed, we just go recursively
   ? EntitySchemaComputedModel<
-      Driver,
+      DataSource,
       Entity["embeds"][P],
       Selection[string & P] extends object ? Selection[string & P] : {},
       ParentPartiallySelected,
@@ -94,14 +94,14 @@ export type FindReturnTypeProperty<
   ? Selection[P] extends object // relation selection can be defined two ways: // 1. we can select some properties of the related object
     ? Entity["relations"][P]["type"] extends "many-to-many" | "one-to-many"
       ? EntitySchemaComputedModel<
-          Driver,
+          DataSource,
           RelationEntity<Entity, P>,
           Selection[string & P] extends object ? Selection[string & P] : {},
           false,
           PropsMode
         >[]
       : EntitySchemaComputedModel<
-          Driver,
+          DataSource,
           RelationEntity<Entity, P>,
           Selection[string & P] extends object ? Selection[string & P] : {},
           false,
@@ -110,14 +110,14 @@ export type FindReturnTypeProperty<
     : Selection[P] extends true // 2. we can select the whole related object (means its columns) by using relation: true
     ? Entity["relations"][P]["type"] extends "many-to-many" | "one-to-many" // Entity["model"]["type"][P] extends Array<infer U> ?
       ? EntitySchemaComputedModel<
-          Driver,
+          DataSource,
           RelationEntity<Entity, P>,
           {},
           false,
           PropsMode
         >[]
       : EntitySchemaComputedModel<
-          Driver,
+          DataSource,
           RelationEntity<Entity, P>,
           {},
           false,
@@ -156,8 +156,8 @@ export type FindReturnTypeProperty<
           EntityPropertiesItem<any>
         >
       >
-  : P extends keyof ActiveRecordMethods<Driver, Entity>
-  ? ActiveRecordMethods<Driver, Entity>[P]
+  : P extends keyof ActiveRecordMethods<DataSource, Entity>
+  ? ActiveRecordMethods<DataSource, Entity>[P]
   : never
 
 export type OnlyColumnKeys<Selection, Entity extends AnyEntitySchema> = {
@@ -178,7 +178,7 @@ export type OnlyColumnKeys<Selection, Entity extends AnyEntitySchema> = {
  * Helper type to mark non-selected properties as "never".
  */
 export type EntitySelectionTruthyKeys<
-  Driver extends AnyDriver,
+  DataSource extends AnyDataSource,
   Entity extends AnyEntitySchema,
   Selection extends EntityCoreSelection<Entity>
 > =
@@ -191,13 +191,13 @@ export type EntitySelectionTruthyKeys<
     }[keyof Selection]
   | keyof Entity["virtualEagerProperties"]
   | keyof Entity["virtualMethods"]
-  | keyof ActiveRecordMethods<Driver, Entity>
+  | keyof ActiveRecordMethods<DataSource, Entity>
 
 /**
  * Helper type to mark non-selected properties as "never".
  */
 export type EntitySelectionAllColumns<
-  Driver extends AnyDriver,
+  DataSource extends AnyDataSource,
   Entity extends AnyEntitySchema,
   Selection extends EntityCoreSelection<Entity>
 > = keyof (Entity["columns"] &
@@ -211,22 +211,22 @@ export type EntitySelectionAllColumns<
   Entity["embeds"] &
   Entity["virtualEagerProperties"] &
   Entity["virtualMethods"] &
-  ActiveRecordMethods<Driver, Entity>)
+  ActiveRecordMethods<DataSource, Entity>)
 
 export type FindType<
-  Driver extends AnyDriver,
+  DataSource extends AnyDataSource,
   Entity extends AnyEntity,
   Selection extends FindOptionsSelect<Entity> | undefined
 > = Entity extends AnyEntitySchema
   ? Selection extends EntityCoreSelection<Entity>
-    ? EntitySchemaComputedModel<Driver, Entity, Selection, false, "all">
-    : EntitySchemaComputedModel<Driver, Entity, {}, false, "all">
+    ? EntitySchemaComputedModel<DataSource, Entity, Selection, false, "all">
+    : EntitySchemaComputedModel<DataSource, Entity, {}, false, "all">
   : Entity extends EntityClassInstance
   ? Entity
   : unknown
 
 export type EntitySchemaComputedModel<
-  Driver extends AnyDriver,
+  DataSource extends AnyDataSource,
   Entity extends AnyEntitySchema,
   Selection extends EntityCoreSelection<Entity>, // if something went wrong use it: extends FindOptionsSelect<Source, Entity>,
   ParentPartiallySelected extends boolean,
@@ -235,13 +235,13 @@ export type EntitySchemaComputedModel<
   ?*/ = ParentPartiallySelected extends true // we need to tell to child (embed) to select only what was selected, to prevent selection of every column
   ? {
       [P in keyof EntityPropsWithModel<
-        Driver,
+        DataSource,
         Entity,
         PropsMode
-      > as P extends EntitySelectionTruthyKeys<Driver, Entity, Selection>
+      > as P extends EntitySelectionTruthyKeys<DataSource, Entity, Selection>
         ? P
         : never]: FindReturnTypeProperty<
-        Driver,
+        DataSource,
         Entity,
         Selection,
         P,
@@ -253,13 +253,13 @@ export type EntitySchemaComputedModel<
   OnlyColumnKeys<Selection, Entity> extends never
   ? {
       [P in keyof EntityPropsWithModel<
-        Driver,
+        DataSource,
         Entity,
         PropsMode
-      > as P extends EntitySelectionAllColumns<Driver, Entity, Selection>
+      > as P extends EntitySelectionAllColumns<DataSource, Entity, Selection>
         ? P
         : never]: FindReturnTypeProperty<
-        Driver,
+        DataSource,
         Entity,
         Selection,
         P,
@@ -270,13 +270,13 @@ export type EntitySchemaComputedModel<
   : // otherwise it means only set of columns were selected, and we should only select them
     {
       [P in keyof EntityPropsWithModel<
-        Driver,
+        DataSource,
         Entity,
         PropsMode
-      > as P extends EntitySelectionTruthyKeys<Driver, Entity, Selection>
+      > as P extends EntitySelectionTruthyKeys<DataSource, Entity, Selection>
         ? P
         : never]: FindReturnTypeProperty<
-        Driver,
+        DataSource,
         Entity,
         Selection,
         P,

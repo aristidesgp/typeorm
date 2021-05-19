@@ -1,4 +1,4 @@
-import { AnyDriver } from "../driver"
+import { AnyDataSource } from "../data-source"
 import { AnyEntity, EntityFromReference, EntityReference } from "../entity"
 import {
   FindOptions,
@@ -12,7 +12,7 @@ import { FindOptionsCount } from "../options/find-options/find-options-count"
 /**
  * Interface for managers that implement find* methods.
  */
-export interface ManagerFindMethods<Driver extends AnyDriver> {
+export interface ManagerFindMethods<DataSource extends AnyDataSource> {
   /**
    * Helps to build a FindOptions object.
    */
@@ -21,7 +21,7 @@ export interface ManagerFindMethods<Driver extends AnyDriver> {
     Entity extends EntityFromReference<Reference>
   >(
     entityRef: Reference,
-  ): FindOptionsBuilder<Driver, Entity>
+  ): FindOptionsBuilder<DataSource, Entity>
 
   /**
    * Finds entities by a given criteria.
@@ -29,11 +29,11 @@ export interface ManagerFindMethods<Driver extends AnyDriver> {
   find<
     Reference extends EntityReference,
     Entity extends EntityFromReference<Reference>,
-    Where extends WhereOptions<Driver, Entity>
+    Where extends WhereOptions<DataSource, Entity>
   >(
     entityRef: Reference,
     where: Where,
-  ): Promise<FindType<Driver, Entity, undefined>[]>
+  ): Promise<FindType<DataSource, Entity, undefined>[]>
 
   /**
    * Finds entities by a given find options.
@@ -41,11 +41,11 @@ export interface ManagerFindMethods<Driver extends AnyDriver> {
   findBy<
     Reference extends EntityReference,
     Entity extends EntityFromReference<Reference>,
-    Options extends FindOptionsMany<Driver, Entity>
+    Options extends FindOptionsMany<DataSource, Entity>
   >(
     entityRef: Reference,
     options: Options,
-  ): Promise<FindType<Driver, Entity, Options["select"]>[]>
+  ): Promise<FindType<DataSource, Entity, Options["select"]>[]>
 
   /**
    * Finds first entity by a given where criteria.
@@ -54,11 +54,11 @@ export interface ManagerFindMethods<Driver extends AnyDriver> {
   findOne<
     Reference extends EntityReference,
     Entity extends EntityFromReference<Reference>,
-    Where extends WhereOptions<Driver, Entity>
+    Where extends WhereOptions<DataSource, Entity>
   >(
     entityRef: Reference,
     where: Where,
-  ): Promise<FindType<Driver, Entity, undefined> | null>
+  ): Promise<FindType<DataSource, Entity, undefined> | null>
 
   /**
    * Finds first entity matching given find options.
@@ -67,11 +67,11 @@ export interface ManagerFindMethods<Driver extends AnyDriver> {
   findOneBy<
     Reference extends EntityReference,
     Entity extends EntityFromReference<Reference>,
-    Options extends FindOptions<Driver, Entity>
+    Options extends FindOptions<DataSource, Entity>
   >(
     entityRef: Reference,
     options: Options,
-  ): Promise<FindType<Driver, Entity, Options["select"]> | null>
+  ): Promise<FindType<DataSource, Entity, Options["select"]> | null>
 
   /**
    * Finds first entity matching given where criteria.
@@ -80,11 +80,11 @@ export interface ManagerFindMethods<Driver extends AnyDriver> {
   findOneOrFail<
     Reference extends EntityReference,
     Entity extends EntityFromReference<Reference>,
-    Where extends WhereOptions<Driver, Entity>
+    Where extends WhereOptions<DataSource, Entity>
   >(
     entityRef: Reference,
     where: Where,
-  ): Promise<FindType<Driver, Entity, undefined>>
+  ): Promise<FindType<DataSource, Entity, undefined>>
 
   /**
    * Finds first entity matching given find options.
@@ -93,11 +93,11 @@ export interface ManagerFindMethods<Driver extends AnyDriver> {
   findOneByOrFail<
     Reference extends EntityReference,
     Entity extends EntityFromReference<Reference>,
-    Options extends FindOptions<Driver, Entity>
+    Options extends FindOptions<DataSource, Entity>
   >(
     entityRef: Reference,
     options: Options,
-  ): Promise<FindType<Driver, Entity, Options["select"]>>
+  ): Promise<FindType<DataSource, Entity, Options["select"]>>
 
   /**
    * Counts entities matching given where criteria.
@@ -107,11 +107,11 @@ export interface ManagerFindMethods<Driver extends AnyDriver> {
   findAndCount<
     Reference extends EntityReference,
     Entity extends EntityFromReference<Reference>,
-    Where extends WhereOptions<Driver, Entity>
+    Where extends WhereOptions<DataSource, Entity>
   >(
     entityRef: Reference,
     where: Where,
-  ): Promise<[FindType<Driver, Entity, undefined>[], number]>
+  ): Promise<[FindType<DataSource, Entity, undefined>[], number]>
 
   /**
    * Counts entities matching given find options.
@@ -121,11 +121,11 @@ export interface ManagerFindMethods<Driver extends AnyDriver> {
   findAndCountBy<
     Reference extends EntityReference,
     Entity extends EntityFromReference<Reference>,
-    Options extends FindOptions<Driver, Entity>
+    Options extends FindOptions<DataSource, Entity>
   >(
     entityRef: Reference,
     options: Options,
-  ): Promise<[FindType<Driver, Entity, Options["select"]>[], number]>
+  ): Promise<[FindType<DataSource, Entity, Options["select"]>[], number]>
 
   /**
    * Counts entities matching given where criteria.
@@ -133,7 +133,7 @@ export interface ManagerFindMethods<Driver extends AnyDriver> {
   count<
     Reference extends EntityReference,
     Entity extends EntityFromReference<Reference>,
-    Where extends WhereOptions<Driver, Entity>
+    Where extends WhereOptions<DataSource, Entity>
   >(
     entityRef: Reference,
     where: Where,
@@ -145,7 +145,7 @@ export interface ManagerFindMethods<Driver extends AnyDriver> {
   countBy<
     Reference extends EntityReference,
     Entity extends EntityFromReference<Reference>,
-    Options extends FindOptionsCount<Driver, Entity>
+    Options extends FindOptionsCount<DataSource, Entity>
   >(
     entity: Reference,
     options: Options,

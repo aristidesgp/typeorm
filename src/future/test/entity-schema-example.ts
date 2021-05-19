@@ -1,4 +1,3 @@
-import { DataSource } from "../core"
 import { sql, sqlFragment } from "../core/sql-query-builder"
 import { entity, postgres } from "../postgres"
 
@@ -230,18 +229,16 @@ export function CarEntity() {
 // usage example
 // -----------------------------------------------------------------
 
-const myDataSource = DataSource.create({
-  type: postgres({
-    username: "",
-    password: "",
-    database: "",
-    entities: {
-      UserEntity,
-      PhotoEntity,
-      AlbumEntity,
-      CarEntity,
-    },
-  }),
+const myDataSource = postgres({
+  username: "",
+  password: "",
+  database: "",
+  entities: {
+    UserEntity,
+    PhotoEntity,
+    AlbumEntity,
+    CarEntity,
+  },
 })
 
 const UserRepository = myDataSource.manager.repository(UserEntity, {

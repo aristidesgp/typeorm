@@ -1,4 +1,4 @@
-import { AnyDriver } from "../../driver"
+import { AnyDataSource } from "../../data-source"
 import {
   AnyEntity,
   AnyEntitySchema,
@@ -8,14 +8,14 @@ import {
 } from "../../entity"
 
 export type WhereExpression<
-  Driver extends AnyDriver,
+  DataSource extends AnyDataSource,
   Entity extends AnyEntity
 > = {
   "@type": "WhereExpression"
   kind: "not" | "or" | "and" | "xor"
   // driver: Source
   entity: Entity
-  options: WhereOptions<Driver, Entity>[]
+  options: WhereOptions<DataSource, Entity>[]
 }
 
 export type WhereOperator<Entity extends AnyEntity, ValueType> = {
@@ -46,38 +46,41 @@ export type WhereOperator<Entity extends AnyEntity, ValueType> = {
 /**
  * Schema for a EntitySelection, used to specify what properties of a Entity must be selected.
  */
-export type WhereOptions<Driver extends AnyDriver, Entity extends AnyEntity> =
-  | WhereExpression<Driver, Entity>
-  | WhereOperatorOptions<Driver, Entity>
+export type WhereOptions<
+  DataSource extends AnyDataSource,
+  Entity extends AnyEntity
+> =
+  | WhereExpression<DataSource, Entity>
+  | WhereOperatorOptions<DataSource, Entity>
 
 export type WhereOptionsOperatorProperty<
-  Driver extends AnyDriver,
+  DataSource extends AnyDataSource,
   Entity extends AnyEntity,
   P extends keyof EntityProps<Entity>
 > = Entity extends AnyEntitySchema
   ? P extends string & keyof Entity["columns"]
     ?
-        | ColumnCompileType<Driver, Entity, P>
-        | WhereOperator<Entity, ColumnCompileType<Driver, Entity, P>>
-        | WhereExpression<Driver, Entity>
+        | ColumnCompileType<DataSource, Entity, P>
+        | WhereOperator<Entity, ColumnCompileType<DataSource, Entity, P>>
+        | WhereExpression<DataSource, Entity>
     : P extends keyof Entity["embeds"]
-    ? object & WhereOptions<Driver, Entity["embeds"][P]>
+    ? object & WhereOptions<DataSource, Entity["embeds"][P]>
     : P extends keyof Entity["relations"]
-    ? object & WhereOptions<Driver, RelationEntity<Entity, P>>
+    ? object & WhereOptions<DataSource, RelationEntity<Entity, P>>
     : never
   : P extends keyof Entity
   ?
       | Entity[P]
       | WhereOperator<Entity, Entity[P]>
-      | WhereExpression<Driver, Entity>
+      | WhereExpression<DataSource, Entity>
   : unknown
 
 export type WhereOperatorOptions<
-  Driver extends AnyDriver,
+  DataSource extends AnyDataSource,
   Entity extends AnyEntity
 > = {
   [P in keyof EntityProps<Entity>]?: WhereOptionsOperatorProperty<
-    Driver,
+    DataSource,
     Entity,
     P
   >

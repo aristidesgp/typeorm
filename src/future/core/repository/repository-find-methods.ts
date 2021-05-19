@@ -1,4 +1,4 @@
-import { AnyDriver } from "../driver"
+import { AnyDataSource } from "../data-source"
 import { AnyEntity } from "../entity"
 import {
   FindOptions,
@@ -14,89 +14,89 @@ import { FindOptionsCount } from "../options/find-options/find-options-count"
  * Interface for repositories that implement find* methods.
  */
 export interface RepositoryFindMethods<
-  Driver extends AnyDriver,
+  DataSource extends AnyDataSource,
   Entity extends AnyEntity
 > {
   /**
    * Helps to build a FindOptions object.
    */
-  findOptions: FindOptionsBuilder<Driver, Entity>
+  findOptions: FindOptionsBuilder<DataSource, Entity>
 
   /**
    * Finds entities by a given criteria.
    */
-  find<Where extends WhereOperatorOptions<Driver, Entity>>(
+  find<Where extends WhereOperatorOptions<DataSource, Entity>>(
     where: Where,
-  ): Promise<FindType<Driver, Entity, undefined>[]>
+  ): Promise<FindType<DataSource, Entity, undefined>[]>
 
   /**
    * Finds entities by a given find options.
    */
-  findBy<Options extends FindOptionsMany<Driver, Entity>>(
+  findBy<Options extends FindOptionsMany<DataSource, Entity>>(
     options: Options,
-  ): Promise<FindType<Driver, Entity, Options["select"]>[]>
+  ): Promise<FindType<DataSource, Entity, Options["select"]>[]>
 
   /**
    * Finds first entity by a given where criteria.
    * If entity was not found in the database - it returns null.
    */
-  findOne<Where extends WhereOptions<Driver, Entity>>(
+  findOne<Where extends WhereOptions<DataSource, Entity>>(
     where: Where,
-  ): Promise<FindType<Driver, Entity, undefined> | null>
+  ): Promise<FindType<DataSource, Entity, undefined> | null>
 
   /**
    * Finds first entity matching given find options.
    * If entity was not found in the database - it returns null.
    */
-  findOneBy<Options extends FindOptions<Driver, Entity>>(
+  findOneBy<Options extends FindOptions<DataSource, Entity>>(
     options: Options,
-  ): Promise<FindType<Driver, Entity, Options["select"]> | null>
+  ): Promise<FindType<DataSource, Entity, Options["select"]> | null>
 
   /**
    * Finds first entity matching given where criteria.
    * If entity was not found in the database - it throws an Error.
    */
-  findOneOrFail<Where extends WhereOptions<Driver, Entity>>(
+  findOneOrFail<Where extends WhereOptions<DataSource, Entity>>(
     where: Where,
-  ): Promise<FindType<Driver, Entity, undefined>>
+  ): Promise<FindType<DataSource, Entity, undefined>>
 
   /**
    * Finds first entity matching given find options.
    * If entity was not found in the database - it throws an Error.
    */
-  findOneByOrFail<Options extends FindOptions<Driver, Entity>>(
+  findOneByOrFail<Options extends FindOptions<DataSource, Entity>>(
     options: Options,
-  ): Promise<FindType<Driver, Entity, Options["select"]>>
+  ): Promise<FindType<DataSource, Entity, Options["select"]>>
 
   /**
    * Counts entities matching given where criteria.
    * Also counts all entities matching given conditions,
    * but ignores pagination settings ("skip" and "take" options).
    */
-  findAndCount<Where extends WhereOptions<Driver, Entity>>(
+  findAndCount<Where extends WhereOptions<DataSource, Entity>>(
     where: Where,
-  ): Promise<[FindType<Driver, Entity, undefined>[], number]>
+  ): Promise<[FindType<DataSource, Entity, undefined>[], number]>
 
   /**
    * Counts entities matching given find options.
    * Also counts all entities matching given conditions,
    * but ignores pagination settings ("skip" and "take" options).
    */
-  findAndCountBy<Options extends FindOptions<Driver, Entity>>(
+  findAndCountBy<Options extends FindOptions<DataSource, Entity>>(
     options: Options,
-  ): Promise<[FindType<Driver, Entity, Options["select"]>[], number]>
+  ): Promise<[FindType<DataSource, Entity, Options["select"]>[], number]>
 
   /**
    * Counts entities matching given where criteria.
    */
-  count<Where extends WhereOptions<Driver, Entity>>(
+  count<Where extends WhereOptions<DataSource, Entity>>(
     where: Where,
   ): Promise<number>
 
   /**
    * Counts entities matching given count options.
    */
-  countBy<Options extends FindOptionsCount<Driver, Entity>>(
+  countBy<Options extends FindOptionsCount<DataSource, Entity>>(
     options: Options,
   ): Promise<number>
 }

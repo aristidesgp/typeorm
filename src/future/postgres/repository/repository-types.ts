@@ -8,16 +8,16 @@ import {
   RepositoryTreeMethods,
 } from "../../core"
 import { Releasable } from "../../core/connection"
-import { PostgresDriver } from "../driver"
+import { PostgresDataSource } from "../data-source"
 
 /**
  * A single repository managing a particular entity.
  */
 export interface PostgresRepository<Entity extends AnyEntity>
-  extends RepositoryBase<PostgresDriver<any>, Entity>,
-    RepositoryBasicMethods<PostgresDriver<any>, Entity>,
-    RepositoryCommonRdbmsMethods<PostgresDriver<any>, Entity>,
-    RepositoryFindMethods<PostgresDriver<any>, Entity>,
-    RepositoryPersistenceMethods<PostgresDriver<any>, Entity>,
-    RepositoryTreeMethods<PostgresDriver<any>, Entity>,
+  extends RepositoryBase<PostgresDataSource<any>, Entity>,
+    RepositoryBasicMethods<PostgresDataSource<any>, Entity>,
+    RepositoryCommonRdbmsMethods<PostgresDataSource<any>, Entity>,
+    RepositoryFindMethods<PostgresDataSource<any>, Entity>,
+    RepositoryPersistenceMethods<PostgresDataSource<any>, Entity>,
+    RepositoryTreeMethods<PostgresDataSource<any>, Entity>,
     Releasable {}

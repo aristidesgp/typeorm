@@ -1,7 +1,7 @@
-import { PostgresQueryRunner } from "./query-runner-types"
+import { PostgresConnection } from "./query-runner-types"
 
-export function createPostgresQueryRunner(): PostgresQueryRunner {
+export function createPostgresConnection(): PostgresConnection {
   return {
-    "@type": "QueryRunner",
+    isReleased: false,
   }
 }

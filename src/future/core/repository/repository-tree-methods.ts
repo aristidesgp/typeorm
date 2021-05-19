@@ -1,10 +1,10 @@
-import { AnyDriver } from "../driver"
+import { AnyDataSource } from "../data-source"
 import { AnyEntity } from "../entity"
 
 /**
  * Interface for repositories that implement methods working with tree tables / structures.
  */
 export interface RepositoryTreeMethods<
-  Driver extends AnyDriver,
+  DataSource extends AnyDataSource,
   Entity extends AnyEntity
 > {}

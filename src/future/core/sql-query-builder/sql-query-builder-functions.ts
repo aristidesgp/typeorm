@@ -1,12 +1,12 @@
-import { AnyDriver } from "../driver"
+import { AnyDataSource } from "../data-source"
 import {
   SqlQueryBuilder,
   SQLTemplateStringParameterTypes,
 } from "./sql-query-builder-types"
 
 export function createSQLQueryBuilder<
-  Driver extends AnyDriver
->(): SqlQueryBuilder<Driver> {
+  DataSource extends AnyDataSource
+>(): SqlQueryBuilder<DataSource> {
   return {
     templates: [],
     append(sql) {
@@ -33,10 +33,10 @@ export function createSQLQueryBuilder<
 /**
  * Template string to build SQL query.
  */
-export function sql<Driver extends AnyDriver>(
+export function sql<DataSource extends AnyDataSource>(
   strings: TemplateStringsArray,
   ...parameters: SQLTemplateStringParameterTypes[]
-): SqlQueryBuilder<Driver> {
+): SqlQueryBuilder<DataSource> {
   const qb = createSQLQueryBuilder()
   qb.templates.push({
     type: "sql",
@@ -49,10 +49,10 @@ export function sql<Driver extends AnyDriver>(
 /**
  * Template string to build SQL query fragment.
  */
-export function sqlFragment<Driver extends AnyDriver>(
+export function sqlFragment<DataSource extends AnyDataSource>(
   strings: TemplateStringsArray,
   ...parameters: SQLTemplateStringParameterTypes[]
-): SqlQueryBuilder<Driver> {
+): SqlQueryBuilder<DataSource> {
   const qb = createSQLQueryBuilder()
   qb.templates.push({
     type: "sqlFragment",

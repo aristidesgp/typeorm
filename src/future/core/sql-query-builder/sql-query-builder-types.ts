@@ -1,5 +1,5 @@
 import { Observable } from "zen-observable-ts"
-import { AnyDriver } from "../driver"
+import { AnyDataSource } from "../data-source"
 import {
   AnyEntity,
   EntityFromReference,
@@ -32,25 +32,25 @@ export type SQLTemplate = {
  * Helps to build SQL query.
  */
 export type SqlQueryBuilderMapped<
-  Driver extends AnyDriver,
+  DataSource extends AnyDataSource,
   Entity extends AnyEntity
 > = {
   /**
    * Executes built SQL query and returns data returned by database.
    * T must be provided in order to identify what is the real data type of the returned data.
    */
-  execute(): Promise<EntityModelPartial<Driver, Entity>>
+  execute(): Promise<EntityModelPartial<DataSource, Entity>>
 
   /**
    * Executes built query and streams returned data.
    */
-  stream(): Observable<EntityModelPartial<Driver, Entity>>
+  stream(): Observable<EntityModelPartial<DataSource, Entity>>
 }
 
 /**
  * Helps to build SQL query.
  */
-export interface SqlQueryBuilder<Driver extends AnyDriver> {
+export interface SqlQueryBuilder<DataSource extends AnyDataSource> {
   /**
    * List of sql templates registered in query builder.
    */
@@ -68,7 +68,7 @@ export interface SqlQueryBuilder<Driver extends AnyDriver> {
     Entity extends EntityFromReference<Reference>
   >(
     entity: Reference,
-  ): SqlQueryBuilderMapped<Driver, Entity>
+  ): SqlQueryBuilderMapped<DataSource, Entity>
 
   /**
    * Additional options applied to query.

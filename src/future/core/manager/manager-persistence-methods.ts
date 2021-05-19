@@ -1,4 +1,4 @@
-import { AnyDriver } from "../driver"
+import { AnyDataSource } from "../data-source"
 import {
   EntityFromReference,
   InsertedEntityModel,
@@ -20,7 +20,7 @@ import {
 /**
  * Interface for managers that implement persistence / alteration operations.
  */
-export interface ManagerPersistenceMethods<Driver extends AnyDriver> {
+export interface ManagerPersistenceMethods<DataSource extends AnyDataSource> {
   /**
    * Inserts a new entity into the database.
    * Database error will be thrown if entity already exists in the database.
@@ -29,12 +29,12 @@ export interface ManagerPersistenceMethods<Driver extends AnyDriver> {
   insert<
     Reference extends EntityReference,
     Entity extends EntityFromReference<Reference>,
-    Model extends EntityModelPartial<Driver, Entity>
+    Model extends EntityModelPartial<DataSource, Entity>
   >(
     entity: Reference,
     model: Model,
-    options?: InsertOptions<Driver, Entity>,
-  ): Promise<InsertedEntityModel<Driver, Entity, Model>>
+    options?: InsertOptions<DataSource, Entity>,
+  ): Promise<InsertedEntityModel<DataSource, Entity, Model>>
 
   /**
    * Inserts entities in bulk.
@@ -43,11 +43,11 @@ export interface ManagerPersistenceMethods<Driver extends AnyDriver> {
   insert<
     Reference extends EntityReference,
     Entity extends EntityFromReference<Reference>,
-    Model extends EntityModelPartial<Driver, Entity>
+    Model extends EntityModelPartial<DataSource, Entity>
   >(
     entity: Reference,
     models: Model[],
-    options?: InsertOptions<Driver, Entity>,
+    options?: InsertOptions<DataSource, Entity>,
   ): Promise<void> // [...EntityModelJustInserted<Entity, Model>[]]
 
   /**
@@ -57,11 +57,11 @@ export interface ManagerPersistenceMethods<Driver extends AnyDriver> {
   update<
     Reference extends EntityReference,
     Entity extends EntityFromReference<Reference>,
-    Model extends EntityModelPartial<Driver, Entity>
+    Model extends EntityModelPartial<DataSource, Entity>
   >(
     entity: Reference,
     model: Model,
-    options?: UpdateOptions<Driver, Entity>,
+    options?: UpdateOptions<DataSource, Entity>,
   ): Promise<void>
 
   /**
@@ -73,7 +73,7 @@ export interface ManagerPersistenceMethods<Driver extends AnyDriver> {
     Entity extends EntityFromReference<Reference>
   >(
     entity: Reference,
-    options: UpdateByOptions<Driver, Entity>,
+    options: UpdateByOptions<DataSource, Entity>,
   ): Promise<void>
 
   /**
@@ -82,11 +82,11 @@ export interface ManagerPersistenceMethods<Driver extends AnyDriver> {
   delete<
     Reference extends EntityReference,
     Entity extends EntityFromReference<Reference>,
-    Model extends EntityModelPartial<Driver, Entity>
+    Model extends EntityModelPartial<DataSource, Entity>
   >(
     entity: Reference,
     model: Model,
-    options?: DeleteOptions<Driver, Entity>,
+    options?: DeleteOptions<DataSource, Entity>,
   ): Promise<void>
 
   /**
@@ -95,11 +95,11 @@ export interface ManagerPersistenceMethods<Driver extends AnyDriver> {
   delete<
     Reference extends EntityReference,
     Entity extends EntityFromReference<Reference>,
-    Model extends EntityModelPartial<Driver, Entity>
+    Model extends EntityModelPartial<DataSource, Entity>
   >(
     entity: Reference,
     models: Model[],
-    options?: DeleteOptions<Driver, Entity>,
+    options?: DeleteOptions<DataSource, Entity>,
   ): Promise<void>
 
   /**
@@ -110,7 +110,7 @@ export interface ManagerPersistenceMethods<Driver extends AnyDriver> {
     Entity extends EntityFromReference<Reference>
   >(
     entity: Reference,
-    options: DeleteByOptions<Driver, Entity>,
+    options: DeleteByOptions<DataSource, Entity>,
   ): Promise<void>
 
   /**
@@ -119,11 +119,11 @@ export interface ManagerPersistenceMethods<Driver extends AnyDriver> {
   archive<
     Reference extends EntityReference,
     Entity extends EntityFromReference<Reference>,
-    Model extends EntityModelPartial<Driver, Entity>
+    Model extends EntityModelPartial<DataSource, Entity>
   >(
     entity: Reference,
     model: Model,
-    options?: ArchiveOptions<Driver, Entity>,
+    options?: ArchiveOptions<DataSource, Entity>,
   ): Promise<void>
 
   /**
@@ -132,11 +132,11 @@ export interface ManagerPersistenceMethods<Driver extends AnyDriver> {
   archive<
     Reference extends EntityReference,
     Entity extends EntityFromReference<Reference>,
-    Model extends EntityModelPartial<Driver, Entity>
+    Model extends EntityModelPartial<DataSource, Entity>
   >(
     entity: Reference,
     models: Model[],
-    options?: ArchiveOptions<Driver, Entity>,
+    options?: ArchiveOptions<DataSource, Entity>,
   ): Promise<void>
 
   /**
@@ -147,7 +147,7 @@ export interface ManagerPersistenceMethods<Driver extends AnyDriver> {
     Entity extends EntityFromReference<Reference>
   >(
     entity: Reference,
-    options: ArchiveByOptions<Driver, Entity>,
+    options: ArchiveByOptions<DataSource, Entity>,
   ): Promise<void>
 
   /**
@@ -156,11 +156,11 @@ export interface ManagerPersistenceMethods<Driver extends AnyDriver> {
   unarchive<
     Reference extends EntityReference,
     Entity extends EntityFromReference<Reference>,
-    Model extends EntityModelPartial<Driver, Entity>
+    Model extends EntityModelPartial<DataSource, Entity>
   >(
     entity: Reference,
     model: Model,
-    options?: UnarchiveOptions<Driver, Entity>,
+    options?: UnarchiveOptions<DataSource, Entity>,
   ): Promise<void>
 
   /**
@@ -169,11 +169,11 @@ export interface ManagerPersistenceMethods<Driver extends AnyDriver> {
   unarchive<
     Reference extends EntityReference,
     Entity extends EntityFromReference<Reference>,
-    Model extends EntityModelPartial<Driver, Entity>
+    Model extends EntityModelPartial<DataSource, Entity>
   >(
     entity: Reference,
     models: Model[],
-    options?: UnarchiveOptions<Driver, Entity>,
+    options?: UnarchiveOptions<DataSource, Entity>,
   ): Promise<void>
 
   /**
@@ -184,6 +184,6 @@ export interface ManagerPersistenceMethods<Driver extends AnyDriver> {
     Entity extends EntityFromReference<Reference>
   >(
     entity: Reference,
-    options: UnarchiveByOptions<Driver, Entity>,
+    options: UnarchiveByOptions<DataSource, Entity>,
   ): Promise<void>
 }

@@ -1,4 +1,3 @@
-import { DataSource } from "../core"
 import { postgres } from "../postgres"
 
 export class PhotoEntity {
@@ -23,17 +22,15 @@ export class UserEntity {
 // usage example
 // -----------------------------------------------------------------
 
-const myDataSource = DataSource.create({
-  type: postgres({
-    username: "",
-    password: "",
-    database: "",
-    entities: {
-      PhotoEntity,
-      AlbumEntity,
-      UserEntity,
-    },
-  }),
+const myDataSource = postgres({
+  username: "",
+  password: "",
+  database: "",
+  entities: {
+    PhotoEntity,
+    AlbumEntity,
+    UserEntity,
+  },
 })
 
 async function test() {

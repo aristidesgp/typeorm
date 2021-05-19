@@ -1,4 +1,4 @@
-import { AnyDriver, IsolationLevels, UpdateResult } from "../driver"
+import { AnyDataSource, IsolationLevels, UpdateResult } from "../data-source"
 import {
   EntityColumnPaths,
   EntityFromReference,
@@ -10,11 +10,11 @@ import { SqlQueryBuilder } from "../sql-query-builder"
 /**
  * Interface for managers that implement common RDBMS methods.
  */
-export interface ManagerCommonRdbmsMethods<Driver extends AnyDriver> {
+export interface ManagerCommonRdbmsMethods<DataSource extends AnyDataSource> {
   /**
    * Executes a raw SQL query and returns raw database results.
    */
-  query(sql: SqlQueryBuilder<Driver>): SqlQueryBuilder<Driver>
+  query(sql: SqlQueryBuilder<DataSource>): SqlQueryBuilder<DataSource>
 
   /**
    * Wraps given function execution (and all operations made there) in a transaction.
@@ -29,7 +29,7 @@ export interface ManagerCommonRdbmsMethods<Driver extends AnyDriver> {
    * All database operations must be executed using provided entity manager.
    */
   transaction<Result>(
-    isolationLevel: IsolationLevels<Driver["types"]>,
+    isolationLevel: IsolationLevels<DataSource["types"]>,
     runInTransaction: (entityManager: this) => Promise<Result>,
   ): Promise<Result>
 
@@ -54,10 +54,10 @@ export interface ManagerCommonRdbmsMethods<Driver extends AnyDriver> {
     Entity extends EntityFromReference<Reference>
   >(
     entity: Reference,
-    where: WhereOptions<Driver, Entity>,
+    where: WhereOptions<DataSource, Entity>,
     columnPath: EntityColumnPaths<Entity>,
     value: number,
-  ): Promise<UpdateResult<Driver["types"]>>
+  ): Promise<UpdateResult<DataSource["types"]>>
 
   /**
    * Decrements some column by provided value of the entities matched given conditions.
@@ -67,8 +67,8 @@ export interface ManagerCommonRdbmsMethods<Driver extends AnyDriver> {
     Entity extends EntityFromReference<Reference>
   >(
     entity: Reference,
-    where: WhereOptions<Driver, Entity>,
+    where: WhereOptions<DataSource, Entity>,
     columnPath: EntityColumnPaths<Entity>,
     value: number,
-  ): Promise<UpdateResult<Driver["types"]>>
+  ): Promise<UpdateResult<DataSource["types"]>>
 }
