@@ -1,22 +1,15 @@
-import { AnyEntityList } from "../entity"
+import { EntityReference } from "../entity"
 import { LoggerBase } from "../logger"
 import { NamingStrategyBase } from "../naming-strategy"
-
-// todo: rename to DataSourceOptions
-
-/**
- * Any DataSourceOptions. Helper type.
- */
-export type AnyDataSourceOptions = BaseDataSourceOptions<AnyEntityList>
 
 /**
  * Options passed to the DataSource.
  */
-export interface BaseDataSourceOptions<Entities extends AnyEntityList> {
+export interface BaseDataSourceOptions {
   /**
    * List of entities to be used in this data source.
    */
-  entities: Entities
+  entities: EntityReference[]
 
   /**
    * Naming strategy used to name things.

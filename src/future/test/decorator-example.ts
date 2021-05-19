@@ -26,11 +26,7 @@ const myDataSource = postgres({
   username: "",
   password: "",
   database: "",
-  entities: {
-    PhotoEntity,
-    AlbumEntity,
-    UserEntity,
-  },
+  entities: [PhotoEntity, AlbumEntity, UserEntity],
 })
 
 async function test() {

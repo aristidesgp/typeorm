@@ -5,12 +5,10 @@ import { PostgresConnection } from "../query-runner"
 import { PostgresDataSourceTypes } from "./data-source-column-types"
 import { PostgresDataSourceOptions } from "./data-source-options-types"
 
-export interface PostgresDataSource<
-  Options extends PostgresDataSourceOptions<AnyEntityList>
-> extends CoreDataSource<
+export interface PostgresDataSource<Options extends PostgresDataSourceOptions>
+  extends CoreDataSource<
     Options,
     PostgresManager,
     PostgresConnection,
-    PostgresNamingStrategy,
     PostgresDataSourceTypes
   > {}

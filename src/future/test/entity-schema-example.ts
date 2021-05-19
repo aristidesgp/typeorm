@@ -233,13 +233,12 @@ const myDataSource = postgres({
   username: "",
   password: "",
   database: "",
-  entities: {
-    UserEntity,
-    PhotoEntity,
-    AlbumEntity,
-    CarEntity,
-  },
+  entities: [UserEntity, PhotoEntity, AlbumEntity, CarEntity],
 })
+
+myDataSource.manager.repository(UserEntity)
+
+// myDataSource.options.namingStrategy.
 
 const UserRepository = myDataSource.manager.repository(UserEntity, {
   async allUsers() {

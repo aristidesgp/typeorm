@@ -6,9 +6,9 @@ import { createPostgresConnection } from "../query-runner"
 import { PostgresDataSourceOptions } from "./data-source-options-types"
 import { PostgresDataSource } from "./data-source-types"
 
-export function postgres<
-  Options extends PostgresDataSourceOptions<AnyEntityList>
->(options: Options): PostgresDataSource<Options> {
+export function postgres<Options extends PostgresDataSourceOptions>(
+  options: Options,
+): PostgresDataSource<Options> {
   // return null as any
   return {
     "@type": "DataSource",
@@ -18,8 +18,8 @@ export function postgres<
     //   return this.builder.manager(this)
     // },
     entityMetadatas: [],
-    namingStrategy: new DefaultNamingStrategy(),
-    logger: new SimpleConsoleLogger(),
+    // namingStrategy: null as any, // new DefaultNamingStrategy(),
+    // logger: new SimpleConsoleLogger(),
     async connect() {
       return this
     },

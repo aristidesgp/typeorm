@@ -1,20 +1,17 @@
 import { EntityMetadata } from "../../../metadata/EntityMetadata"
 import { ConnectionBase } from "../connection/connection"
-import { LoggerBase } from "../logger"
 import { ManagerBase } from "../manager"
-import { NamingStrategyBase } from "../naming-strategy"
 import { DataSourceTypes } from "./data-source-column-types"
-import { AnyDataSourceOptions } from "./data-source-options"
+import { BaseDataSourceOptions } from "./data-source-options"
 
 /**
  * Any driver implementation.
  * Helper type.
  */
 export type AnyDataSource = CoreDataSource<
-  AnyDataSourceOptions,
+  BaseDataSourceOptions,
   ManagerBase<any>,
   ConnectionBase,
-  NamingStrategyBase,
   any
 >
 
@@ -22,10 +19,9 @@ export type AnyDataSource = CoreDataSource<
  *
  */
 export interface CoreDataSource<
-  Options extends AnyDataSourceOptions,
+  Options extends BaseDataSourceOptions,
   Manager extends ManagerBase<any>,
   Connection extends ConnectionBase,
-  NamingStrategy extends NamingStrategyBase,
   Types extends DataSourceTypes
 > {
   // todo: rename to __ or move everything to driver: { } ?
@@ -62,16 +58,6 @@ export interface CoreDataSource<
    * All entity metadatas that are registered for this connection.
    */
   entityMetadatas: EntityMetadata[] // if it will be typed, EntityMetadataList should be created like RepositoryList
-
-  /**
-   * Naming strategy used in the connection.
-   */
-  namingStrategy: NamingStrategy
-
-  /**
-   * Logger used to log orm events.
-   */
-  logger: LoggerBase
 
   /**
    * Initializes a data source connection.
