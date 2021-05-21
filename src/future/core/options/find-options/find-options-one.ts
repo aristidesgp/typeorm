@@ -13,7 +13,7 @@ export type FindOptions<
   Entity extends AnyEntity
 > = {
   /**
-   * What data needs to be selected from the loaded entity.
+   * What properties and relations needs to be selected from the loading entities.
    */
   select?: SelectOptions<Entity>
 
@@ -28,6 +28,11 @@ export type FindOptions<
   order?: OrderOptions<DataSource, Entity>
 
   /**
+   * Indicates if archived (soft-deleted) entities should be included in the result.
+   */
+  archived?: boolean
+
+  /**
    * Whatever cache should be enabled for query or not.
    * This option allows to "cache" query to improve query performance.
    * If set to true - cache will be enabled and default options from data source will be used.
@@ -35,9 +40,4 @@ export type FindOptions<
    * Alternatively you can use advanced cache options.
    */
   cache?: boolean | number | FindOptionsCache
-
-  /**
-   * Indicates if soft-deleted rows should be included in the result.
-   */
-  withDeleted?: boolean
 } & DataSource["types"]["findOptions"]

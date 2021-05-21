@@ -21,17 +21,17 @@ export type FindOptionsBuilder<
   ): Options
 
   /**
-   * Creates a FindOptionsSelect object.
+   * Creates a SelectOptions object.
    */
   select<Select extends SelectOptions<Entity>>(select: Select): Select
 
   /**
-   * Creates a FindOptionsWhere object.
+   * Creates a WhereOptions object.
    */
   where<Where extends WhereOptions<DataSource, Entity>>(where: Where): Where
 
   /**
-   * Creates a FindOptionsOrder object.
+   * Creates a OrderOptions object.
    */
   order<Order extends OrderOptions<DataSource, Entity>>(order: Order): Order
 }

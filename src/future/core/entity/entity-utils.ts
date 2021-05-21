@@ -60,7 +60,7 @@ export type NonArrayRelations<
 export type ActiveRecordMethods<
   DataSource extends AnyDataSource,
   Entity extends AnyEntitySchema
-> = Entity["type"] extends "active-record"
+> = Entity["type"] extends "advanced"
   ? {
       save(): Promise<void>
       remove(): Promise<void>

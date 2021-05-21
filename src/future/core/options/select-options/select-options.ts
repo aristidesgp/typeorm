@@ -40,7 +40,7 @@ export type SelectOptions<
   : unknown
 
 /**
- * Defines SelectOptions for a entity defined in a class (with decorators).
+ * Defines SelectOptions for entity defined in a class (with decorators).
  */
 export type SelectOptionsForClass<Entity extends EntityClassInstance> = {
   [P in keyof Entity]?: Entity[P] extends Array<infer U>
@@ -53,7 +53,7 @@ export type SelectOptionsForClass<Entity extends EntityClassInstance> = {
 }
 
 /**
- * Defines SelectOptions for a entity defined as entity schemas.
+ * Defines SelectOptions for entity defined as entity schemas.
  */
 export type SelectOptionsForEntitySchema<Entity extends AnyEntitySchema> = {
   [P in keyof Entity["columns"]]?: true | false

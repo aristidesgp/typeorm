@@ -97,7 +97,7 @@ export function ProfileEmbed() {
 
 export function UserEntity() {
   return entity({
-    type: "active-record",
+    type: "advanced",
     columns: {
       id: {
         type: "int",
@@ -523,6 +523,3 @@ console.log(UserWithAvatarEager)
 // })
 //
 // console.log(whereOptions);
-
-// entity can have 3 base types:
-// - simple, active-record, class (for decorators)

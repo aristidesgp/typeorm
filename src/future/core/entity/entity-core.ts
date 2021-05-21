@@ -14,17 +14,18 @@ import { EntityRelation, EntityRelationList } from "./entity-relations"
 export type AnyEntity = AnyEntitySchema | EntityClassInstance
 
 /**
- * Entity class returning type, e.g. properties of "User", properties of "Photo", etc.
+ * Entity class returning type, e.g. typeof = new Entity()
  */
 export type EntityClassInstance = InstanceType<EntityClassDefinition>
 
 /**
- * Entity class function, e.g. "User", "Photo", etc.
+ * Entity class function, e.g. typeof = class Entity
  */
 export type EntityClassDefinition = new (...args: any) => any
 
 /**
  * Any entity schema.
+ * Entity schema is a one way of entity definition.
  */
 export type AnyEntitySchema = EntitySchema<
   EntitySchemaType,
@@ -65,12 +66,13 @@ export interface EntitySchema<
 /**
  * There are two types of entity schemas:
  *
- * - default
- * - active-record
+ * - simple
+ * - advanced
  *
- * active-record type adds special methods (like "save", "remove", etc.) to your entities.
+ * "simple" type is a default type and simply return objects / models as they are.
+ * "advanced" type adds special methods (like "save", "remove", etc.) to your entities.
  */
-export type EntitySchemaType = "default" | "active-record"
+export type EntitySchemaType = "simple" | "advanced"
 
 /**
  * List of named entity definitions.

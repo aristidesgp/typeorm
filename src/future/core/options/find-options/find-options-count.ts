@@ -16,6 +16,11 @@ export type FindOptionsCount<
   where?: WhereOptions<DataSource, Entity>
 
   /**
+   * Indicates if archived (soft-deleted) entities should be included in the count.
+   */
+  archived?: boolean
+
+  /**
    * Whatever cache should be enabled for query or not.
    * This option allows to "cache" query to improve query performance.
    * If set to true - cache will be enabled and default options from data source will be used.
@@ -23,9 +28,4 @@ export type FindOptionsCount<
    * Alternatively you can use advanced cache options.
    */
   cache?: boolean | number | FindOptionsCache
-
-  /**
-   * Indicates if soft-deleted rows should be included in the count.
-   */
-  withDeleted?: boolean
 } & DataSource["types"]["findOptions"]

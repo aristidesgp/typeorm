@@ -18,7 +18,6 @@ export type FindReturnTypeProperty<
   Entity extends AnyEntitySchema,
   Selection extends SelectOptionsForEntitySchema<Entity>,
   P, // extends string, // & keyof EntityPropsWithModel<Entity, any>,
-  // Property extends EntityPropsWithModel<Entity, any>[P]["property"],
   ParentPartiallySelected extends boolean,
   PropsMode extends EntityPropsMode
 > = P extends string & keyof Entity["columns"] // if property is a column, just return it's type inferred from a driver column types defined in the entity
@@ -172,8 +171,7 @@ export type EntitySchemaComputedModel<
   Selection extends SelectOptionsForEntitySchema<Entity>, // if something went wrong use it: extends FindOptionsSelect<Source, Entity>,
   ParentPartiallySelected extends boolean,
   PropsMode extends EntityPropsMode
-> /*Entity extends AnyEntityCore // this case is possible in embed, when parent selected set of columns,
-  ?*/ = ParentPartiallySelected extends true // we need to tell to child (embed) to select only what was selected, to prevent selection of every column
+> = ParentPartiallySelected extends true // we need to tell to child (embed) to select only what was selected, to prevent selection of every column
   ? {
       [P in keyof EntityPropsWithModel<
         DataSource,
@@ -225,4 +223,3 @@ export type EntitySchemaComputedModel<
         PropsMode
       >
     }
-// : Entity

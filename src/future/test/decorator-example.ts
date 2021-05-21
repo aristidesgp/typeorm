@@ -278,6 +278,3 @@ console.log(UserWithAvatarEager)
 // })
 //
 // console.log(whereOptions);
-
-// entity can have 3 base types:
-// - simple, active-record, class (for decorators)
