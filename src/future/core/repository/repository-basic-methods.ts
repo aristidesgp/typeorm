@@ -38,7 +38,7 @@ export interface RepositoryBasicMethods<
   ): CreatedEntityModel<DataSource, Entity, Model>
 
   /**
-   * Merges multiple entities (or entity-like objects) into a given entity.
+   * Merges multiple entities (or entity-like objects) into a new entity.
    */
   merge<Models extends EntityCreateParams<DataSource, Entity>[]>(
     ...models: Models

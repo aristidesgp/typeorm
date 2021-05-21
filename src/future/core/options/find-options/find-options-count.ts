@@ -6,19 +6,14 @@ import { FindOptionsCache } from "./find-options-cache"
 /**
  * Defines a special criteria to find specific entity.
  */
-export interface FindOptionsCount<
+export type FindOptionsCount<
   DataSource extends AnyDataSource,
   Entity extends AnyEntity
-> {
+> = {
   /**
    * Conditions applied to a query on what needs to be selected from the database.
    */
   where?: WhereOptions<DataSource, Entity>
-
-  /**
-   * Indicates what locking mode should be used.
-   */
-  lock?: DataSource["types"]["lockTypes"]
 
   /**
    * Whatever cache should be enabled for query or not.
@@ -30,13 +25,7 @@ export interface FindOptionsCount<
   cache?: boolean | number | FindOptionsCache
 
   /**
-   * If this is set to true, query will be executed in a transaction.
-   * By default query isn't wrapped into transaction.
-   */
-  transaction?: boolean
-
-  /**
    * Indicates if soft-deleted rows should be included in the count.
    */
   withDeleted?: boolean
-}
+} & DataSource["types"]["findOptions"]

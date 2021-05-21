@@ -4,7 +4,6 @@ import {
   AnyEntity,
   AnyEntitySchema,
   ColumnCompileType,
-  EntityClassDefinition,
   EntityClassInstance,
   EntityPropertiesItem,
   EntityPropsMode,
@@ -12,70 +11,12 @@ import {
   RelationEntity,
 } from "../../entity"
 import { ForceCastIfExtends } from "../../util"
-
-/**
- * Schema for Selection, used for user to specify what he is going to "select" from the db.
- * In selection he is able to specify columns, relations and embeds to select.
- * Relations can be "selected completely" by simply specifying "true" to the whole object in the relation, e.g. { relation: true }.
- * Its also worth noting if no columns where specified in the selection, all entity columns will be selected,
- * e.g. for selection of user(id,name,photo,contacts) with selection set to { select: { photo: true } } -
- * returned result will have - "id", "name" columns and "photo" relation selected.
- *
- * Usage example:
- *
- * .find({
- *   select: {
- *     id: true,
- *     name: true,
- *     photo: {
- *       id: true,
- *       filename: true,
- *       album: true
- *     },
- *     profile: {
- *       bio: true
- *     }
- *   }
- * })
- */
-export type FindOptionsSelect<
-  Entity extends AnyEntity
-> = Entity extends AnyEntitySchema
-  ? EntityCoreSelection<Entity>
-  : Entity extends EntityClassInstance
-  ? EntityClassSelection<Entity>
-  : unknown
-
-export type EntityClassSelection<Entity extends EntityClassInstance> = {
-  [P in keyof Entity]?: Entity[P] extends Array<infer U>
-    ? U extends EntityClassDefinition
-      ? true | false | FindOptionsSelect<InstanceType<U>>
-      : true | false
-    : Entity[P] extends EntityClassDefinition
-    ? true | false | FindOptionsSelect<InstanceType<Entity[P]>>
-    : true | false
-}
-
-export type EntityCoreSelection<Entity extends AnyEntitySchema> = {
-  [P in keyof Entity["columns"]]?: true | false
-} &
-  {
-    [P in keyof Entity["virtualLazyProperties"]]?: true | false
-  } &
-  {
-    [P in keyof Entity["relations"]]?:
-      | true
-      | false
-      | FindOptionsSelect<RelationEntity<Entity, P>>
-  } &
-  {
-    [P in keyof Entity["embeds"]]?: FindOptionsSelect<Entity["embeds"][P]>
-  }
+import { SelectOptions, SelectOptionsForEntitySchema } from "../select-options"
 
 export type FindReturnTypeProperty<
   DataSource extends AnyDataSource,
   Entity extends AnyEntitySchema,
-  Selection extends EntityCoreSelection<Entity>,
+  Selection extends SelectOptionsForEntitySchema<Entity>,
   P, // extends string, // & keyof EntityPropsWithModel<Entity, any>,
   // Property extends EntityPropsWithModel<Entity, any>[P]["property"],
   ParentPartiallySelected extends boolean,
@@ -180,7 +121,7 @@ export type OnlyColumnKeys<Selection, Entity extends AnyEntitySchema> = {
 export type EntitySelectionTruthyKeys<
   DataSource extends AnyDataSource,
   Entity extends AnyEntitySchema,
-  Selection extends EntityCoreSelection<Entity>
+  Selection extends SelectOptionsForEntitySchema<Entity>
 > =
   | {
       [P in keyof Selection]: Selection[P] extends true
@@ -199,7 +140,7 @@ export type EntitySelectionTruthyKeys<
 export type EntitySelectionAllColumns<
   DataSource extends AnyDataSource,
   Entity extends AnyEntitySchema,
-  Selection extends EntityCoreSelection<Entity>
+  Selection extends SelectOptionsForEntitySchema<Entity>
 > = keyof (Entity["columns"] &
   {
     [P in keyof Entity["relations"] as Selection[P] extends true
@@ -216,9 +157,9 @@ export type EntitySelectionAllColumns<
 export type FindType<
   DataSource extends AnyDataSource,
   Entity extends AnyEntity,
-  Selection extends FindOptionsSelect<Entity> | undefined
+  Selection extends SelectOptions<Entity> | undefined
 > = Entity extends AnyEntitySchema
-  ? Selection extends EntityCoreSelection<Entity>
+  ? Selection extends SelectOptionsForEntitySchema<Entity>
     ? EntitySchemaComputedModel<DataSource, Entity, Selection, false, "all">
     : EntitySchemaComputedModel<DataSource, Entity, {}, false, "all">
   : Entity extends EntityClassInstance
@@ -228,7 +169,7 @@ export type FindType<
 export type EntitySchemaComputedModel<
   DataSource extends AnyDataSource,
   Entity extends AnyEntitySchema,
-  Selection extends EntityCoreSelection<Entity>, // if something went wrong use it: extends FindOptionsSelect<Source, Entity>,
+  Selection extends SelectOptionsForEntitySchema<Entity>, // if something went wrong use it: extends FindOptionsSelect<Source, Entity>,
   ParentPartiallySelected extends boolean,
   PropsMode extends EntityPropsMode
 > /*Entity extends AnyEntityCore // this case is possible in embed, when parent selected set of columns,

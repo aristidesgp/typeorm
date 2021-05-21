@@ -131,6 +131,6 @@ export type DeleteResult<
   DataSource extends AnyDataSource
 > = DataSource["types"]["deleteResult"]
 
-export type IsolationLevels<
+export type TransactionOptions<
   DataSource extends AnyDataSource
-> = DataSource["types"]["isolationLevels"]
+> = DataSource["types"]["transactionOptions"]

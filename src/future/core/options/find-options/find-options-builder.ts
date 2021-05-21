@@ -1,9 +1,9 @@
 import { AnyDataSource } from "../../data-source"
 import { AnyEntity } from "../../entity"
+import { OrderOptions } from "../order-options"
+import { SelectOptions } from "../select-options"
 import { WhereOptions } from "../where-options"
 import { FindOptionsMany } from "./find-options-many"
-import { FindOptionsOrder } from "./find-options-order"
-import { FindOptionsSelect } from "./find-options-select"
 
 /**
  * Function type that produces FindOptions.
@@ -23,7 +23,7 @@ export type FindOptionsBuilder<
   /**
    * Creates a FindOptionsSelect object.
    */
-  select<Select extends FindOptionsSelect<Entity>>(select: Select): Select
+  select<Select extends SelectOptions<Entity>>(select: Select): Select
 
   /**
    * Creates a FindOptionsWhere object.
@@ -33,5 +33,5 @@ export type FindOptionsBuilder<
   /**
    * Creates a FindOptionsOrder object.
    */
-  order<Order extends FindOptionsOrder<DataSource, Entity>>(order: Order): Order
+  order<Order extends OrderOptions<DataSource, Entity>>(order: Order): Order
 }

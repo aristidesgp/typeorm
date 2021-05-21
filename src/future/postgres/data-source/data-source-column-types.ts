@@ -1,4 +1,5 @@
 import {
+  FindOptionsCache,
   PersistenceWithChunkOptions,
   PersistenceWithListenersOptions,
   PersistenceWithTransactionOptions,
@@ -23,15 +24,41 @@ export type PostgresIsolationLevels =
   | "REPEATABLE READ"
   | "SERIALIZABLE"
 
+export type PostgresLocking =
+  | { mode: "optimistic"; version: number | Date }
+  | {
+      mode:
+        | "pessimistic_read"
+        | "pessimistic_write"
+        | "dirty_read"
+        | "pessimistic_partial_write"
+        | "pessimistic_write_or_fail"
+        | "for_no_key_update"
+      tables?: string[]
+    }
+
 export type PostgresDataSourceTypes = {
   columnTypes: PostgresColumnTypes
   orderTypes: PostgresOrderTypes
-  lockTypes: ""
+  findOptions: {
+    /**
+     * If this is set to true, query will be executed in a transaction.
+     * By default query isn't wrapped into transaction.
+     */
+    transaction?: boolean
+
+    /**
+     * Indicates what locking mode should be used.
+     */
+    lockTypes?: PostgresLocking
+  }
   insertResult: any
   updateResult: any
   deleteResult: any
   queryResult: any
-  isolationLevels: PostgresIsolationLevels
+  transactionOptions: {
+    isolationLevel?: PostgresIsolationLevels
+  }
   insertOptions: PostgresInsertOptions
   updateOptions: PostgresUpdateOptions
   updateByOptions: PostgresUpdateByOptions

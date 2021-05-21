@@ -1,11 +1,11 @@
 import { AnyDataSource } from "../data-source"
 import {
-  EntityCoreSelection,
   FindOptions,
   FindOptionsMany,
   EntitySchemaComputedModel,
 } from "../options"
 import { FindOptionsCount } from "../options/find-options/find-options-count"
+import { SelectOptionsForEntitySchema } from "../options/select-options"
 import {
   AnyEntity,
   AnyEntitySchema,
@@ -79,7 +79,7 @@ export type ActiveRecordMethods<
             Entity,
             P extends keyof Entity["relations"] ? P : never
           >,
-          Options["select"] extends EntityCoreSelection<Entity>
+          Options["select"] extends SelectOptionsForEntitySchema<Entity>
             ? Options["select"]
             : {},
           false,
@@ -99,7 +99,7 @@ export type ActiveRecordMethods<
               Entity,
               P extends keyof Entity["relations"] ? P : never
             >,
-            Options["select"] extends EntityCoreSelection<Entity>
+            Options["select"] extends SelectOptionsForEntitySchema<Entity>
               ? Options["select"]
               : {},
             false,

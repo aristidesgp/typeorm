@@ -1,5 +1,5 @@
 import { AnyDataSource } from "../data-source"
-import { AnyEntity, EntityFromReference, EntityReference } from "../entity"
+import { EntityFromReference, EntityReference } from "../entity"
 import {
   FindOptions,
   FindOptionsBuilder,

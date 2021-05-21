@@ -54,7 +54,7 @@ export interface ManagerBasicMethods<DataSource extends AnyDataSource> {
   ): CreatedEntityModel<DataSource, Entity, Model>
 
   /**
-   * Merges multiple entities (or entity-like objects) into a given entity.
+   * Merges multiple entities (or entity-like objects) into a new entity.
    */
   merge<
     Reference extends EntityReference,

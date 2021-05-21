@@ -1,6 +1,3 @@
-import { SimpleConsoleLogger } from "../../../logger/SimpleConsoleLogger"
-import { DefaultNamingStrategy } from "../../../naming-strategy/DefaultNamingStrategy"
-import { AnyEntityList } from "../../core"
 import { createPostgresManager } from "../manager"
 import { createPostgresConnection } from "../query-runner"
 import { PostgresDataSourceOptions } from "./data-source-options-types"

@@ -1,21 +1,21 @@
 import { AnyDataSource } from "../../data-source"
 import { AnyEntity } from "../../entity"
+import { OrderOptions } from "../order-options"
+import { SelectOptions } from "../select-options"
 import { WhereOptions } from "../where-options"
 import { FindOptionsCache } from "./find-options-cache"
-import { FindOptionsOrder } from "./find-options-order"
-import { FindOptionsSelect } from "./find-options-select"
 
 /**
  * Defines a special criteria to find specific entity.
  */
-export interface FindOptions<
+export type FindOptions<
   DataSource extends AnyDataSource,
-  Entity extends AnyEntity // ValueOf<Entities>
-> {
+  Entity extends AnyEntity
+> = {
   /**
    * What data needs to be selected from the loaded entity.
    */
-  select?: FindOptionsSelect<Entity>
+  select?: SelectOptions<Entity>
 
   /**
    * Conditions applied to a query on what needs to be selected from the database.
@@ -25,12 +25,7 @@ export interface FindOptions<
   /**
    * Order options applied to a query.
    */
-  order?: FindOptionsOrder<DataSource, Entity>
-
-  /**
-   * Indicates what locking mode should be used.
-   */
-  lock?: DataSource["types"]["lockTypes"]
+  order?: OrderOptions<DataSource, Entity>
 
   /**
    * Whatever cache should be enabled for query or not.
@@ -42,13 +37,7 @@ export interface FindOptions<
   cache?: boolean | number | FindOptionsCache
 
   /**
-   * If this is set to true, query will be executed in a transaction.
-   * By default `find` queries aren't wrapped into transaction.
-   */
-  transaction?: boolean
-
-  /**
    * Indicates if soft-deleted rows should be included in the result.
    */
   withDeleted?: boolean
-}
+} & DataSource["types"]["findOptions"]

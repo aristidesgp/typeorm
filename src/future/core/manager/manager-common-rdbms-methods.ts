@@ -1,4 +1,4 @@
-import { AnyDataSource, IsolationLevels, UpdateResult } from "../data-source"
+import { AnyDataSource, TransactionOptions, UpdateResult } from "../data-source"
 import {
   EntityColumnPaths,
   EntityFromReference,
@@ -17,24 +17,18 @@ export interface ManagerCommonRdbmsMethods<DataSource extends AnyDataSource> {
   query(sql: SqlQueryBuilder<DataSource>): SqlQueryBuilder<DataSource>
 
   /**
-   * Wraps given function execution (and all operations made there) in a transaction.
-   * All database operations must be executed using provided entity manager.
+   * Wraps given function execution (and all operations made there) into transaction.
+   * All database operations must be executed using provided transactional entity manager.
    */
   transaction<Result>(
-    runInTransaction: (entityManager: this) => Promise<Result>,
+    runInTransaction: (
+      transactionalManager: DataSource["manager"],
+    ) => Promise<Result>,
+    options?: TransactionOptions<DataSource>,
   ): Promise<Result>
 
   /**
-   * Wraps given function execution (and all operations made there) in a transaction.
-   * All database operations must be executed using provided entity manager.
-   */
-  transaction<Result>(
-    isolationLevel: IsolationLevels<DataSource["types"]>,
-    runInTransaction: (entityManager: this) => Promise<Result>,
-  ): Promise<Result>
-
-  /**
-   * Clears all the data from the given table/collection (truncates/drops it).
+   * Clears all the data from the database table (truncates it).
    *
    * Note: on some drivers this method uses TRUNCATE and may not work as you expect in transactions.
    * @see https://stackoverflow.com/a/5972738/925151

@@ -10,12 +10,11 @@ export type OrderValueTypes = "asc" | "desc"
 export type DataSourceTypes = {
   columnTypes: any // DataSourceColumnTypes
   orderTypes: any // OrderValueTypes
-  lockTypes: any // DataSourceLockTypes
+  findOptions: {}
   insertResult: any
   updateResult: any
   deleteResult: any
   queryResult: any
-  isolationLevels: any
   insertOptions: {}
   updateOptions: {}
   updateByOptions: {}
