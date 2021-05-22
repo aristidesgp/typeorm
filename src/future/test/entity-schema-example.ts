@@ -1,3 +1,4 @@
+import { And } from "../core"
 import { sql, sqlFragment } from "../core/sql-query-builder"
 import { entity, postgres } from "../postgres"
 
@@ -493,6 +494,14 @@ const UserWithAvatarEager = myDataSource.manager
   })
 
 console.log(UserWithAvatarEager)
+
+myDataSource.manager.repository(UserEntity).findOptions.where({
+  $and: [
+    {
+      name: "THIS IS WOW PUWAW STRING",
+    },
+  ],
+})
 
 // const whereOptions: FindOperatorWhereOptions<typeof myDataSource, typeof UserEntity> = Or({
 //     avatar: {

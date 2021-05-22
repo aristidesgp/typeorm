@@ -2,7 +2,7 @@ import { AnyModel } from "../../../repository/model"
 import { AnyDataSource, DataSourceTypes } from "../data-source"
 import { FlatTypeHint, ForceCastIfNoKeys, NonNever, ValueOf } from "../util"
 import { AnyEntity, AnyEntitySchema } from "./entity-core"
-import { EntityProps } from "./entity-utils"
+import { EntityPropsForOptions } from "./entity-utils"
 
 /**
  * This type is used to define entity column properties.
@@ -119,7 +119,8 @@ export type EntityGeneratedColumnTypeMap<
   Entity extends AnyEntitySchema
 > = NonNever<
   {
-    [P in keyof EntityProps<Entity>]: P extends string & keyof Entity["columns"]
+    [P in keyof EntityPropsForOptions<Entity>]: P extends string &
+      keyof Entity["columns"]
       ? Entity["columns"][P]["generated"] extends true
         ? ColumnCompileType<DataSource, Entity, P>
         : never
@@ -146,7 +147,8 @@ export type EntityDefaultColumnTypeMap<
   Entity extends AnyEntitySchema
 > = NonNever<
   {
-    [P in keyof EntityProps<Entity>]: P extends string & keyof Entity["columns"]
+    [P in keyof EntityPropsForOptions<Entity>]: P extends string &
+      keyof Entity["columns"]
       ? Entity["columns"][P]["default"] extends string | number | boolean
         ? ColumnCompileType<DataSource, Entity, P>
         : never
@@ -168,7 +170,7 @@ export type EntityColumnPaths<
 > = Entity extends AnyEntitySchema
   ? ValueOf<
       {
-        [P in keyof EntityProps<Entity>]?: P extends string &
+        [P in keyof EntityPropsForOptions<Entity>]?: P extends string &
           keyof Entity["columns"]
           ? `${Parent}${P}`
           : P extends string & keyof Entity["embeds"]

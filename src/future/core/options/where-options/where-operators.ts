@@ -1,4 +1,4 @@
-import { AnyEntity, AnyEntitySchema } from "../../entity/entity-core"
+import { AnyEntity, AnyEntitySchema } from "../../entity"
 import { WhereOperator } from "./index"
 
 export function Any<Entity extends AnyEntity, ValueType>(

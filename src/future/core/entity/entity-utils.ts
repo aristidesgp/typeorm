@@ -157,7 +157,7 @@ export type EntityPropsWithModel<
   PropsMode extends EntityPropsMode
 > = Entity extends AnyEntitySchema
   ? PropsMode extends "all"
-    ? EntityProps<Entity> &
+    ? EntityPropsForOptions<Entity> &
         {
           [P in keyof Entity["model"]["type"]]: {
             type: "model"
@@ -190,7 +190,7 @@ export type EntityPropsWithModel<
           property: P
         }
       }
-    : EntityProps<Entity> &
+    : EntityPropsForOptions<Entity> &
         {
           [P in keyof Entity["model"]["type"]]: {
             type: "model"
@@ -204,7 +204,10 @@ export type EntityPropsWithModel<
       }
     }
 
-export type EntityProps<
+/**
+ * Extracts entity properties to be used in options.
+ */
+export type EntityPropsForOptions<
   Entity extends AnyEntity
 > = Entity extends AnyEntitySchema
   ? {
@@ -229,7 +232,7 @@ export type EntityProps<
   ? {
       [P in keyof Entity]: {
         type: "class-property"
-        property: P
+        property: P // todo: do we need to exclude "" ?
       }
     }
   : unknown
