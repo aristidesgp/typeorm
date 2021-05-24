@@ -61,27 +61,13 @@ export type WhereConditions<
     : unknown
 }
 
-export type WhereOperator<Entity extends AnyEntity, ValueType> = {
+/**
+ * Operators can be used to provide a complex value to a column during where selection.
+ */
+export type WhereOperator<Entity extends AnyEntity, ValueType> = () => {
   "@type": "WhereOperator"
-  kind:
-    | "any"
-    | "between"
-    | "equal"
-    | "ilike"
-    | "like"
-    | "in"
-    | "lessThan"
-    | "lessThanOrEqual"
-    | "moreThan"
-    | "moreThanOrEqual"
-    | "raw"
-    // | "and"
-    // | "or"
-    // | "not"
-    | "escaped"
-    | "column"
-  // driver: Source
+  name: string
+  value: any
   entity: Entity
   valueType: ValueType
-  value: any
 }
