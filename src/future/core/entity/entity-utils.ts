@@ -230,9 +230,11 @@ export type EntityPropsForOptions<
       }
   : Entity extends EntityClassInstance
   ? {
-      [P in keyof Entity]: {
-        type: "class-property"
-        property: P // todo: do we need to exclude "" ?
-      }
+      [P in keyof Entity]: Entity[P] extends Function
+        ? never
+        : {
+            type: "class-property"
+            property: P
+          }
     }
   : unknown

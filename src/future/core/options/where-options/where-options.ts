@@ -3,6 +3,7 @@ import {
   AnyEntity,
   AnyEntitySchema,
   ColumnCompileType,
+  EntityClassInstance,
   EntityPropsForOptions,
   RelationEntity,
 } from "../../entity"
@@ -23,16 +24,16 @@ export type WhereGroup<
   Entity extends AnyEntity
 > =
   | {
-      $not: WhereOptions<DataSource, Entity>[]
+      $not: WhereConditions<DataSource, Entity>
     }
   | {
-      $and: WhereOptions<DataSource, Entity>[]
+      $and: WhereConditions<DataSource, Entity>[]
     }
   | {
-      $or: WhereOptions<DataSource, Entity>[]
+      $or: WhereConditions<DataSource, Entity>[]
     }
   | {
-      $xor: WhereOptions<DataSource, Entity>[]
+      $xor: WhereConditions<DataSource, Entity>[]
     }
 
 /**
@@ -41,24 +42,47 @@ export type WhereGroup<
 export type WhereConditions<
   DataSource extends AnyDataSource,
   Entity extends AnyEntity
+> = Entity extends AnyEntitySchema
+  ? WhereConditionsForEntitySchema<DataSource, Entity>
+  : Entity extends EntityClassInstance
+  ? WhereConditionsForClass<DataSource, Entity>
+  : unknown
+
+/**
+ * Defines WhereOptions for entity defined in a class (with decorators).
+ */
+export type WhereConditionsForClass<
+  DataSource extends AnyDataSource,
+  Entity extends EntityClassInstance
 > = {
-  [P in keyof EntityPropsForOptions<Entity>]?: Entity extends AnyEntitySchema
-    ? P extends string & keyof Entity["columns"]
-      ?
-          | ColumnCompileType<DataSource, Entity, P>
-          | WhereOperator<Entity, ColumnCompileType<DataSource, Entity, P>>
-          | WhereGroup<DataSource, Entity>
-      : P extends keyof Entity["embeds"]
-      ? /*object &*/ WhereOptions<DataSource, Entity["embeds"][P]>
-      : P extends keyof Entity["relations"]
-      ? /*object &*/ WhereOptions<DataSource, RelationEntity<Entity, P>>
-      : never
-    : P extends keyof Entity
+  $ex?: WhereOperator<Entity, undefined>[]
+} & {
+  [P in keyof Entity]?: Entity[P] extends Array<infer U>
+    ? WhereOptions<DataSource, U>
+    : Entity[P] extends Object
+    ? WhereOptions<DataSource, Entity[P]>
+    : Entity[P] | WhereOperator<Entity, Entity[P]>
+}
+
+/**
+ * Defines WhereOptions for entity defined as entity schemas.
+ */
+export type WhereConditionsForEntitySchema<
+  DataSource extends AnyDataSource,
+  Entity extends AnyEntitySchema
+> = {
+  $ex?: WhereOperator<Entity, undefined>[]
+} & {
+  [P in keyof EntityPropsForOptions<Entity>]?: P extends string &
+    keyof Entity["columns"]
     ?
-        | Entity[P]
-        | WhereOperator<Entity, Entity[P]>
-        | WhereGroup<DataSource, Entity>
-    : unknown
+        | ColumnCompileType<DataSource, Entity, P>
+        | WhereOperator<Entity, ColumnCompileType<DataSource, Entity, P>> // | WhereGroup<DataSource, Entity>
+    : P extends keyof Entity["embeds"]
+    ? /*object &*/ WhereOptions<DataSource, Entity["embeds"][P]>
+    : P extends keyof Entity["relations"]
+    ? /*object &*/ WhereOptions<DataSource, RelationEntity<Entity, P>>
+    : never
 }
 
 /**

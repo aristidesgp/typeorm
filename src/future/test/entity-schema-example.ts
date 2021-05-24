@@ -1,5 +1,5 @@
-import { And, Equal } from "../core"
-import { sql, sqlFragment } from "../core/sql-query-builder"
+import { Column, Concat, Equal, MoreThan, Not, Plus } from "../postgres"
+import { sql, sqlFragment } from "../core"
 import { entity, postgres } from "../postgres"
 
 export class Photo {
@@ -496,9 +496,26 @@ const UserWithAvatarEager = myDataSource.manager
 console.log(UserWithAvatarEager)
 
 myDataSource.manager.repository(UserEntity).findOptions.where({
-  $and: [
+  $or: [
     {
-      name: Equal("dasd"),
+      $ex: [
+        MoreThan(Plus(Column("id"), Column("id")), 10),
+        // MoreThan(Length(Column("name")), 10),
+      ],
+      name: Not(Equal("dasd")),
+      secondName: Concat(Column("name"), " ", Column("secondName"), "!"),
+      // id: MoreThan(),
+      // date: Raw(sql`select max(date) from dual`)
+      photos: {
+        $or: [
+          {
+            filename: Equal("dasd"),
+          },
+          {
+            filename: "dasd2",
+          },
+        ],
+      },
     },
   ],
 })
