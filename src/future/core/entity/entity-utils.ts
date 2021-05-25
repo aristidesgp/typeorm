@@ -238,3 +238,9 @@ export type EntityPropsForOptions<
           }
     }
   : unknown
+
+/**
+ * Extract all entity main properties: columns, relations and embeds.
+ */
+export type EntitySchemaKeys<Entity extends AnyEntitySchema> = string &
+  keyof (Entity["columns"] & Entity["relations"] & Entity["embeds"])

@@ -4,7 +4,7 @@ import {
   AnyEntitySchema,
   ColumnCompileType,
   EntityClassInstance,
-  EntityPropsForOptions,
+  EntitySchemaKeys,
   RelationEntity,
 } from "../../entity"
 
@@ -50,6 +50,7 @@ export type WhereConditions<
 
 /**
  * Defines WhereOptions for entity defined in a class (with decorators).
+ * "$ex" notation allows to specify set of operators to apply to where query.
  */
 export type WhereConditionsForClass<
   DataSource extends AnyDataSource,
@@ -66,6 +67,7 @@ export type WhereConditionsForClass<
 
 /**
  * Defines WhereOptions for entity defined as entity schemas.
+ * "$ex" notation allows to specify set of operators to apply to where query.
  */
 export type WhereConditionsForEntitySchema<
   DataSource extends AnyDataSource,
@@ -73,8 +75,7 @@ export type WhereConditionsForEntitySchema<
 > = {
   $ex?: WhereOperator<Entity, undefined>[]
 } & {
-  [P in keyof EntityPropsForOptions<Entity>]?: P extends string &
-    keyof Entity["columns"]
+  [P in EntitySchemaKeys<Entity>]?: P extends keyof Entity["columns"]
     ?
         | ColumnCompileType<DataSource, Entity, P>
         | WhereOperator<Entity, ColumnCompileType<DataSource, Entity, P>> // | WhereGroup<DataSource, Entity>
@@ -86,12 +87,31 @@ export type WhereConditionsForEntitySchema<
 }
 
 /**
- * Operators can be used to provide a complex value to a column during where selection.
+ * Operators can be used to provide a complex value to a column during where filtering.
  */
 export type WhereOperator<Entity extends AnyEntity, ValueType> = () => {
+  /**
+   * Unique type identifier.
+   */
   "@type": "WhereOperator"
+
+  /**
+   * Operator name, e.g. "in", "plus", "minus", etc.
+   */
   name: string
+
+  /**
+   * Value sent to operator when it was called.
+   */
   value: any
-  entity: Entity
-  valueType: ValueType
+
+  /**
+   * Fake property to store type information.
+   */
+  __entity: Entity
+
+  /**
+   * Fake property to store type information.
+   */
+  __valueType: ValueType
 }

@@ -1,100 +1,57 @@
-import { AnyEntity, EntityColumnPaths, WhereOperator } from "../../core"
+import {
+  AnyEntity,
+  createWhereOperator,
+  EntityColumnPaths,
+  WhereOperator,
+} from "../../core"
 
 export function Any<Entity extends AnyEntity, ValueType>(
   ...values: ValueType[]
 ): WhereOperator<Entity, ValueType> {
-  return () => ({
-    "@type": "WhereOperator",
-    name: "any",
-    entity: null as any,
-    valueType: null as any,
-    value: values,
-  })
+  return createWhereOperator<Entity, ValueType>("any", values)
 }
 
 export function Between<Entity extends AnyEntity, ValueType>(
   first: ValueType,
   second: ValueType,
 ): WhereOperator<Entity, ValueType> {
-  return () => ({
-    "@type": "WhereOperator",
-    name: "between",
-    entity: null as any,
-    valueType: null as any,
-    value: [first, second],
-  })
+  return createWhereOperator<Entity, ValueType>("between", [first, second])
 }
 
 export function Equal<Entity extends AnyEntity, ValueType>(
   value: ValueType | WhereOperator<Entity, ValueType>,
 ): WhereOperator<Entity, ValueType> {
-  return () => ({
-    "@type": "WhereOperator",
-    name: "equal",
-    entity: null as any,
-    valueType: null as any,
-    value: value,
-  })
+  return createWhereOperator<Entity, ValueType>("equal", value)
 }
 
 export function Like<Entity extends AnyEntity, ValueType>(
   value: string,
 ): WhereOperator<Entity, ValueType> {
-  return () => ({
-    "@type": "WhereOperator",
-    name: "like",
-    entity: null as any,
-    valueType: null as any,
-    value: value,
-  })
+  return createWhereOperator<Entity, ValueType>("like", value)
 }
 
 export function ILike<Entity extends AnyEntity, ValueType>(
   value: string,
 ): WhereOperator<Entity, ValueType> {
-  return () => ({
-    "@type": "WhereOperator",
-    name: "ilike",
-    entity: null as any,
-    valueType: null as any,
-    value: value,
-  })
+  return createWhereOperator<Entity, ValueType>("ilike", value)
 }
 
 export function In<Entity extends AnyEntity, ValueType>(
   ...values: ValueType[]
 ): WhereOperator<Entity, ValueType> {
-  return () => ({
-    "@type": "WhereOperator",
-    name: "in",
-    entity: null as any,
-    valueType: null as any,
-    value: values,
-  })
+  return createWhereOperator<Entity, ValueType>("in", values)
 }
 
 export function LessThan<Entity extends AnyEntity, ValueType>(
   value: ValueType | WhereOperator<Entity, ValueType>,
 ): WhereOperator<Entity, ValueType> {
-  return () => ({
-    "@type": "WhereOperator",
-    name: "lessThan",
-    entity: null as any,
-    valueType: null as any,
-    value: value,
-  })
+  return createWhereOperator<Entity, ValueType>("lessThan", value)
 }
 
 export function LessThanOrEqual<Entity extends AnyEntity, ValueType>(
   value: ValueType | WhereOperator<Entity, ValueType>,
 ): WhereOperator<Entity, ValueType> {
-  return () => ({
-    "@type": "WhereOperator",
-    name: "lessThanOrEqual",
-    entity: null as any,
-    valueType: null as any,
-    value: value,
-  })
+  return createWhereOperator<Entity, ValueType>("lessThanOrEqual", value)
 }
 
 export function MoreThan<Entity extends AnyEntity, ValueType>(
@@ -108,74 +65,32 @@ export function MoreThan<Entity extends AnyEntity, ValueType>(
   value1: number | ValueType | WhereOperator<Entity, ValueType>,
   value2?: number | ValueType | WhereOperator<Entity, ValueType>,
 ): WhereOperator<Entity, ValueType> {
-  return () => ({
-    "@type": "WhereOperator",
-    name: "moreThan",
-    entity: null as any,
-    valueType: null as any,
-    value: [value1, value2],
-  })
+  return createWhereOperator<Entity, ValueType>("moreThan", [value1, value2])
 }
 
 export function MoreThanOrEqual<Entity extends AnyEntity, ValueType>(
   value: ValueType | WhereOperator<Entity, ValueType>,
 ): WhereOperator<Entity, ValueType> {
-  return () => ({
-    "@type": "WhereOperator",
-    name: "moreThanOrEqual",
-    entity: null as any,
-    valueType: null as any,
-    value: value,
-  })
+  return createWhereOperator<Entity, ValueType>("moreThanOrEqual", value)
 }
 
 export function Raw<Entity extends AnyEntity, ValueType>(
-  value: string,
+  sql: string,
 ): WhereOperator<Entity, ValueType> {
-  return () => ({
-    "@type": "WhereOperator",
-    name: "raw",
-    entity: null as any,
-    valueType: null as any,
-    value: value,
-  })
-}
-
-export function Escaped<Entity extends AnyEntity, ValueType>(
-  value: string,
-): WhereOperator<Entity, ValueType> {
-  return () => ({
-    "@type": "WhereOperator",
-    name: "escaped",
-    entity: null as any,
-    valueType: null as any,
-    value: value,
-  })
+  return createWhereOperator<Entity, ValueType>("raw", sql)
 }
 
 export function AliasedColumn<Entity extends AnyEntity, ValueType>(
   name: string,
 ): WhereOperator<Entity, ValueType> {
-  return () => ({
-    "@type": "WhereOperator",
-    name: "aliased-column",
-    entity: null as any,
-    valueType: null as any,
-    value: name,
-  })
+  return createWhereOperator<Entity, ValueType>("aliased-column", name)
 }
 
 export function Column<Entity extends AnyEntity, ValueType>(
   name: EntityColumnPaths<Entity>,
   // alias?: string
 ): WhereOperator<Entity, ValueType> {
-  return () => ({
-    "@type": "WhereOperator",
-    name: "column",
-    entity: null as any,
-    valueType: null as any,
-    value: name,
-  })
+  return createWhereOperator<Entity, ValueType>("column", name)
 }
 
 export function SelfColumn<
@@ -183,47 +98,23 @@ export function SelfColumn<
   ValueType
 >(): // alias?: string
 WhereOperator<Entity, ValueType> {
-  return () => ({
-    "@type": "WhereOperator",
-    name: "self-column",
-    entity: null as any,
-    valueType: null as any,
-    value: "",
-  })
+  return createWhereOperator<Entity, ValueType>("self-column", undefined)
 }
 
 export function Concat<Entity extends AnyEntity, ValueType>(
   ...values: (ValueType | WhereOperator<Entity, ValueType>)[]
 ): WhereOperator<Entity, ValueType> {
-  return () => ({
-    "@type": "WhereOperator",
-    name: "concat",
-    entity: null as any,
-    valueType: null as any,
-    value: values,
-  })
+  return createWhereOperator<Entity, ValueType>("concat", values)
 }
 
 export function Not<Entity extends AnyEntity, ValueType>(
   value: ValueType | WhereOperator<Entity, ValueType>,
 ): WhereOperator<Entity, ValueType> {
-  return () => ({
-    "@type": "WhereOperator",
-    name: "not",
-    entity: null as any,
-    valueType: null as any,
-    value: value,
-  })
+  return createWhereOperator<Entity, ValueType>("not", value)
 }
 
 export function Plus<Entity extends AnyEntity, ValueType>(
   ...values: (number | WhereOperator<Entity, ValueType>)[]
 ): WhereOperator<Entity, ValueType> {
-  return () => ({
-    "@type": "WhereOperator",
-    name: "plus",
-    entity: null as any,
-    valueType: null as any,
-    value: values,
-  })
+  return createWhereOperator<Entity, ValueType>("plus", values)
 }
