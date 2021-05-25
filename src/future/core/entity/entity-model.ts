@@ -141,3 +141,19 @@ export type EntityInsertParams<
       >
     >
   : DeepPartial<Entity>
+
+/**
+ * Extracts entity's (represented as class) possible relations and embeds.
+
+export type EntityClassRelationAndEmbedKeys<
+  Entity extends EntityClassInstance
+> = {
+  [P in keyof Entity]?: Entity[P] extends Array<infer U>
+    ? U extends EntityClassDefinition
+      ? P
+      : never
+    : Entity[P] extends EntityClassDefinition
+    ? P
+    : never
+}[keyof Entity]
+ */

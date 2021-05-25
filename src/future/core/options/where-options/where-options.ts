@@ -7,6 +7,7 @@ import {
   EntitySchemaKeys,
   RelationEntity,
 } from "../../entity"
+import { Operator } from "../operator"
 
 /**
  * Conditions for executed queries, used to specify what will be selected from the database.
@@ -56,13 +57,13 @@ export type WhereConditionsForClass<
   DataSource extends AnyDataSource,
   Entity extends EntityClassInstance
 > = {
-  $ex?: WhereOperator<Entity, undefined>[]
+  $ex?: Operator<Entity, undefined>[]
 } & {
   [P in keyof Entity]?: Entity[P] extends Array<infer U>
     ? WhereOptions<DataSource, U>
     : Entity[P] extends Object
     ? WhereOptions<DataSource, Entity[P]>
-    : Entity[P] | WhereOperator<Entity, Entity[P]>
+    : Entity[P] | Operator<Entity, Entity[P]>
 }
 
 /**
@@ -73,45 +74,15 @@ export type WhereConditionsForEntitySchema<
   DataSource extends AnyDataSource,
   Entity extends AnyEntitySchema
 > = {
-  $ex?: WhereOperator<Entity, undefined>[]
+  $ex?: Operator<Entity, undefined>[]
 } & {
   [P in EntitySchemaKeys<Entity>]?: P extends keyof Entity["columns"]
     ?
         | ColumnCompileType<DataSource, Entity, P>
-        | WhereOperator<Entity, ColumnCompileType<DataSource, Entity, P>> // | WhereGroup<DataSource, Entity>
+        | Operator<Entity, ColumnCompileType<DataSource, Entity, P>> // | WhereGroup<DataSource, Entity>
     : P extends keyof Entity["embeds"]
     ? /*object &*/ WhereOptions<DataSource, Entity["embeds"][P]>
     : P extends keyof Entity["relations"]
     ? /*object &*/ WhereOptions<DataSource, RelationEntity<Entity, P>>
     : never
-}
-
-/**
- * Operators can be used to provide a complex value to a column during where filtering.
- */
-export type WhereOperator<Entity extends AnyEntity, ValueType> = () => {
-  /**
-   * Unique type identifier.
-   */
-  "@type": "WhereOperator"
-
-  /**
-   * Operator name, e.g. "in", "plus", "minus", etc.
-   */
-  name: string
-
-  /**
-   * Value sent to operator when it was called.
-   */
-  value: any
-
-  /**
-   * Fake property to store type information.
-   */
-  __entity: Entity
-
-  /**
-   * Fake property to store type information.
-   */
-  __valueType: ValueType
 }

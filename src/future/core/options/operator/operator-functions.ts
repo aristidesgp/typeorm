@@ -1,15 +1,15 @@
 import { AnyEntity } from "../../entity"
-import { WhereOperator } from "./where-options"
+import { Operator } from "./index"
 
 /**
  * Helper function to create a new WhereOperator.
  */
-export function createWhereOperator<Entity extends AnyEntity, ValueType>(
+export function createOperator<Entity extends AnyEntity, ValueType>(
   name: string,
   value: any,
-): WhereOperator<Entity, ValueType> {
+): Operator<Entity, ValueType> {
   return () => ({
-    "@type": "WhereOperator",
+    "@type": "Operator",
     __entity: null as any,
     __valueType: null as any,
     name,

@@ -1,3 +1,6 @@
 export * from "./find-options"
+export * from "./operator"
+export * from "./order-options"
 export * from "./persistence-options"
+export * from "./select-options"
 export * from "./where-options"

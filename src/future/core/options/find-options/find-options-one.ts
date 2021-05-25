@@ -1,7 +1,7 @@
 import { AnyDataSource } from "../../data-source"
 import { AnyEntity } from "../../entity"
 import { OrderOptions } from "../order-options"
-import { SelectOptions } from "../select-options"
+import { SelectAndMapOptions, SelectOptions } from "../select-options"
 import { WhereOptions } from "../where-options"
 import { FindOptionsCache } from "./find-options-cache"
 
@@ -12,6 +12,11 @@ export type FindOptions<
   DataSource extends AnyDataSource,
   Entity extends AnyEntity
 > = {
+  /**
+   * What properties and relations needs to be selected from the loading entities.
+   */
+  selectAndMap?: SelectAndMapOptions<DataSource, Entity>
+
   /**
    * What properties and relations needs to be selected from the loading entities.
    */
