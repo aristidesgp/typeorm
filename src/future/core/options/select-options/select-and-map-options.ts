@@ -17,7 +17,7 @@ export type SelectAndMapOptions<
   Entity extends AnyEntity
 > = {
   properties?: {
-    [name: string]: Operator<DataSource, Entity, any>
+    [name: string]: Operator<Entity, any, any>
   }
   methods?: {
     [name: string]: (...args: any) => any
