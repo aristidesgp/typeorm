@@ -3,7 +3,7 @@ import { AnyEntity } from "../../entity"
 /**
  * Operators can be used to provide a custom functions which can be injected into
  */
-export type Operator<Entity extends AnyEntity, ValueType> = () => {
+export type Operator<Entity extends AnyEntity, ValueType, ReturnType> = () => {
   /**
    * Unique type identifier.
    */
@@ -28,4 +28,9 @@ export type Operator<Entity extends AnyEntity, ValueType> = () => {
    * Fake property to store type information.
    */
   __valueType: ValueType
+
+  /**
+   * Fake property to store type information.
+   */
+  __returnType: ReturnType
 }

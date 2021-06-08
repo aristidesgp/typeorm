@@ -16,12 +16,18 @@ export type SelectAndMapOptions<
   DataSource extends AnyDataSource,
   Entity extends AnyEntity
 > = {
-  [name: string]: Operator<DataSource, Entity>[]
-} & (Entity extends AnyEntitySchema
-  ? SelectAndMapOptionsForEntitySchema<DataSource, Entity>
-  : Entity extends EntityClassInstance
-  ? SelectAndMapOptionsForClass<DataSource, Entity>
-  : {})
+  properties?: {
+    [name: string]: Operator<DataSource, Entity, any>
+  }
+  methods?: {
+    [name: string]: (...args: any) => any
+  }
+  relations?: Entity extends AnyEntitySchema
+    ? SelectAndMapOptionsForEntitySchema<DataSource, Entity>
+    : Entity extends EntityClassInstance
+    ? SelectAndMapOptionsForClass<DataSource, Entity>
+    : unknown
+}
 
 /**
  * Defines SelectAndMapOptions for entity defined in a class (with decorators).

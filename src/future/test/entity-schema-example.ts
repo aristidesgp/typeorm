@@ -479,6 +479,50 @@ async function test() {
     >()
 
   console.log(results1, results2, results3)
+
+  const alwaysSelectAge = myDataSource.manager
+    .repository(UserEntity)
+    .findOptions.selectAndMap({
+      properties: {
+        idPlusId: Plus(Column("id"), Column("id")),
+      },
+    })
+
+  const userX = await myDataSource.manager
+    .repository(UserEntity)
+    .findOneByOrFail({
+      selectAndMap: {
+        // ...alwaysSelectAge,
+        properties: {
+          superFullName: Concat("this", "is", "sparta"),
+          age: Plus(Column("id"), Column("id")),
+        },
+        methods: {
+          helloAge(name: string) {
+            return 1
+          },
+        },
+        relations: {
+          photos: {
+            properties: {
+              waat: Plus(Column("id"), Column("id")),
+            },
+            methods: {
+              ohMyGod() {
+                return 2
+              },
+            },
+          },
+        },
+      },
+      select: {
+        id: true,
+        photos: true,
+      },
+    })
+  console.log(userX.superFullName)
+  console.log(userX.age)
+  console.log(userX.photos[0])
 }
 
 test()
@@ -494,6 +538,12 @@ const UserWithAvatarEager = myDataSource.manager
   })
 
 console.log(UserWithAvatarEager)
+
+myDataSource.manager.repository(UserEntity).findOptions.selectAndMap({
+  properties: {
+    something: Column("name"),
+  },
+})
 
 myDataSource.manager.repository(UserEntity).findOptions.where({
   $or: [

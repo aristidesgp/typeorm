@@ -33,7 +33,7 @@ export interface ManagerFindMethods<DataSource extends AnyDataSource> {
   >(
     entityRef: Reference,
     where: Where,
-  ): Promise<FindType<DataSource, Entity, undefined>[]>
+  ): Promise<FindType<DataSource, Entity, undefined, undefined>[]>
 
   /**
    * Finds entities by a given find options.
@@ -45,7 +45,9 @@ export interface ManagerFindMethods<DataSource extends AnyDataSource> {
   >(
     entityRef: Reference,
     options: Options,
-  ): Promise<FindType<DataSource, Entity, Options["select"]>[]>
+  ): Promise<
+    FindType<DataSource, Entity, Options["select"], Options["selectAndMap"]>[]
+  >
 
   /**
    * Finds first entity by a given where criteria.
@@ -58,7 +60,7 @@ export interface ManagerFindMethods<DataSource extends AnyDataSource> {
   >(
     entityRef: Reference,
     where: Where,
-  ): Promise<FindType<DataSource, Entity, undefined> | null>
+  ): Promise<FindType<DataSource, Entity, undefined, undefined> | null>
 
   /**
    * Finds first entity matching given find options.
@@ -71,7 +73,12 @@ export interface ManagerFindMethods<DataSource extends AnyDataSource> {
   >(
     entityRef: Reference,
     options: Options,
-  ): Promise<FindType<DataSource, Entity, Options["select"]> | null>
+  ): Promise<FindType<
+    DataSource,
+    Entity,
+    Options["select"],
+    Options["selectAndMap"]
+  > | null>
 
   /**
    * Finds first entity matching given where criteria.
@@ -84,7 +91,7 @@ export interface ManagerFindMethods<DataSource extends AnyDataSource> {
   >(
     entityRef: Reference,
     where: Where,
-  ): Promise<FindType<DataSource, Entity, undefined>>
+  ): Promise<FindType<DataSource, Entity, undefined, undefined>>
 
   /**
    * Finds first entity matching given find options.
@@ -97,7 +104,9 @@ export interface ManagerFindMethods<DataSource extends AnyDataSource> {
   >(
     entityRef: Reference,
     options: Options,
-  ): Promise<FindType<DataSource, Entity, Options["select"]>>
+  ): Promise<
+    FindType<DataSource, Entity, Options["select"], Options["selectAndMap"]>
+  >
 
   /**
    * Counts entities matching given where criteria.
@@ -111,7 +120,7 @@ export interface ManagerFindMethods<DataSource extends AnyDataSource> {
   >(
     entityRef: Reference,
     where: Where,
-  ): Promise<[FindType<DataSource, Entity, undefined>[], number]>
+  ): Promise<[FindType<DataSource, Entity, undefined, undefined>[], number]>
 
   /**
    * Counts entities matching given find options.
@@ -125,7 +134,17 @@ export interface ManagerFindMethods<DataSource extends AnyDataSource> {
   >(
     entityRef: Reference,
     options: Options,
-  ): Promise<[FindType<DataSource, Entity, Options["select"]>[], number]>
+  ): Promise<
+    [
+      FindType<
+        DataSource,
+        Entity,
+        Options["select"],
+        Options["selectAndMap"]
+      >[],
+      number,
+    ]
+  >
 
   /**
    * Counts entities matching given where criteria.

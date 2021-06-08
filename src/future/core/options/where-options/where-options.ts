@@ -57,13 +57,13 @@ export type WhereConditionsForClass<
   DataSource extends AnyDataSource,
   Entity extends EntityClassInstance
 > = {
-  $ex?: Operator<Entity, undefined>[]
+  $ex?: Operator<Entity, any, any>[]
 } & {
   [P in keyof Entity]?: Entity[P] extends Array<infer U>
     ? WhereOptions<DataSource, U>
     : Entity[P] extends Object
     ? WhereOptions<DataSource, Entity[P]>
-    : Entity[P] | Operator<Entity, Entity[P]>
+    : Entity[P] | Operator<Entity, Entity[P], any>
 }
 
 /**
@@ -74,12 +74,12 @@ export type WhereConditionsForEntitySchema<
   DataSource extends AnyDataSource,
   Entity extends AnyEntitySchema
 > = {
-  $ex?: Operator<Entity, undefined>[]
+  $ex?: Operator<Entity, any, any>[]
 } & {
   [P in EntitySchemaKeys<Entity>]?: P extends keyof Entity["columns"]
     ?
         | ColumnCompileType<DataSource, Entity, P>
-        | Operator<Entity, ColumnCompileType<DataSource, Entity, P>> // | WhereGroup<DataSource, Entity>
+        | Operator<Entity, ColumnCompileType<DataSource, Entity, P>, any> // | WhereGroup<DataSource, Entity>
     : P extends keyof Entity["embeds"]
     ? /*object &*/ WhereOptions<DataSource, Entity["embeds"][P]>
     : P extends keyof Entity["relations"]

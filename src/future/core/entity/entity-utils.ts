@@ -3,6 +3,7 @@ import {
   FindOptions,
   FindOptionsMany,
   EntitySchemaComputedModel,
+  SelectAndMapOptions,
 } from "../options"
 import { FindOptionsCount } from "../options/find-options/find-options-count"
 import { SelectOptionsForEntitySchema } from "../options/select-options"
@@ -82,6 +83,7 @@ export type ActiveRecordMethods<
           Options["select"] extends SelectOptionsForEntitySchema<Entity>
             ? Options["select"]
             : {},
+          {}, // todo
           false,
           "all"
         >[]
@@ -102,6 +104,7 @@ export type ActiveRecordMethods<
             Options["select"] extends SelectOptionsForEntitySchema<Entity>
               ? Options["select"]
               : {},
+            {}, // todo
             false,
             "all"
           >
@@ -154,7 +157,8 @@ export type ActiveRecordMethods<
 export type EntityPropsWithModel<
   DataSource extends AnyDataSource,
   Entity extends AnyEntity,
-  PropsMode extends EntityPropsMode
+  PropsMode extends EntityPropsMode,
+  SelectAndMap extends SelectAndMapOptions<DataSource, Entity>
 > = Entity extends AnyEntitySchema
   ? PropsMode extends "all"
     ? EntityPropsForOptions<Entity> &
@@ -179,6 +183,24 @@ export type EntityPropsWithModel<
         {
           [P in keyof Entity["virtualEagerProperties"]]: {
             type: "virtualEagerProperties"
+            property: P
+          }
+        } &
+        {
+          [P in keyof SelectAndMap["properties"]]: {
+            type: "selectAndMapProperties"
+            property: P
+          }
+        } &
+        {
+          [P in keyof SelectAndMap["methods"]]: {
+            type: "selectAndMapMethods"
+            property: P
+          }
+        } &
+        {
+          [P in keyof SelectAndMap["relations"]]: {
+            type: "selectAndMapRelations"
             property: P
           }
         } &

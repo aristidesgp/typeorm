@@ -27,14 +27,16 @@ export interface RepositoryFindMethods<
    */
   find<Where extends WhereConditions<DataSource, Entity>>(
     where: Where,
-  ): Promise<FindType<DataSource, Entity, undefined>[]>
+  ): Promise<FindType<DataSource, Entity, undefined, undefined>[]>
 
   /**
    * Finds entities by a given find options.
    */
   findBy<Options extends FindOptionsMany<DataSource, Entity>>(
     options: Options,
-  ): Promise<FindType<DataSource, Entity, Options["select"]>[]>
+  ): Promise<
+    FindType<DataSource, Entity, Options["select"], Options["selectAndMap"]>[]
+  >
 
   /**
    * Finds first entity by a given where criteria.
@@ -42,7 +44,7 @@ export interface RepositoryFindMethods<
    */
   findOne<Where extends WhereOptions<DataSource, Entity>>(
     where: Where,
-  ): Promise<FindType<DataSource, Entity, undefined> | null>
+  ): Promise<FindType<DataSource, Entity, undefined, undefined> | null>
 
   /**
    * Finds first entity matching given find options.
@@ -50,7 +52,12 @@ export interface RepositoryFindMethods<
    */
   findOneBy<Options extends FindOptions<DataSource, Entity>>(
     options: Options,
-  ): Promise<FindType<DataSource, Entity, Options["select"]> | null>
+  ): Promise<FindType<
+    DataSource,
+    Entity,
+    Options["select"],
+    Options["selectAndMap"]
+  > | null>
 
   /**
    * Finds first entity matching given where criteria.
@@ -58,7 +65,7 @@ export interface RepositoryFindMethods<
    */
   findOneOrFail<Where extends WhereOptions<DataSource, Entity>>(
     where: Where,
-  ): Promise<FindType<DataSource, Entity, undefined>>
+  ): Promise<FindType<DataSource, Entity, undefined, undefined>>
 
   /**
    * Finds first entity matching given find options.
@@ -66,7 +73,9 @@ export interface RepositoryFindMethods<
    */
   findOneByOrFail<Options extends FindOptions<DataSource, Entity>>(
     options: Options,
-  ): Promise<FindType<DataSource, Entity, Options["select"]>>
+  ): Promise<
+    FindType<DataSource, Entity, Options["select"], Options["selectAndMap"]>
+  >
 
   /**
    * Counts entities matching given where criteria.
@@ -75,7 +84,7 @@ export interface RepositoryFindMethods<
    */
   findAndCount<Where extends WhereOptions<DataSource, Entity>>(
     where: Where,
-  ): Promise<[FindType<DataSource, Entity, undefined>[], number]>
+  ): Promise<[FindType<DataSource, Entity, undefined, undefined>[], number]>
 
   /**
    * Counts entities matching given find options.
@@ -84,7 +93,17 @@ export interface RepositoryFindMethods<
    */
   findAndCountBy<Options extends FindOptions<DataSource, Entity>>(
     options: Options,
-  ): Promise<[FindType<DataSource, Entity, Options["select"]>[], number]>
+  ): Promise<
+    [
+      FindType<
+        DataSource,
+        Entity,
+        Options["select"],
+        Options["selectAndMap"]
+      >[],
+      number,
+    ]
+  >
 
   /**
    * Counts entities matching given where criteria.

@@ -18,7 +18,14 @@ export type EntityModel<
   DataSource extends AnyDataSource,
   Entity extends AnyEntity
 > = Entity extends AnyEntitySchema
-  ? EntitySchemaComputedModel<DataSource, Entity, {}, false, "all">
+  ? EntitySchemaComputedModel<
+      DataSource,
+      Entity,
+      {},
+      {}, // todo
+      false,
+      "all"
+    >
   : Entity extends EntityClassInstance
   ? Entity
   : unknown
@@ -39,7 +46,14 @@ export type EntityCreateParams<
   Entity extends AnyEntity
 > = Entity extends AnyEntitySchema
   ? DeepPartial<
-      EntitySchemaComputedModel<DataSource, Entity, {}, false, "create">
+      EntitySchemaComputedModel<
+        DataSource,
+        Entity,
+        {},
+        {}, // todo
+        false,
+        "create"
+      >
     >
   : DeepPartial<Entity>
 
@@ -51,7 +65,15 @@ export type CreatedEntityModel<
   Entity extends AnyEntity,
   Model extends EntityCreateParams<DataSource, Entity>
 > = Entity extends AnyEntitySchema
-  ? Model & EntitySchemaComputedModel<DataSource, Entity, {}, false, "virtuals">
+  ? Model &
+      EntitySchemaComputedModel<
+        DataSource,
+        Entity,
+        {},
+        {}, // todo
+        false,
+        "virtuals"
+      >
   : Entity
 
 /**
@@ -83,7 +105,15 @@ export type InsertedEntityModel<
   Entity extends AnyEntity,
   Model
 > = Entity extends AnyEntitySchema
-  ? Model & EntitySchemaComputedModel<DataSource, Entity, {}, false, "all"> // todo: fix SelectAll please
+  ? Model &
+      EntitySchemaComputedModel<
+        DataSource,
+        Entity,
+        {},
+        {}, // todo
+        false,
+        "all"
+      > // todo: fix SelectAll please
   : Entity
 
 /**

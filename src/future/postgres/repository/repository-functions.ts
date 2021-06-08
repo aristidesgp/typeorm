@@ -5,6 +5,9 @@ export function createPostgresRepository(): PostgresRepository<AnyEntity> {
   function Options() {
     return {} as any
   }
+  Options.selectAndMap = () => {
+    return {} as any
+  }
   Options.select = () => {
     return {} as any
   }
