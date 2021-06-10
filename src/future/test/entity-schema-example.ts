@@ -146,36 +146,38 @@ export function UserEntity() {
     embeds: {
       profile: ProfileEmbed(),
     },
-    virtualMethods: {
-      walkHome() {
-        console.log("walking home...")
-        return true
+    virtuals: {
+      methods: {
+        walkHome() {
+          console.log("walking home...")
+          return true
+        },
       },
-    },
-    virtualEagerProperties: {
-      async fullName(manager) {
-        return "Dima Dima"
+      eagerProperties: {
+        async fullName(manager) {
+          return "Dima Dima"
+        },
       },
-    },
-    virtualLazyProperties: {
-      async photosCount(manager) {
-        const result = await manager.findBy(PhotoEntity, {
-          select: {
-            album: {
-              id: true,
-              photos: {
+      lazyProperties: {
+        async photosCount(manager) {
+          const result = await manager.findBy(PhotoEntity, {
+            select: {
+              album: {
                 id: true,
-                filename: true,
-                album: true,
+                photos: {
+                  id: true,
+                  filename: true,
+                  album: true,
+                },
               },
             },
-          },
-          where: {
-            id: 1,
-          },
-        })
-        console.log(result)
-        return 1
+            where: {
+              id: 1,
+            },
+          })
+          console.log(result)
+          return 1
+        },
       },
     },
   })
@@ -482,7 +484,7 @@ async function test() {
 
   const alwaysSelectAge = myDataSource.manager
     .repository(UserEntity)
-    .findOptions.selectAndMap({
+    .findOptions.virtuals({
       properties: {
         idPlusId: Plus(Column("id"), Column("id")),
       },
@@ -491,7 +493,7 @@ async function test() {
   const userX = await myDataSource.manager
     .repository(UserEntity)
     .findOneByOrFail({
-      selectAndMap: {
+      virtuals: {
         // ...alwaysSelectAge,
         properties: {
           superFullName: Concat("this", "is", "sparta"),
@@ -539,7 +541,7 @@ const UserWithAvatarEager = myDataSource.manager
 
 console.log(UserWithAvatarEager)
 
-myDataSource.manager.repository(UserEntity).findOptions.selectAndMap({
+myDataSource.manager.repository(UserEntity).findOptions.virtuals({
   properties: {
     something: Column("name"),
   },

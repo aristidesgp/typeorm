@@ -5,24 +5,23 @@ import {
   AnyEntitySchema,
   ColumnCompileType,
   EntityClassInstance,
-  EntityPropertiesItem,
-  EntityPropsForOptions,
   EntityPropsMode,
   EntityPropsWithModel,
   RelationEntity,
 } from "../../entity"
-import { ForceCastIfExtends } from "../../util"
+import { ForceCastIfUndefined } from "../../util"
 import { Operator } from "../operator"
 import {
-  SelectAndMapOptions,
+  FindOptionVirtuals,
   SelectOptions,
   SelectOptionsForEntitySchema,
+  VirtualPropertyReturnType,
 } from "../select-options"
 
 export type EntitySchemaComputedModelWrapper<
   DataSource extends AnyDataSource,
   Selection extends SelectOptionsForEntitySchema<any>,
-  SelectAndMap extends SelectAndMapOptions<any, any>,
+  Virtuals extends FindOptionVirtuals<any, any>,
   Entity extends AnyEntitySchema,
   ParentPartiallySelected extends boolean,
   PropsMode extends EntityPropsMode,
@@ -31,12 +30,9 @@ export type EntitySchemaComputedModelWrapper<
   DataSource,
   Entity,
   Selection[string & P] extends object ? Selection[string & P] : {}, // todo: if this won't work - send as a parameter to this type
-  P extends keyof SelectAndMap["relations"]
-    ? SelectAndMap["relations"][P] extends SelectAndMapOptions<
-        DataSource,
-        Entity
-      > // todo: remove this if?
-      ? SelectAndMap["relations"][P]
+  P extends keyof Virtuals["relations"]
+    ? Virtuals["relations"][P] extends FindOptionVirtuals<DataSource, Entity> // todo: remove this if?
+      ? Virtuals["relations"][P]
       : {}
     : {},
   ParentPartiallySelected,
@@ -47,7 +43,7 @@ export type FindReturnTypeProperty<
   DataSource extends AnyDataSource,
   Entity extends AnyEntitySchema,
   Selection extends SelectOptionsForEntitySchema<Entity>,
-  SelectAndMap extends SelectAndMapOptions<DataSource, Entity>,
+  Virtuals extends FindOptionVirtuals<DataSource, Entity>,
   P, // extends string, // & keyof EntityPropsWithModel<Entity, any>,
   ParentPartiallySelected extends boolean,
   PropsMode extends EntityPropsMode
@@ -57,7 +53,7 @@ export type FindReturnTypeProperty<
   ? EntitySchemaComputedModelWrapper<
       DataSource,
       Selection,
-      SelectAndMap,
+      Virtuals,
       Entity["embeds"][P],
       ParentPartiallySelected,
       PropsMode,
@@ -69,7 +65,7 @@ export type FindReturnTypeProperty<
       ? EntitySchemaComputedModelWrapper<
           DataSource,
           Selection,
-          SelectAndMap,
+          Virtuals,
           RelationEntity<Entity, P>,
           false,
           PropsMode,
@@ -78,7 +74,7 @@ export type FindReturnTypeProperty<
       : EntitySchemaComputedModelWrapper<
           DataSource,
           Selection,
-          SelectAndMap,
+          Virtuals,
           RelationEntity<Entity, P>,
           false,
           PropsMode,
@@ -89,7 +85,7 @@ export type FindReturnTypeProperty<
       ? EntitySchemaComputedModelWrapper<
           DataSource,
           {}, // because Selection[P] is boolean "true"
-          SelectAndMap,
+          Virtuals,
           RelationEntity<Entity, P>,
           false,
           PropsMode,
@@ -98,18 +94,18 @@ export type FindReturnTypeProperty<
       : EntitySchemaComputedModelWrapper<
           DataSource,
           Selection,
-          SelectAndMap,
+          Virtuals,
           RelationEntity<Entity, P>,
           false,
           PropsMode,
           P
         >
-    : P extends keyof SelectAndMap["relations"] // 3. relation can be not selected at all, however select&mapped properties can be defined
+    : P extends keyof Virtuals["relations"] // 3. relation can be not selected at all, however select&mapped properties can be defined
     ? Entity["relations"][P]["type"] extends "many-to-many" | "one-to-many" // Entity["model"]["type"][P] extends Array<infer U> ?
       ? EntitySchemaComputedModelWrapper<
           DataSource,
           {}, // because we have no selection at all here
-          SelectAndMap,
+          Virtuals,
           RelationEntity<Entity, P>,
           true, // because we don't have selection at all - this will prevent selecting any properties
           PropsMode,
@@ -118,7 +114,7 @@ export type FindReturnTypeProperty<
       : EntitySchemaComputedModelWrapper<
           DataSource,
           {}, // because we have no selection at all here
-          SelectAndMap,
+          Virtuals,
           RelationEntity<Entity, P>,
           true, // because we don't have selection at all - this will prevent selecting any properties
           PropsMode,
@@ -127,48 +123,27 @@ export type FindReturnTypeProperty<
     : never
   : P extends keyof Entity["model"]["type"]
   ? Entity["model"]["type"][P]
-  : P extends keyof Entity["virtualMethods"]
-  ? Entity["virtualMethods"][P]
-  : P extends keyof Entity["virtualLazyProperties"]
-  ? ReturnType<
-      ForceCastIfExtends<
-        Entity["virtualLazyProperties"][P],
-        EntityPropertiesItem<any>
-      >
-    > extends Promise<infer U>
-    ? U
-    : ReturnType<
-        ForceCastIfExtends<
-          Entity["virtualLazyProperties"][P],
-          EntityPropertiesItem<any>
-        >
-      >
-  : P extends keyof Entity["virtualEagerProperties"]
-  ? ReturnType<
-      ForceCastIfExtends<
-        Entity["virtualEagerProperties"][P],
-        EntityPropertiesItem<any>
-      >
-    > extends Promise<infer U>
-    ? U
-    : ReturnType<
-        ForceCastIfExtends<
-          Entity["virtualEagerProperties"][P],
-          EntityPropertiesItem<any>
-        >
-      >
+  : P extends keyof Entity["virtuals"]["methods"]
+  ? Entity["virtuals"]["methods"][P]
+  : P extends keyof Entity["virtuals"]["lazyProperties"]
+  ? VirtualPropertyReturnType<
+      ForceCastIfUndefined<Entity["virtuals"]["lazyProperties"], {}>,
+      P
+    >
+  : P extends keyof Entity["virtuals"]["lazyProperties"]
+  ? VirtualPropertyReturnType<
+      ForceCastIfUndefined<Entity["virtuals"]["eagerProperties"], {}>,
+      P
+    >
   : P extends keyof ActiveRecordMethods<DataSource, Entity>
   ? ActiveRecordMethods<DataSource, Entity>[P]
-  : P extends keyof SelectAndMap["properties"]
-  ? SelectAndMap["properties"][P] extends Operator<
-      any,
-      any,
-      infer ReturningType
+  : P extends keyof Virtuals["properties"]
+  ? VirtualPropertyReturnType<
+      ForceCastIfUndefined<Virtuals["properties"], {}>,
+      P
     >
-    ? ReturningType
-    : unknown
-  : P extends keyof SelectAndMap["methods"]
-  ? SelectAndMap["methods"][string & P]
+  : P extends keyof Virtuals["methods"]
+  ? Virtuals["methods"][string & P]
   : /*: P extends keyof SelectAndMap["relations"]
     ? P extends keyof Entity["relations"]
       ? EntitySchemaComputedModelWrapper<
@@ -204,7 +179,7 @@ export type EntitySelectionTruthyKeys<
   DataSource extends AnyDataSource,
   Entity extends AnyEntitySchema,
   Selection extends SelectOptionsForEntitySchema<Entity>,
-  SelectAndMap extends SelectAndMapOptions<DataSource, Entity>
+  Virtuals extends FindOptionVirtuals<DataSource, Entity>
 > =
   | {
       [P in keyof Selection]: Selection[P] extends true
@@ -213,11 +188,11 @@ export type EntitySelectionTruthyKeys<
         ? P
         : never
     }[keyof Selection]
-  | keyof Entity["virtualEagerProperties"]
-  | keyof Entity["virtualMethods"]
-  | keyof SelectAndMap["properties"]
-  | keyof SelectAndMap["methods"]
-  | keyof SelectAndMap["relations"]
+  | keyof Entity["virtuals"]["eagerProperties"]
+  | keyof Entity["virtuals"]["methods"]
+  | keyof Virtuals["properties"]
+  | keyof Virtuals["methods"]
+  | keyof Virtuals["relations"]
   | keyof ActiveRecordMethods<DataSource, Entity>
 
 /**
@@ -227,7 +202,7 @@ export type EntitySelectionAllColumns<
   DataSource extends AnyDataSource,
   Entity extends AnyEntitySchema,
   Selection extends SelectOptionsForEntitySchema<Entity>,
-  SelectAndMap extends SelectAndMapOptions<DataSource, Entity>
+  Virtuals extends FindOptionVirtuals<DataSource, Entity>
 > = keyof (Entity["columns"] &
   {
     [P in keyof Entity["relations"] as Selection[P] extends true
@@ -237,37 +212,37 @@ export type EntitySelectionAllColumns<
       : never]: true
   } &
   Entity["embeds"] &
-  Entity["virtualEagerProperties"] &
-  Entity["virtualMethods"] &
-  SelectAndMap["properties"] &
-  SelectAndMap["methods"] &
-  SelectAndMap["relations"] &
+  Entity["virtuals"]["eagerProperties"] &
+  Entity["virtuals"]["methods"] &
+  Virtuals["properties"] &
+  Virtuals["methods"] &
+  Virtuals["relations"] &
   ActiveRecordMethods<DataSource, Entity>)
 
 export type FindType<
   DataSource extends AnyDataSource,
   Entity extends AnyEntity,
   Selection extends SelectOptions<Entity> | undefined,
-  SelectAndMap extends SelectAndMapOptions<DataSource, Entity> | undefined
+  Virtuals extends FindOptionVirtuals<DataSource, Entity> | undefined
 > = Entity extends AnyEntitySchema
-  ? SelectAndMap extends SelectAndMapOptions<DataSource, Entity>
+  ? Virtuals extends FindOptionVirtuals<DataSource, Entity>
     ? Selection extends SelectOptionsForEntitySchema<Entity>
       ? EntitySchemaComputedModel<
           DataSource,
           Entity,
           Selection,
-          SelectAndMap,
+          Virtuals,
           false,
           "all"
-        > /*& FindSelectAndMapType<DataSource, Entity, SelectAndMap>*/
+        >
       : EntitySchemaComputedModel<
           DataSource,
           Entity,
           {},
-          SelectAndMap,
+          Virtuals,
           false,
           "all"
-        > /*& FindSelectAndMapType<DataSource, Entity, SelectAndMap>*/
+        >
     : Selection extends SelectOptionsForEntitySchema<Entity>
     ? EntitySchemaComputedModel<DataSource, Entity, Selection, {}, false, "all">
     : EntitySchemaComputedModel<DataSource, Entity, {}, {}, false, "all">
@@ -275,28 +250,11 @@ export type FindType<
   ? Entity
   : unknown
 
-export type FindSelectAndMapType<
-  DataSource extends AnyDataSource,
-  Entity extends AnyEntity,
-  SelectAndMap extends SelectAndMapOptions<DataSource, Entity>
-> = {
-  [P in keyof SelectAndMap["properties"]]: SelectAndMap["properties"][P] extends Operator<
-    any,
-    any,
-    infer ReturnType
-  >
-    ? ReturnType
-    : unknown
-} /*&
-  {
-    [P in keyof SelectAndMap["relations"]]: FindSelectAndMapType<DataSource, any, SelectAndMap["relations"][P]>
-  }*/
-
 export type EntitySchemaComputedModel<
   DataSource extends AnyDataSource,
   Entity extends AnyEntitySchema,
   Selection extends SelectOptionsForEntitySchema<Entity>, // if something went wrong use it: extends FindOptionsSelect<Source, Entity>,
-  SelectAndMap extends SelectAndMapOptions<DataSource, Entity>,
+  Virtuals extends FindOptionVirtuals<DataSource, Entity>,
   ParentPartiallySelected extends boolean,
   PropsMode extends EntityPropsMode
 > = ParentPartiallySelected extends true // we need to tell to child (embed) to select only what was selected, to prevent selection of every column
@@ -305,19 +263,19 @@ export type EntitySchemaComputedModel<
         DataSource,
         Entity,
         PropsMode,
-        SelectAndMap
+        Virtuals
       > as P extends EntitySelectionTruthyKeys<
         DataSource,
         Entity,
         Selection,
-        SelectAndMap
+        Virtuals
       >
         ? P
         : never]: FindReturnTypeProperty<
         DataSource,
         Entity,
         Selection,
-        SelectAndMap,
+        Virtuals,
         P,
         true,
         PropsMode
@@ -330,19 +288,19 @@ export type EntitySchemaComputedModel<
         DataSource,
         Entity,
         PropsMode,
-        SelectAndMap
+        Virtuals
       > as P extends EntitySelectionAllColumns<
         DataSource,
         Entity,
         Selection,
-        SelectAndMap
+        Virtuals
       >
         ? P
         : never]: FindReturnTypeProperty<
         DataSource,
         Entity,
         Selection,
-        SelectAndMap,
+        Virtuals,
         P,
         false,
         PropsMode
@@ -354,19 +312,19 @@ export type EntitySchemaComputedModel<
         DataSource,
         Entity,
         PropsMode,
-        SelectAndMap
+        Virtuals
       > as P extends EntitySelectionTruthyKeys<
         DataSource,
         Entity,
         Selection,
-        SelectAndMap
+        Virtuals
       >
         ? P
         : never]: FindReturnTypeProperty<
         DataSource,
         Entity,
         Selection,
-        SelectAndMap,
+        Virtuals,
         P,
         true,
         PropsMode

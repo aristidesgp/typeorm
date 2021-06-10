@@ -35,7 +35,7 @@ export interface RepositoryFindMethods<
   findBy<Options extends FindOptionsMany<DataSource, Entity>>(
     options: Options,
   ): Promise<
-    FindType<DataSource, Entity, Options["select"], Options["selectAndMap"]>[]
+    FindType<DataSource, Entity, Options["select"], Options["virtuals"]>[]
   >
 
   /**
@@ -56,7 +56,7 @@ export interface RepositoryFindMethods<
     DataSource,
     Entity,
     Options["select"],
-    Options["selectAndMap"]
+    Options["virtuals"]
   > | null>
 
   /**
@@ -74,7 +74,7 @@ export interface RepositoryFindMethods<
   findOneByOrFail<Options extends FindOptions<DataSource, Entity>>(
     options: Options,
   ): Promise<
-    FindType<DataSource, Entity, Options["select"], Options["selectAndMap"]>
+    FindType<DataSource, Entity, Options["select"], Options["virtuals"]>
   >
 
   /**
@@ -95,12 +95,7 @@ export interface RepositoryFindMethods<
     options: Options,
   ): Promise<
     [
-      FindType<
-        DataSource,
-        Entity,
-        Options["select"],
-        Options["selectAndMap"]
-      >[],
+      FindType<DataSource, Entity, Options["select"], Options["virtuals"]>[],
       number,
     ]
   >

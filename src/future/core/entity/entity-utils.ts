@@ -3,7 +3,7 @@ import {
   FindOptions,
   FindOptionsMany,
   EntitySchemaComputedModel,
-  SelectAndMapOptions,
+  FindOptionVirtuals,
 } from "../options"
 import { FindOptionsCount } from "../options/find-options/find-options-count"
 import { SelectOptionsForEntitySchema } from "../options/select-options"
@@ -158,7 +158,7 @@ export type EntityPropsWithModel<
   DataSource extends AnyDataSource,
   Entity extends AnyEntity,
   PropsMode extends EntityPropsMode,
-  SelectAndMap extends SelectAndMapOptions<DataSource, Entity>
+  Virtuals extends FindOptionVirtuals<DataSource, Entity>
 > = Entity extends AnyEntitySchema
   ? PropsMode extends "all"
     ? EntityPropsForOptions<Entity> &
@@ -169,45 +169,45 @@ export type EntityPropsWithModel<
           }
         } &
         {
-          [P in keyof Entity["virtualMethods"]]: {
+          [P in keyof Entity["virtuals"]["methods"]]: {
             type: "virtualMethods"
             property: P
           }
         } &
         {
-          [P in keyof Entity["virtualLazyProperties"]]: {
+          [P in keyof Entity["virtuals"]["lazyProperties"]]: {
             type: "virtualLazyProperties"
             property: P
           }
         } &
         {
-          [P in keyof Entity["virtualEagerProperties"]]: {
+          [P in keyof Entity["virtuals"]["eagerProperties"]]: {
             type: "virtualEagerProperties"
             property: P
           }
         } &
         {
-          [P in keyof SelectAndMap["properties"]]: {
-            type: "selectAndMapProperties"
+          [P in keyof Virtuals["properties"]]: {
+            type: "virtualProperties"
             property: P
           }
         } &
         {
-          [P in keyof SelectAndMap["methods"]]: {
-            type: "selectAndMapMethods"
+          [P in keyof Virtuals["methods"]]: {
+            type: "virtualMethods"
             property: P
           }
         } &
         {
-          [P in keyof SelectAndMap["relations"]]: {
-            type: "selectAndMapRelations"
+          [P in keyof Virtuals["relations"]]: {
+            type: "virtualRelations"
             property: P
           }
         } &
         ActiveRecordMethods<DataSource, Entity>
-    : PropsMode extends "virtuals"
+    : PropsMode extends "virtuals" // todo: rename to virtual-methods? or list all virtuals in properties?
     ? {
-        [P in keyof Entity["virtualMethods"]]: {
+        [P in keyof Entity["virtuals"]["methods"]]: {
           type: "virtualMethods"
           property: P
         }

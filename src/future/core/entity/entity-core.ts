@@ -1,10 +1,7 @@
 import { AnyModel } from "../../../repository/model"
 import { AnyDataSource } from "../data-source"
-import {
-  EntityColumnList,
-  EntityMethods,
-  EntityProperties,
-} from "./entity-columns"
+import { EntityVirtuals } from "../selection"
+import { EntityColumnList } from "./entity-columns"
 import { EntityEmbedList } from "./entity-embeds"
 import { EntityRelation, EntityRelationList } from "./entity-relations"
 
@@ -33,9 +30,7 @@ export type AnyEntitySchema = EntitySchema<
   EntityColumnList<AnyDataSource>,
   EntityRelationList,
   EntityEmbedList<AnyDataSource>,
-  EntityMethods,
-  EntityProperties<AnyDataSource>,
-  EntityProperties<AnyDataSource>
+  EntityVirtuals<AnyDataSource, AnyEntity>
 >
 
 /**
@@ -48,19 +43,15 @@ export interface EntitySchema<
   Columns extends EntityColumnList<AnyDataSource>,
   Relations extends EntityRelationList,
   Embeds extends EntityEmbedList<AnyDataSource>,
-  VirtualMethods extends EntityMethods,
-  VirtualLazyProperties extends EntityProperties<AnyDataSource>,
-  VirtualEagerProperties extends EntityProperties<AnyDataSource>
+  Virtuals extends EntityVirtuals<AnyDataSource, AnyEntity>
 > {
   "@type": "Entity"
   type: Type
   model: Model
-  virtualMethods: VirtualMethods
-  virtualLazyProperties: VirtualLazyProperties
-  virtualEagerProperties: VirtualEagerProperties
   columns: Columns
   relations: Relations
   embeds: Embeds
+  virtuals: Virtuals
 }
 
 /**

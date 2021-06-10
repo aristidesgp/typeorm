@@ -1,2 +1,2 @@
 export * from "./select-options"
-export * from "./select-and-map-options"
+export * from "../../selection/selection-virtuals"

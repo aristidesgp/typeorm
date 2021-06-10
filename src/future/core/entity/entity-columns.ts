@@ -27,18 +27,6 @@ export type EntityColumnList<DataSource extends AnyDataSource> = {
   [key: string]: EntityColumn<DataSource>
 }
 
-export type EntityPropertiesItem<DataSource extends AnyDataSource> = (
-  manager: DataSource["manager"],
-) => any
-
-export type EntityProperties<DataSource extends AnyDataSource> = {
-  [name: string]: EntityPropertiesItem<DataSource>
-}
-
-export type EntityMethods = {
-  [name: string]: any
-}
-
 /**
  * Gets a real compile-time type of the column defined in the entity.
  *

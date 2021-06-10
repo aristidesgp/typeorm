@@ -1,15 +1,14 @@
 import { AnyModel, Model } from "../../../repository/model"
 import {
   EntityColumnList,
-  EntitySchema,
   EntityEmbedList,
-  EntityMethods,
-  EntityProperties,
   EntityRelationList,
+  EntitySchema,
   EntitySchemaType,
+  EntityVirtuals,
   ForceCastIfUndefined,
 } from "../../core"
-import { PostgresDataSource, PostgresDataSourceTypes } from "../data-source"
+import { PostgresDataSource } from "../data-source"
 
 export function entity<
   Type extends EntitySchemaType,
@@ -17,31 +16,21 @@ export function entity<
   Columns extends EntityColumnList<PostgresDataSource<any>> | undefined,
   Relations extends EntityRelationList | undefined,
   Embeds extends EntityEmbedList<PostgresDataSource<any>> | undefined,
-  VirtualMethods extends EntityMethods | undefined,
-  VirtualLazyProperties extends
-    | EntityProperties<PostgresDataSource<any>>
-    | undefined,
-  VirtualEagerProperties extends
-    | EntityProperties<PostgresDataSource<any>>
-    | undefined
+  Virtuals extends EntityVirtuals<PostgresDataSource<any>, any> | undefined
 >(options: {
   type?: Type
   model?: GivenModel
   columns?: Columns
   relations?: Relations
   embeds?: Embeds
-  virtualMethods?: VirtualMethods
-  virtualLazyProperties?: VirtualLazyProperties
-  virtualEagerProperties?: VirtualEagerProperties
+  virtuals?: Virtuals
 }): EntitySchema<
   Type extends EntitySchemaType ? Type : "default",
   GivenModel extends AnyModel ? GivenModel : Model<undefined>,
   Columns extends EntityColumnList<any> ? Columns : {},
   ForceCastIfUndefined<Relations, {}>,
   ForceCastIfUndefined<Embeds, {}>,
-  ForceCastIfUndefined<VirtualMethods, {}>,
-  ForceCastIfUndefined<VirtualLazyProperties, {}>,
-  ForceCastIfUndefined<VirtualEagerProperties, {}>
+  ForceCastIfUndefined<Virtuals, {}>
 > {
   return undefined as any
 }

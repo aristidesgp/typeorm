@@ -46,7 +46,7 @@ export interface ManagerFindMethods<DataSource extends AnyDataSource> {
     entityRef: Reference,
     options: Options,
   ): Promise<
-    FindType<DataSource, Entity, Options["select"], Options["selectAndMap"]>[]
+    FindType<DataSource, Entity, Options["select"], Options["virtuals"]>[]
   >
 
   /**
@@ -77,7 +77,7 @@ export interface ManagerFindMethods<DataSource extends AnyDataSource> {
     DataSource,
     Entity,
     Options["select"],
-    Options["selectAndMap"]
+    Options["virtuals"]
   > | null>
 
   /**
@@ -105,7 +105,7 @@ export interface ManagerFindMethods<DataSource extends AnyDataSource> {
     entityRef: Reference,
     options: Options,
   ): Promise<
-    FindType<DataSource, Entity, Options["select"], Options["selectAndMap"]>
+    FindType<DataSource, Entity, Options["select"], Options["virtuals"]>
   >
 
   /**
@@ -136,12 +136,7 @@ export interface ManagerFindMethods<DataSource extends AnyDataSource> {
     options: Options,
   ): Promise<
     [
-      FindType<
-        DataSource,
-        Entity,
-        Options["select"],
-        Options["selectAndMap"]
-      >[],
+      FindType<DataSource, Entity, Options["select"], Options["virtuals"]>[],
       number,
     ]
   >

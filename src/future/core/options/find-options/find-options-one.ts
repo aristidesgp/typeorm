@@ -1,7 +1,7 @@
 import { AnyDataSource } from "../../data-source"
 import { AnyEntity } from "../../entity"
 import { OrderOptions } from "../order-options"
-import { SelectAndMapOptions, SelectOptions } from "../select-options"
+import { FindOptionVirtuals, SelectOptions } from "../select-options"
 import { WhereOptions } from "../where-options"
 import { FindOptionsCache } from "./find-options-cache"
 
@@ -13,9 +13,9 @@ export type FindOptions<
   Entity extends AnyEntity
 > = {
   /**
-   * What properties and relations needs to be selected from the loading entities.
+   * "Virtuals" needs to be added to the loaded entity.
    */
-  selectAndMap?: SelectAndMapOptions<DataSource, Entity>
+  virtuals?: FindOptionVirtuals<DataSource, Entity>
 
   /**
    * What properties and relations needs to be selected from the loading entities.

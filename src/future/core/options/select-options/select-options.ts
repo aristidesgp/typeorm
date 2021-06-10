@@ -59,7 +59,7 @@ export type SelectOptionsForEntitySchema<Entity extends AnyEntitySchema> = {
   [P in keyof Entity["columns"]]?: true | false
 } &
   {
-    [P in keyof Entity["virtualLazyProperties"]]?: true | false
+    [P in keyof Entity["virtuals"]["lazyProperties"]]?: true | false
   } &
   {
     [P in keyof Entity["relations"]]?:

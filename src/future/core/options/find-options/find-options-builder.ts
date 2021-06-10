@@ -1,7 +1,7 @@
 import { AnyDataSource } from "../../data-source"
 import { AnyEntity } from "../../entity"
 import { OrderOptions } from "../order-options"
-import { SelectAndMapOptions, SelectOptions } from "../select-options"
+import { FindOptionVirtuals, SelectOptions } from "../select-options"
 import { WhereOptions } from "../where-options"
 import { FindOptionsMany } from "./find-options-many"
 
@@ -21,11 +21,11 @@ export type FindOptionsBuilder<
   ): Options
 
   /**
-   * Creates a SelectAndMapOptions object.
+   * Creates a FindOptionVirtuals object.
    */
-  selectAndMap<SelectAndMap extends SelectAndMapOptions<DataSource, Entity>>(
-    selectAndMap: SelectAndMap,
-  ): SelectAndMap
+  virtuals<Virtuals extends FindOptionVirtuals<DataSource, Entity>>(
+    virtuals: Virtuals,
+  ): Virtuals
 
   /**
    * Creates a SelectOptions object.
