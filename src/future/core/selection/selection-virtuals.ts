@@ -10,7 +10,7 @@ import { NonNever } from "../util"
 import { Operator } from "../options"
 
 /**
- *
+ * Extracts return type out of a given VirtualProperty in a given VirtualProperties list.
  */
 export type VirtualPropertyReturnType<
   Properties extends VirtualProperties<AnyDataSource, AnyEntity>,
@@ -22,6 +22,7 @@ export type VirtualPropertyReturnType<
   : ReturnType<Properties[P]>
 
 /**
+ * Virtuals defined in FindOptions.
  */
 export type FindOptionVirtuals<
   DataSource extends AnyDataSource,
@@ -34,6 +35,7 @@ export type FindOptionVirtuals<
 }
 
 /**
+ * Virtuals defined in entity schema.
  */
 export type EntityVirtuals<
   DataSource extends AnyDataSource,
@@ -44,11 +46,17 @@ export type EntityVirtuals<
   methods?: VirtualMethods
 }
 
+/**
+ * Virtual property can be operator or a function returning value.
+ */
 export type VirtualProperty<
   DataSource extends AnyDataSource,
   Entity extends AnyEntity
 > = Operator<Entity, any, any> | ((manager: DataSource["manager"]) => any)
 
+/**
+ * List of VirtualProperty objects.
+ */
 export type VirtualProperties<
   DataSource extends AnyDataSource,
   Entity extends AnyEntity
@@ -56,10 +64,16 @@ export type VirtualProperties<
   [name: string]: VirtualProperty<DataSource, Entity>
 }
 
+/**
+ * Methods can be defined in the virtual list - those methods will be part of the entity.
+ */
 export type VirtualMethods = {
   [name: string]: (...args: any) => any
 }
 
+/**
+ * Virtuals to be defined in the relations.
+ */
 export type VirtualRelations<
   DataSource extends AnyDataSource,
   Entity extends AnyEntity
@@ -69,6 +83,9 @@ export type VirtualRelations<
   ? VirtualRelationsAndEmbedsForClass<DataSource, Entity>
   : unknown
 
+/**
+ * Virtuals to be defined in the embeds.
+ */
 export type VirtualEmbeds<
   DataSource extends AnyDataSource,
   Entity extends AnyEntity
@@ -79,7 +96,7 @@ export type VirtualEmbeds<
   : unknown
 
 /**
- * Defines SelectAndMapOptions for entity defined as entity schemas.
+ * Virtuals to be defined in the relations (for entity schemas).
  */
 export type VirtualRelationsForEntitySchema<
   DataSource extends AnyDataSource,
@@ -92,7 +109,7 @@ export type VirtualRelationsForEntitySchema<
 }
 
 /**
- * Defines SelectAndMapOptions for entity defined as entity schemas.
+ * Virtuals to be defined in the embeds (for entity schemas).
  */
 export type VirtualEmbedsForEntitySchema<
   DataSource extends AnyDataSource,
@@ -105,7 +122,7 @@ export type VirtualEmbedsForEntitySchema<
 }
 
 /**
- * Defines SelectAndMapOptions for entity defined in a class (with decorators).
+ * Virtuals to be defined in the relations and embeds (for entity classes).
  */
 export type VirtualRelationsAndEmbedsForClass<
   DataSource extends AnyDataSource,

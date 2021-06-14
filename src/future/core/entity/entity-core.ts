@@ -33,6 +33,16 @@ export type AnyEntitySchema = EntitySchema<
   EntityVirtuals<AnyDataSource, AnyEntity>
 >
 
+export type EntityListeners = {
+  afterLoad(): Promise<void> | void
+  beforeInsert(): Promise<void> | void
+  afterInsert(): Promise<void> | void
+  beforeUpdate(): Promise<void> | void
+  afterUpdate(): Promise<void> | void
+  beforeDelete(): Promise<void> | void
+  afterDelete(): Promise<void> | void
+}
+
 /**
  * This type represents entity defined as "entity schema".
  * There are two ways of entity definition: entity schema and class.
@@ -52,6 +62,7 @@ export interface EntitySchema<
   relations: Relations
   embeds: Embeds
   virtuals: Virtuals
+  listeners: EntityListeners
 }
 
 /**

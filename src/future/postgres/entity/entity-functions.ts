@@ -2,6 +2,7 @@ import { AnyModel, Model } from "../../../repository/model"
 import {
   EntityColumnList,
   EntityEmbedList,
+  EntityListeners,
   EntityRelationList,
   EntitySchema,
   EntitySchemaType,
@@ -24,6 +25,7 @@ export function entity<
   relations?: Relations
   embeds?: Embeds
   virtuals?: Virtuals
+  listeners?: EntityListeners
 }): EntitySchema<
   Type extends EntitySchemaType ? Type : "default",
   GivenModel extends AnyModel ? GivenModel : Model<undefined>,

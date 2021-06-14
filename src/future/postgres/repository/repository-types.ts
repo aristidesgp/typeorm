@@ -7,7 +7,7 @@ import {
   RepositoryPersistenceMethods,
   RepositoryTreeMethods,
 } from "../../core"
-import { Releasable } from "../../core/connection"
+import { Releasable } from "../../core"
 import { PostgresDataSource } from "../data-source"
 
 /**
