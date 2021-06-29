@@ -24,4 +24,5 @@ export type DataSourceTypes = {
   archiveByOptions: {}
   unarchiveOptions: {}
   unarchiveByOptions: {}
+  subscriberTypes: {}
 }

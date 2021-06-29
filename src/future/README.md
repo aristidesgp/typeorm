@@ -38,12 +38,13 @@ TypeORM will be divided into multiple packages:
 * cli - command line tools
 * cache-redis - query caching into redis
 * cache-rdbms - caching into table in rdbms
-* decorators - if TypeORM is going to be used with decorators
+* decorators - if TypeORM is going to be used with decorators, but decorators are db-specific...
 * query-builder - legacy query builder
 * logger-debug
 * logger-simple-console
 * logger-console
 * migrations - migrations framework
+* subscribers -> will be deprecated, suppressed by observers
 
 supported drivers:
 

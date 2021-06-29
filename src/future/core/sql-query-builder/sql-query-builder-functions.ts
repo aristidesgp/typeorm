@@ -3,7 +3,7 @@ import {
   SqlQueryBuilder,
   SQLTemplateStringParameterTypes,
 } from "./sql-query-builder-types"
-
+/*
 export function createSQLQueryBuilder<
   DataSource extends AnyDataSource
 >(): SqlQueryBuilder<DataSource> {
@@ -28,7 +28,7 @@ export function createSQLQueryBuilder<
       return ""
     },
   }
-}
+}*/
 
 /**
  * Template string to build SQL query.
@@ -37,13 +37,14 @@ export function sql<DataSource extends AnyDataSource>(
   strings: TemplateStringsArray,
   ...parameters: SQLTemplateStringParameterTypes[]
 ): SqlQueryBuilder<DataSource> {
-  const qb = createSQLQueryBuilder()
-  qb.templates.push({
-    type: "sql",
-    strings,
-    parameters,
-  })
-  return qb
+  return null as any
+  // const qb = createSQLQueryBuilder()
+  // qb.templates.push({
+  //   type: "sql",
+  //   strings,
+  //   parameters,
+  // })
+  // return qb
 }
 
 /**
@@ -53,11 +54,12 @@ export function sqlFragment<DataSource extends AnyDataSource>(
   strings: TemplateStringsArray,
   ...parameters: SQLTemplateStringParameterTypes[]
 ): SqlQueryBuilder<DataSource> {
-  const qb = createSQLQueryBuilder()
-  qb.templates.push({
-    type: "sqlFragment",
-    strings,
-    parameters,
-  })
-  return qb
+  return null as any
+  // const qb = createSQLQueryBuilder()
+  // qb.templates.push({
+  //   type: "sqlFragment",
+  //   strings,
+  //   parameters,
+  // })
+  // return qb
 }

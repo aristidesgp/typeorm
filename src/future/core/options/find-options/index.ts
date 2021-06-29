@@ -1,5 +1,6 @@
 export * from "./find-options-cache"
 export * from "./find-options-many"
 export * from "./find-options-one"
+export * from "./find-options-count"
 export * from "./find-options-return-types"
 export * from "./find-options-builder"

@@ -1,9 +1,15 @@
 import {
+  AnyEntity,
   FindOptionsCache,
   PersistenceWithChunkOptions,
   PersistenceWithListenersOptions,
   PersistenceWithTransactionOptions,
 } from "../../core"
+import {
+  SubscriberCommonTypes,
+  SubscriberTransactionalTypes,
+} from "../../core/subscriber"
+import { PostgresDataSource } from "./data-source-types"
 
 export interface PostgresColumnTypes {
   int: { type: number }
@@ -68,6 +74,9 @@ export type PostgresDataSourceTypes = {
   archiveByOptions: PostgresArchiveByOptions
   unarchiveOptions: PostgresUnarchiveOptions
   unarchiveByOptions: PostgresUnarchiveByOptions
+
+  subscriberTypes: SubscriberCommonTypes<PostgresDataSource<any>, AnyEntity> &
+    SubscriberTransactionalTypes<PostgresDataSource<any>, AnyEntity>
 }
 
 export type PostgresInsertOptions = PersistenceWithTransactionOptions &

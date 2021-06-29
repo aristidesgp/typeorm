@@ -456,31 +456,31 @@ async function test() {
   //   console.log(manager)
   // })
 
-  const results1 = await myDataSource.manager
-    .query(sql`SELECT * FROM "users"`)
-    .append(sqlFragment` WHERE id > 1000`)
-    .mapTo(UserEntity)
-    .execute()
-
-  const results2 = await myDataSource.manager
-    .query(sql`SELECT * FROM "users"`)
-    .execute<
-      {
-        id: number
-        name: string
-      }[]
-    >()
-
-  const results3 = await myDataSource.manager
-    .query(sql`SELECT * FROM "users"`)
-    .execute<
-      {
-        firstName: string
-        lastName: string
-      }[]
-    >()
-
-  console.log(results1, results2, results3)
+  // const results1 = await myDataSource.manager
+  //   .query(sql`SELECT * FROM "users"`)
+  //   .append(sqlFragment` WHERE id > 1000`)
+  //   .mapTo(UserEntity)
+  //   .execute()
+  //
+  // const results2 = await myDataSource.manager
+  //   .query(sql`SELECT * FROM "users"`)
+  //   .execute<
+  //     {
+  //       id: number
+  //       name: string
+  //     }[]
+  //   >()
+  //
+  // const results3 = await myDataSource.manager
+  //   .query(sql`SELECT * FROM "users"`)
+  //   .execute<
+  //     {
+  //       firstName: string
+  //       lastName: string
+  //     }[]
+  //   >()
+  //
+  // console.log(results1, results2, results3)
 
   const alwaysSelectAge = myDataSource.manager
     .repository(UserEntity)
@@ -546,6 +546,28 @@ myDataSource.manager.repository(UserEntity).findOptions.virtuals({
     something: Column("name"),
   },
 })
+
+// type ObserveType =
+//   | "afterLoad"
+//   | "beforeInsert"
+//   | "afterInsert"
+//   | "beforeUpdate"
+//   | "afterUpdate"
+//   | "beforeRemove"
+//   | "afterRemove"
+//   | "beforeTransactionStart"
+//   | "afterTransactionStart"
+//   | "beforeTransactionCommit"
+//   | "afterTransactionCommit"
+//   | "beforeTransactionRollback"
+//   | "afterTransactionRollback"
+//
+// function observe(type: ObserveType) {}
+//
+// myDataSource.manager
+//   .repository(UserEntity)
+//   .on("afterLoad")
+//   .subscribe(() => {})
 
 myDataSource.manager.repository(UserEntity).findOptions.where({
   $or: [

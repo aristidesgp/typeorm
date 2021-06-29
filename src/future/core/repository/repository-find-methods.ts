@@ -3,12 +3,12 @@ import { AnyEntity } from "../entity"
 import {
   FindOptions,
   FindOptionsBuilder,
+  FindOptionsCount,
   FindOptionsMany,
   FindType,
   WhereConditions,
   WhereOptions,
 } from "../options"
-import { FindOptionsCount } from "../options/find-options/find-options-count"
 
 /**
  * Interface for repositories that implement find* methods.
