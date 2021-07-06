@@ -306,6 +306,10 @@ export class ColumnMetadata {
      */
     srid?: number;
 
+    normalizedDefault?: string //  driver.normalizeDefault(columnMetadata)
+    normalizedType: string // driver.normalizeType(columnMetadata),
+    normalizedIsUnique: boolean // driver.normalizeIsUnique(columnMetadata),
+
     // ---------------------------------------------------------------------
     // Constructor
     // ---------------------------------------------------------------------
@@ -699,6 +703,11 @@ export class ColumnMetadata {
         this.databaseName = this.buildDatabaseName(connection);
         this.databasePath = this.buildDatabasePath();
         this.databaseNameWithoutPrefixes = connection.namingStrategy.columnName(this.propertyName, this.givenDatabaseName, []);
+
+        this.normalizedDefault = connection.driver.normalizeDefault(this)
+        this.normalizedType = connection.driver.normalizeType(this)
+        this.normalizedIsUnique = connection.driver.normalizeIsUnique(this)
+
         return this;
     }
 
