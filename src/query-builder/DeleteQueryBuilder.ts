@@ -14,7 +14,7 @@ import {ReturningStatementNotSupportedError} from "../error/ReturningStatementNo
 import {SqljsDriver} from "../driver/sqljs/SqljsDriver";
 import {MysqlDriver} from "../driver/mysql/MysqlDriver";
 import {BroadcasterResult} from "../subscriber/BroadcasterResult";
-import {EntitySchema} from "../index";
+import {EntitySchema} from "../entity-schema/EntitySchema";
 import {AuroraDataApiDriver} from "../driver/aurora-data-api/AuroraDataApiDriver";
 import {BetterSqlite3Driver} from "../driver/better-sqlite3/BetterSqlite3Driver";
 
@@ -185,21 +185,21 @@ export class DeleteQueryBuilder<Entity> extends QueryBuilder<Entity> implements 
      * Adds new AND WHERE with conditions for the given ids.
      */
     whereInIds(ids: any|any[]): this {
-        return this.where(this.createWhereIdsExpression(ids));
+        return this.where(this.getWhereInIdsCondition(ids));
     }
 
     /**
      * Adds new AND WHERE with conditions for the given ids.
      */
     andWhereInIds(ids: any|any[]): this {
-        return this.andWhere(this.createWhereIdsExpression(ids));
+        return this.andWhere(this.getWhereInIdsCondition(ids));
     }
 
     /**
      * Adds new OR WHERE with conditions for the given ids.
      */
     orWhereInIds(ids: any|any[]): this {
-        return this.orWhere(this.createWhereIdsExpression(ids));
+        return this.orWhere(this.getWhereInIdsCondition(ids));
     }
     /**
      * Optional returning/output clause.

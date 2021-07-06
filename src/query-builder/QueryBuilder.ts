@@ -19,10 +19,11 @@ import {PostgresDriver} from "../driver/postgres/PostgresDriver";
 import {CockroachDriver} from "../driver/cockroachdb/CockroachDriver";
 import {SqlServerDriver} from "../driver/sqlserver/SqlServerDriver";
 import {OracleDriver} from "../driver/oracle/OracleDriver";
-import {EntitySchema} from "../";
+import {EntitySchema} from "../entity-schema/EntitySchema";
 import {FindOperator} from "../find-options/FindOperator";
 import {In} from "../find-options/operator/In";
 import {EntityColumnNotFound} from "../error/EntityColumnNotFound";
+import { TypeORMError } from "../error";
 
 // todo: completely cover query builder with tests
 // todo: entityOrProperty can be target name. implement proper behaviour if it is.
@@ -72,6 +73,11 @@ export abstract class QueryBuilder<Entity> {
      */
     protected parentQueryBuilder: QueryBuilder<any>;
 
+    /**
+     * Memo to help keep place of current parameter index for `createParameter`
+     */
+    private parameterIndex = 0;
+
     // -------------------------------------------------------------------------
     // Constructor
     // -------------------------------------------------------------------------
@@ -120,7 +126,7 @@ export abstract class QueryBuilder<Entity> {
      */
     get alias(): string {
         if (!this.expressionMap.mainAlias)
-            throw new Error(`Main alias is not set`); // todo: better exception
+            throw new TypeORMError(`Main alias is not set`); // todo: better exception
 
         return this.expressionMap.mainAlias.name;
     }
@@ -325,11 +331,18 @@ export abstract class QueryBuilder<Entity> {
     }
 
     /**
+     * Check the existence of a parameter for this query builder.
+     */
+    hasParameter(key: string): boolean {
+        return this.parentQueryBuilder?.hasParameter(key) || key in this.expressionMap.parameters;
+    }
+
+    /**
      * Sets parameter name and its value.
      */
     setParameter(key: string, value: any): this {
         if (value instanceof Function) {
-            throw new Error(`Function parameter isn't supported in the parameters. Please check "${key}" parameter.`);
+            throw new TypeORMError(`Function parameter isn't supported in the parameters. Please check "${key}" parameter.`);
         }
 
         if (this.parentQueryBuilder) {
@@ -351,8 +364,22 @@ export abstract class QueryBuilder<Entity> {
         return this;
     }
 
+    protected createParameter(value: any): string {
+        let parameterName;
+
+        do {
+            parameterName = `orm_param_${this.parameterIndex++}`;
+        } while (this.hasParameter(parameterName));
+
+        this.setParameter(parameterName, value);
+
+        return `:${parameterName}`;
+    }
+
     /**
      * Adds native parameters from the given object.
+     *
+     * @deprecated Use `setParameters` instead
      */
     setNativeParameters(parameters: ObjectLiteral): this {
 
@@ -527,7 +554,7 @@ export abstract class QueryBuilder<Entity> {
      */
     protected getMainTableName(): string {
         if (!this.expressionMap.mainAlias)
-            throw new Error(`Entity where values should be inserted is not specified. Call "qb.into(entity)" method to specify it.`);
+            throw new TypeORMError(`Entity where values should be inserted is not specified. Call "qb.into(entity)" method to specify it.`);
 
         if (this.expressionMap.mainAlias.hasMetadata)
             return this.expressionMap.mainAlias.metadata.tablePath;
@@ -734,9 +761,7 @@ export abstract class QueryBuilder<Entity> {
 
             if (driver instanceof OracleDriver) {
                 columnsExpression += " INTO " + columns.map(column => {
-                    const parameterName = "output_" + column.databaseName;
-                    this.expressionMap.nativeParameters[parameterName] = { type: driver.columnTypeToNativeParameter(column.type), dir: driver.oracle.BIND_OUT };
-                    return this.connection.driver.createParameter(parameterName, Object.keys(this.expressionMap.nativeParameters).length);
+                    return this.createParameter({ type: driver.columnTypeToNativeParameter(column.type), dir: driver.oracle.BIND_OUT });
                 }).join(", ");
             }
 
@@ -788,47 +813,183 @@ export abstract class QueryBuilder<Entity> {
     }
 
     /**
-     * Creates "WHERE" expression and variables for the given "ids".
+     * Creates "WHERE" condition for an in-ids condition.
      */
-    protected createWhereIdsExpression(ids: any|any[]): string {
+    protected getWhereInIdsCondition(ids: any|any[]): ObjectLiteral | Brackets  {
         const metadata = this.expressionMap.mainAlias!.metadata;
         const normalized = (Array.isArray(ids) ? ids : [ids]).map(id => metadata.ensureEntityIdMap(id));
 
         // using in(...ids) for single primary key entities
-        if (!metadata.hasMultiplePrimaryKeys
-            && metadata.embeddeds.length === 0
-        ) {
+        if (!metadata.hasMultiplePrimaryKeys) {
             const primaryColumn = metadata.primaryColumns[0];
 
             // getEntityValue will try to transform `In`, it is a bug
             // todo: remove this transformer check after #2390 is fixed
-            if (!primaryColumn.transformer) {
-                return this.computeWhereParameter({
+            // This also fails for embedded & relation, so until that is fixed skip it.
+            if (!primaryColumn.transformer && !primaryColumn.relationMetadata && !primaryColumn.embeddedMetadata) {
+                return {
                     [primaryColumn.propertyName]: In(
                         normalized.map(id => primaryColumn.getEntityValue(id, false))
                     )
-                });
+                };
             }
         }
 
-        // create shortcuts for better readability
-        const alias = this.expressionMap.aliasNamePrefixingEnabled ? this.escape(this.expressionMap.mainAlias!.name) + "." : "";
-        let parameterIndex = Object.keys(this.expressionMap.nativeParameters).length;
-        const whereStrings = normalized.map((id, index) => {
-            const whereSubStrings: string[] = [];
-            metadata.primaryColumns.forEach((primaryColumn, secondIndex) => {
-                const parameterName = "id_" + index + "_" + secondIndex;
-                // whereSubStrings.push(alias + this.escape(primaryColumn.databaseName) + "=:id_" + index + "_" + secondIndex);
-                whereSubStrings.push(alias + this.escape(primaryColumn.databaseName) + " = " + this.connection.driver.createParameter(parameterName, parameterIndex));
-                this.expressionMap.nativeParameters[parameterName] = primaryColumn.getEntityValue(id, true);
-                parameterIndex++;
-            });
-            return whereSubStrings.join(" AND ");
+        return new Brackets((qb) => {
+            for (const data of normalized) {
+                qb.orWhere(new Brackets(
+                    (qb) => qb.where(data)
+                ));
+            }
         });
+    }
 
-        return whereStrings.length > 1
-            ? "(" + whereStrings.map(whereString => "(" + whereString + ")").join(" OR ") + ")"
-            : whereStrings[0];
+    private findColumnsForPropertyPath(propertyPath: string): [ Alias, string[], ColumnMetadata[] ] {
+        // Make a helper to iterate the entity & relations?
+        // Use that to set the correct alias?  Or the other way around?
+
+        // Start with the main alias with our property paths
+        let alias = this.expressionMap.mainAlias;
+        const root: string[] = [];
+        const propertyPathParts = propertyPath.split(".");
+
+        while (propertyPathParts.length > 1) {
+            const part = propertyPathParts[0];
+
+            if (!alias?.hasMetadata) {
+                // If there's no metadata, we're wasting our time
+                // and can't actually look any of this up.
+                break;
+            }
+
+            if (alias.metadata.hasEmbeddedWithPropertyPath(part)) {
+                // If this is an embedded then we should combine the two as part of our lookup.
+                // Instead of just breaking, we keep going with this in case there's an embedded/relation
+                // inside an embedded.
+                propertyPathParts.unshift(
+                    `${propertyPathParts.shift()}.${propertyPathParts.shift()}`
+                );
+                continue;
+            }
+
+            if (alias.metadata.hasRelationWithPropertyPath(part)) {
+                // If this is a relation then we should find the aliases
+                // that match the relation & then continue further down
+                // the property path
+                const joinAttr = this.expressionMap.joinAttributes.find(
+                    (joinAttr) => joinAttr.relationPropertyPath === part
+                );
+
+                if (!joinAttr?.alias) {
+                    const fullRelationPath = root.length > 0 ? `${root.join(".")}.${part}` : part;
+                    throw new Error(`Cannot find alias for relation at ${fullRelationPath}`);
+                }
+
+                alias = joinAttr.alias;
+                root.push(...part.split("."));
+                propertyPathParts.shift();
+                continue;
+            }
+
+            break;
+        }
+
+        if (!alias) {
+            throw new Error(`Cannot find alias for property ${propertyPath}`);
+        }
+
+        // Remaining parts are combined back and used to find the actual property path
+        const aliasPropertyPath = propertyPathParts.join(".");
+
+        const columns = alias.metadata.findColumnsWithPropertyPath(aliasPropertyPath);
+
+        if (!columns.length) {
+            throw new EntityColumnNotFound(propertyPath);
+        }
+
+        return [ alias, root, columns ];
+    }
+
+    /**
+     * Creates a property paths for a given ObjectLiteral.
+     */
+    protected createPropertyPath(metadata: EntityMetadata, entity: ObjectLiteral, prefix: string = "") {
+        const paths: string[] = [];
+
+        for (const key of Object.keys(entity)) {
+            const path = prefix ? `${prefix}.${key}` : key;
+
+            // There's times where we don't actually want to traverse deeper.
+            // If the value is a `FindOperator`, or null, or not an object, then we don't, for example.
+            if (entity[key] === null || typeof entity[key] !== "object" || entity[key] instanceof FindOperator) {
+                paths.push(path);
+                continue;
+            }
+
+            if (metadata.hasEmbeddedWithPropertyPath(path)) {
+                const subPaths = this.createPropertyPath(metadata, entity[key], path);
+                paths.push(...subPaths);
+                continue;
+            }
+
+            if (metadata.hasRelationWithPropertyPath(path)) {
+                const relation = metadata.findRelationWithPropertyPath(path)!;
+
+                // There's also cases where we don't want to return back all of the properties.
+                // These handles the situation where someone passes the model & we don't need to make
+                // a HUGE `where` to uniquely look up the entity.
+
+                // In the case of a *-to-one, there's only ever one possible entity on the other side
+                // so if the join columns are all defined we can return just the relation itself
+                // because it will fetch only the join columns and do the lookup.
+                if (relation.relationType === "one-to-one" || relation.relationType === "many-to-one") {
+                    const joinColumns = relation.joinColumns
+                        .map(j => j.referencedColumn)
+                        .filter((j): j is ColumnMetadata => !!j);
+
+                    const hasAllJoinColumns = joinColumns.length > 0 && joinColumns.every(
+                        column => column.getEntityValue(entity[key], false)
+                    );
+
+                    if (hasAllJoinColumns) {
+                        paths.push(path);
+                        continue;
+                    }
+                }
+
+                if (relation.relationType === "one-to-many" || relation.relationType === "many-to-many") {
+                    throw new Error(`Cannot query across ${relation.relationType} for property ${path}`);
+                }
+
+                // For any other case, if the `entity[key]` contains all of the primary keys we can do a
+                // lookup via these.  We don't need to look up via any other values 'cause these are
+                // the unique primary keys.
+                // This handles the situation where someone passes the model & we don't need to make
+                // a HUGE where.
+                const primaryColumns = relation.inverseEntityMetadata.primaryColumns;
+                const hasAllPrimaryKeys = primaryColumns.length > 0 && primaryColumns.every(
+                    column => column.getEntityValue(entity[key], false)
+                );
+
+                if (hasAllPrimaryKeys) {
+                    const subPaths = primaryColumns.map(
+                        column => `${path}.${column.propertyPath}`
+                    );
+                    paths.push(...subPaths);
+                    continue;
+                }
+
+                // If nothing else, just return every property that's being passed to us.
+                const subPaths = this.createPropertyPath(relation.inverseEntityMetadata, entity[key])
+                    .map(p => `${path}.${p}`);
+                paths.push(...subPaths);
+                continue;
+            }
+
+            paths.push(path);
+        }
+
+        return paths;
     }
 
     /**
@@ -859,25 +1020,31 @@ export abstract class QueryBuilder<Entity> {
         } else if (where instanceof Object) {
             const wheres: ObjectLiteral[] = Array.isArray(where) ? where : [where];
             let andConditions: string[];
-            let parameterIndex = Object.keys(this.expressionMap.nativeParameters).length;
 
             if (this.expressionMap.mainAlias!.hasMetadata) {
                 andConditions = wheres.map((where, whereIndex) => {
-                    const propertyPaths = EntityMetadata.createPropertyPath(this.expressionMap.mainAlias!.metadata, where);
+                    const propertyPaths = this.createPropertyPath(this.expressionMap.mainAlias!.metadata, where);
 
                     return propertyPaths.map((propertyPath, propertyIndex) => {
-                        const columns = this.expressionMap.mainAlias!.metadata.findColumnsWithPropertyPath(propertyPath);
-
-                        if (!columns.length) {
-                            throw new EntityColumnNotFound(propertyPath);
-                        }
+                        const [ alias, aliasPropertyPath, columns ] = this.findColumnsForPropertyPath(propertyPath);
 
                         return columns.map((column, columnIndex) => {
 
-                            const aliasPath = this.expressionMap.aliasNamePrefixingEnabled ? `${this.alias}.${propertyPath}` : column.propertyPath;
-                            let parameterValue = column.getEntityValue(where, true);
-                            const parameterName = "where_" + whereIndex + "_" + propertyIndex + "_" + columnIndex;
-                            const parameterBaseCount = Object.keys(this.expressionMap.nativeParameters).filter(x => x.startsWith(parameterName)).length;
+                            // Use the correct alias & the property path from the column
+                            const aliasPath = this.expressionMap.aliasNamePrefixingEnabled ? `${alias.name}.${column.propertyPath}` : column.propertyPath;
+
+                            let containedWhere = where;
+
+                            for (const part of aliasPropertyPath) {
+                                if (!containedWhere || !(part in containedWhere)) {
+                                    containedWhere = {};
+                                    break;
+                                }
+
+                                containedWhere = containedWhere[part];
+                            }
+
+                            let parameterValue = column.getEntityValue(containedWhere, true);
 
                             if (parameterValue === null) {
                                 return `${aliasPath} IS NULL`;
@@ -890,19 +1057,17 @@ export abstract class QueryBuilder<Entity> {
                                     } else {
                                         const realParameterValues: any[] = parameterValue.multipleParameters ? parameterValue.value : [parameterValue.value];
                                         realParameterValues.forEach((realParameterValue, realParameterValueIndex) => {
-                                            this.expressionMap.nativeParameters[parameterName + (parameterBaseCount + realParameterValueIndex)] = realParameterValue;
-                                            parameterIndex++;
-                                            parameters.push(this.connection.driver.createParameter(parameterName + (parameterBaseCount + realParameterValueIndex), parameterIndex - 1));
+
+                                            const parameterName = this.createParameter(realParameterValue);
+                                            parameters.push(parameterName);
                                         });
                                     }
                                 }
 
                                 return this.computeFindOperatorExpression(parameterValue, aliasPath, parameters);
                             } else {
-                                this.expressionMap.nativeParameters[parameterName] = parameterValue;
-                                parameterIndex++;
-                                const parameter = this.connection.driver.createParameter(parameterName, parameterIndex - 1);
-                                return `${aliasPath} = ${parameter}`;
+                                const parameterName = this.createParameter(parameterValue);
+                                return `${aliasPath} = ${parameterName}`;
                             }
 
                         }).filter(expression => !!expression).join(" AND ");
@@ -918,10 +1083,8 @@ export abstract class QueryBuilder<Entity> {
                             return `${aliasPath} IS NULL`;
 
                         } else {
-                            const parameterName = "where_" + whereIndex + "_" + parameterIndex;
-                            this.expressionMap.nativeParameters[parameterName] = parameterValue;
-                            parameterIndex++;
-                            return `${aliasPath} = ${this.connection.driver.createParameter(parameterName, parameterIndex - 1)}`;
+                            const parameterName = this.createParameter(parameterValue);
+                            return `${aliasPath} = ${parameterName}`;
                         }
                     }).join(" AND ");
                 });
