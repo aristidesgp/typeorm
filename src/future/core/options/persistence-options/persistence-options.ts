@@ -8,7 +8,7 @@ import { WhereOptions } from "../where-options"
 export type InsertOptions<
   DataSource extends AnyDataSource,
   Entity extends AnyEntity
-> = DataSource["types"]["insertOptions"]
+> = DataSource["@types"]["insertOptions"]
 
 /**
  * Entity update options.
@@ -16,7 +16,7 @@ export type InsertOptions<
 export type UpdateOptions<
   DataSource extends AnyDataSource,
   Entity extends AnyEntity
-> = DataSource["types"]["updateOptions"]
+> = DataSource["@types"]["updateOptions"]
 
 /**
  * Entity update by options.
@@ -26,7 +26,7 @@ export type UpdateByOptions<
   Entity extends AnyEntity
 > = {
   where: WhereOptions<DataSource, Entity>
-} & DataSource["types"]["updateByOptions"]
+} & DataSource["@types"]["updateByOptions"]
 
 /**
  * Entity delete options.
@@ -34,7 +34,7 @@ export type UpdateByOptions<
 export type DeleteOptions<
   DataSource extends AnyDataSource,
   Entity extends AnyEntity
-> = DataSource["types"]["deleteOptions"]
+> = DataSource["@types"]["deleteOptions"]
 
 /**
  * Entity delete by options.
@@ -44,7 +44,7 @@ export type DeleteByOptions<
   Entity extends AnyEntity
 > = {
   where: WhereOptions<DataSource, Entity>
-} & DataSource["types"]["deleteByOptions"]
+} & DataSource["@types"]["deleteByOptions"]
 
 /**
  * Archive (soft-remove) options.
@@ -52,7 +52,7 @@ export type DeleteByOptions<
 export type ArchiveOptions<
   DataSource extends AnyDataSource,
   Entity extends AnyEntity
-> = DataSource["types"]["archiveOptions"]
+> = DataSource["@types"]["archiveOptions"]
 
 /**
  * Archive (soft-remove) options.
@@ -62,7 +62,7 @@ export type ArchiveByOptions<
   Entity extends AnyEntity
 > = {
   where: WhereOptions<DataSource, Entity>
-} & DataSource["types"]["archiveByOptions"]
+} & DataSource["@types"]["archiveByOptions"]
 
 /**
  * Entities unarchive options.
@@ -70,7 +70,7 @@ export type ArchiveByOptions<
 export type UnarchiveOptions<
   DataSource extends AnyDataSource,
   Entity extends AnyEntity
-> = DataSource["types"]["unarchiveOptions"]
+> = DataSource["@types"]["unarchiveOptions"]
 
 /**
  * Entities unarchive options.
@@ -80,4 +80,4 @@ export type UnarchiveByOptions<
   Entity extends AnyEntity
 > = {
   where: WhereOptions<DataSource, Entity>
-} & DataSource["types"]["unarchiveByOptions"]
+} & DataSource["@types"]["unarchiveByOptions"]

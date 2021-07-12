@@ -9,7 +9,7 @@ import { EntityPropsForOptions } from "./entity-utils"
  */
 export type EntityColumn<DataSource extends AnyDataSource> = {
   primary?: boolean
-  type: keyof DataSource["types"]["columnTypes"]
+  type: keyof DataSource["@types"]["columnTypes"]
   generated?: boolean
   nullable?: boolean
   array?: boolean
@@ -49,14 +49,14 @@ export type ColumnCompileType<
     : Entity["columns"][ColumnName]["array"] extends true
     ? Entity["columns"][ColumnName]["nullable"] extends true
       ?
-          | DataSource["types"]["columnTypes"][Entity["columns"][ColumnName]["type"]]["type"][]
+          | DataSource["@types"]["columnTypes"][Entity["columns"][ColumnName]["type"]]["type"][]
           | null
-      : DataSource["types"]["columnTypes"][Entity["columns"][ColumnName]["type"]]["type"]
+      : DataSource["@types"]["columnTypes"][Entity["columns"][ColumnName]["type"]]["type"]
     : Entity["columns"][ColumnName]["nullable"] extends true
     ?
-        | DataSource["types"]["columnTypes"][Entity["columns"][ColumnName]["type"]]["type"]
+        | DataSource["@types"]["columnTypes"][Entity["columns"][ColumnName]["type"]]["type"]
         | null
-    : DataSource["types"]["columnTypes"][Entity["columns"][ColumnName]["type"]]["type"]
+    : DataSource["@types"]["columnTypes"][Entity["columns"][ColumnName]["type"]]["type"]
   : ColumnName extends keyof Entity
   ? Entity[ColumnName]
   : unknown

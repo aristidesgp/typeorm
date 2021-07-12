@@ -51,7 +51,7 @@ export interface ManagerCommonRdbmsMethods<DataSource extends AnyDataSource> {
     where: WhereOptions<DataSource, Entity>,
     columnPath: EntityColumnPaths<Entity>,
     value: number,
-  ): Promise<UpdateResult<DataSource["types"]>>
+  ): Promise<UpdateResult<DataSource["@types"]>>
 
   /**
    * Decrements some column by provided value of the entities matched given conditions.
@@ -64,5 +64,5 @@ export interface ManagerCommonRdbmsMethods<DataSource extends AnyDataSource> {
     where: WhereOptions<DataSource, Entity>,
     columnPath: EntityColumnPaths<Entity>,
     value: number,
-  ): Promise<UpdateResult<DataSource["types"]>>
+  ): Promise<UpdateResult<DataSource["@types"]>>
 }

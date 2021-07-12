@@ -29,10 +29,10 @@ export type OrderOptionsForClass<
   [P in keyof Entity]?: Entity[P] extends Array<infer U>
     ? U extends EntityClassDefinition
       ? OrderOptions<DataSource, InstanceType<U>>
-      : DataSource["types"]["orderTypes"]
+      : DataSource["@types"]["orderTypes"]
     : Entity[P] extends EntityClassDefinition
     ? OrderOptions<DataSource, InstanceType<Entity[P]>>
-    : DataSource["types"]["orderTypes"]
+    : DataSource["@types"]["orderTypes"]
 }
 
 /**
@@ -42,7 +42,7 @@ export type OrderOptionsForEntitySchema<
   DataSource extends AnyDataSource,
   Entity extends AnyEntitySchema
 > = {
-  [P in keyof Entity["columns"]]?: DataSource["types"]["orderTypes"]
+  [P in keyof Entity["columns"]]?: DataSource["@types"]["orderTypes"]
 } &
   {
     [P in keyof Entity["relations"]]?: OrderOptions<

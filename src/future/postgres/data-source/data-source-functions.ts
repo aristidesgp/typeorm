@@ -10,7 +10,7 @@ export function postgres<Options extends PostgresDataSourceOptions>(
   return {
     "@type": "DataSource",
     "@connection": null as any,
-    types: null as any,
+    "@types": null as any,
     options,
     isConnected: false,
     // get manager() {

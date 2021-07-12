@@ -45,4 +45,4 @@ export type FindOptions<
    * Alternatively you can use advanced cache options.
    */
   cache?: boolean | number | FindOptionsCache
-} & DataSource["types"]["findOptions"]
+} & DataSource["@types"]["findOptions"]

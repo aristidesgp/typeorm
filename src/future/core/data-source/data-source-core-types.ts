@@ -37,9 +37,9 @@ export interface CoreDataSource<
   "@connection": Connection
 
   /**
-   *
+   * Special property to store information about database-specific types.
    */
-  types: Types
+  "@types": Types
 
   /**
    * Indicates if connection with a data source was initialized or not.
@@ -119,20 +119,20 @@ export interface CoreDataSource<
 
 export type QueryResult<
   DataSource extends AnyDataSource
-> = DataSource["types"]["queryResult"]
+> = DataSource["@types"]["queryResult"]
 
 export type InsertResult<
   DataSource extends AnyDataSource
-> = DataSource["types"]["insertResult"]
+> = DataSource["@types"]["insertResult"]
 
 export type UpdateResult<
   DataSource extends AnyDataSource
-> = DataSource["types"]["updateResult"]
+> = DataSource["@types"]["updateResult"]
 
 export type DeleteResult<
   DataSource extends AnyDataSource
-> = DataSource["types"]["deleteResult"]
+> = DataSource["@types"]["deleteResult"]
 
 export type TransactionOptions<
   DataSource extends AnyDataSource
-> = DataSource["types"]["transactionOptions"]
+> = DataSource["@types"]["transactionOptions"]

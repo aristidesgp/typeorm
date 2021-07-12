@@ -12,7 +12,7 @@ export interface ManagerSubscriberMethods<
   /**
    * Listens to a given event.
    */
-  on<Event extends keyof DataSource["types"]["subscriberTypes"]>(
+  on<Event extends keyof DataSource["@types"]["subscriberTypes"]>(
     event: Event,
-  ): Observable<DataSource["types"]["subscriberTypes"][Event]>
+  ): Observable<DataSource["@types"]["subscriberTypes"][Event]>
 }
