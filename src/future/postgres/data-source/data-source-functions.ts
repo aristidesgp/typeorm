@@ -9,6 +9,8 @@ export function postgres<Options extends PostgresDataSourceOptions>(
   // return null as any
   return {
     "@type": "DataSource",
+    "@connection": null as any,
+    types: null as any,
     options,
     isConnected: false,
     // get manager() {
@@ -25,16 +27,14 @@ export function postgres<Options extends PostgresDataSourceOptions>(
     createConnection() {
       return this.builder.connection(this)
     },
-    types: null as any,
     manager: null as any,
-    connection: null as any,
-    builder: {
-      manager() {
-        return createPostgresManager()
-      },
-      connection() {
-        return createPostgresConnection()
-      },
-    },
+    // builder: {
+    //   manager() {
+    //     return createPostgresManager()
+    //   },
+    //   connection() {
+    //     return createPostgresConnection()
+    //   },
+    // },
   }
 }

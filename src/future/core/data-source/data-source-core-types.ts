@@ -1,5 +1,5 @@
 import { EntityMetadata } from "../../../metadata/EntityMetadata"
-import { ConnectionBase } from "../connection/connection"
+import { ConnectionBase, ConnectionReleasable } from "../connection/connection"
 import { ManagerBase } from "../manager"
 import { DataSourceTypes } from "./data-source-column-types"
 import { BaseDataSourceOptions } from "./data-source-options"
@@ -24,13 +24,6 @@ export interface CoreDataSource<
   Connection extends ConnectionBase,
   Types extends DataSourceTypes
 > {
-  // todo: rename to __ or move everything to driver: { } ?
-  connection: Connection
-  types: Types
-  builder: {
-    manager(): Manager
-    connection(): Connection
-  }
 
   /**
    * Unique type identifier.
@@ -39,30 +32,41 @@ export interface CoreDataSource<
   "@type": "DataSource"
 
   /**
+   * Special property to store information about connection type.
+   */
+  "@connection": Connection
+
+  /**
+   *
+   */
+  types: Types
+
+  /**
    * Indicates if connection with a data source was initialized or not.
    * In most database implementations this connection means connection to a connection pool.
    */
   isConnected: boolean
 
   /**
-   * Options.
+   * Data Source options.
    */
   options: Options
 
   /**
-   * Manager.
+   * Main manager to perform database operations.
+   * Isn't bounded to a specific connection, every operation call might use a separate connection.
    */
   manager: Manager
 
   /**
-   * All entity metadatas that are registered for this connection.
+   * All entity metadatas that are registered in this data source.
    */
-  entityMetadatas: EntityMetadata[] // if it will be typed, EntityMetadataList should be created like RepositoryList
+  entityMetadatas: EntityMetadata[]
 
   /**
    * Initializes a data source connection.
    * This method should be called once on application bootstrap.
-   * This method not necessarily creates database connection (depend on database type),
+   * This method not necessarily creates a database connection (depend on database type),
    * but it also can setup a connection pool with database to use.
    *
    * Returns self.
@@ -70,7 +74,7 @@ export interface CoreDataSource<
   connect(): Promise<this>
 
   /**
-   * Closes any opened connection with a database.
+   * Closes any opened connections with the database.
    * In most database types it also means connection poll will be closed.
    * Once connection is closed, manager and repositories cannot be used,
    * until connection with a data source won't be initialized using {@link connect()} method.
@@ -78,24 +82,22 @@ export interface CoreDataSource<
   close(): Promise<void>
 
   /**
-   * Creates database schema for all entities registered in this connection.
-   * Can be used only after connection to the database is established.
-   *
-   * Returns self.
+   * Performs all synchronization operations on a database.
+   * Depend on the database type it can be a schema synchronization.
+   * Can be used only after {@link connect()} method was called.
    */
   synchronize(): Promise<void>
 
   /**
-   * Creates a query runner used for perform queries on a single database connection.
-   * Using query runners you can control your queries to execute using single database connection and
-   * manually control your database transaction.
-   *
-   * Mode is used in replication mode and indicates whatever you want to connect
-   * to master database or any of slave databases.
-   * If you perform writes you must use master database,
-   * if you perform reads you can use slave databases.
+   * If connection pool is used, this method takes a single free connection from the pool and returns it.
+   * Once you done with connection, it must be released using {@link ConnectionReleasable.release()}.
    */
   createConnection(): Connection
+
+  // builder: {
+  //   manager(): Manager
+  //   connection(): Connection
+  // }
 
   // subscribers -> needs a re-design, based on observables, maybe driver-specific
   // queryResultCache -> need design

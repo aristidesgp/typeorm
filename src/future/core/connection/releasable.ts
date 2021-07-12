@@ -1,5 +1,3 @@
-import { ConnectionBase } from "./connection"
-
 /**
  * If manager / repository / other is created per-connection (query runner), this interface must be followed.
  */
