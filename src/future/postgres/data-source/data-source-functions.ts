@@ -1,40 +1,32 @@
-import { createPostgresManager } from "../manager"
-import { createPostgresConnection } from "../query-runner"
-import { PostgresDataSourceOptions } from "./data-source-options-types"
-import { PostgresDataSource } from "./data-source-types"
+import {PostgresManager} from "../manager"
+import {PostgresConnection} from "../query-runner"
+import {PostgresDataSourceOptions} from "./data-source-options-types"
+import {PostgresDataSource} from "./data-source-types"
+import {DataSourceAbstract} from "../../core";
+import {PostgresDataSourceTypes} from "./data-source-column-types";
 
 export function postgres<Options extends PostgresDataSourceOptions>(
   options: Options,
 ): PostgresDataSource<Options> {
-  // return null as any
-  return {
-    "@type": "DataSource",
-    "@connection": null as any,
-    "@types": null as any,
-    options,
-    isConnected: false,
-    // get manager() {
-    //   return this.builder.manager(this)
-    // },
-    entityMetadatas: [],
-    // namingStrategy: null as any, // new DefaultNamingStrategy(),
-    // logger: new SimpleConsoleLogger(),
+  return new DataSourceAbstract<
+    Options,
+    PostgresManager,
+    PostgresConnection,
+    PostgresDataSourceTypes
+    >(options, {
     async connect() {
-      return this
     },
-    async close() {},
-    async synchronize() {},
+    async disconnect() {
+    },
+    async dropEverything() {
+    },
+    async syncSchema() {
+    },
     createConnection() {
-      return this.builder.connection(this)
+      return null as any
     },
-    manager: null as any,
-    // builder: {
-    //   manager() {
-    //     return createPostgresManager()
-    //   },
-    //   connection() {
-    //     return createPostgresConnection()
-    //   },
-    // },
-  }
+    createManager() {
+      return null as any
+    }
+  })
 }

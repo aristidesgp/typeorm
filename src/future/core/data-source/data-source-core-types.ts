@@ -79,7 +79,7 @@ export interface CoreDataSource<
    * Once connection is closed, manager and repositories cannot be used,
    * until connection with a data source won't be initialized using {@link connect()} method.
    */
-  close(): Promise<void>
+  disconnect(): Promise<void>
 
   /**
    * Performs all synchronization operations on a database.
@@ -93,11 +93,6 @@ export interface CoreDataSource<
    * Once you done with connection, it must be released using {@link ConnectionReleasable.release()}.
    */
   createConnection(): Connection
-
-  // builder: {
-  //   manager(): Manager
-  //   connection(): Connection
-  // }
 
   // subscribers -> needs a re-design, based on observables, maybe driver-specific
   // queryResultCache -> need design
