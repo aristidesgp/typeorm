@@ -93,6 +93,8 @@ As an alternative, you can use CLI and run migration:run command.
 * `migrationsTableName` - Name of the table in the database which is going to contain information about executed migrations.
 By default this table is called "migrations".
 
+* `migrationsTransactionMode` - Control transactions for migrations (default: `all`), can be one of `all` | `none` | `each`
+
 * `cache` - Enables entity result caching. You can also configure cache type and other cache options here.
 Read more about caching [here](./caching.md).
 
@@ -189,6 +191,10 @@ See [SSL options](https://github.com/mysqljs/mysql#ssl-options).
 
 * `logNotifications` - A boolean to determine whether postgres server [notice messages](https://www.postgresql.org/docs/current/plpgsql-errors-and-messages.html) and [notification events](https://www.postgresql.org/docs/current/sql-notify.html) should be included in client's logs with `info` level (default: `false`).
 
+* `installExtensions` - A boolean to control whether to install necessary postgres extensions automatically or not (default: `true`)
+
+* `applicationName` - A string visible in statistics and logs to help referencing an application to a connection (default: `undefined`)
+
 ## `sqlite` connection options
 
 * `database` - Database path. For example "./mydb.sql"
@@ -206,6 +212,10 @@ See [SSL options](https://github.com/mysqljs/mysql#ssl-options).
 * `database` - Database name (capacitor-sqlite will add the suffix `SQLite.db`)
 
 * `driver` - The capacitor-sqlite instance. For example, `new SQLiteConnection(CapacitorSQLite)`.
+
+* `mode` - Set the mode for database encryption: "no-encryption" | "encryption" | "secret" | "newsecret"
+
+* `version` - Database version
 
 * `journalMode` - The SQLite journal mode (optional)
 
@@ -269,8 +279,6 @@ See [SSL options](https://github.com/mysqljs/mysql#ssl-options).
  
 * `pool.priorityRange` - int between 1 and x - if set, borrowers can specify their relative priority in the queue if no
  resources are available. see example. (default `1`).
- 
-* `pool.autostart` - boolean, should the pool start creating resources etc once the constructor is called, (default `true`).
 
 * `pool.evictionRunIntervalMillis` - How often to run eviction checks. Default: `0` (does not run).
 

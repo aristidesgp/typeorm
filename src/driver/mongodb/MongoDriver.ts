@@ -19,6 +19,9 @@ import {ApplyValueTransformers} from "../../util/ApplyValueTransformers";
 import {ReplicationMode} from "../types/ReplicationMode";
 import {DriverUtils} from "../DriverUtils";
 import { TypeORMError } from "../../error";
+import { Table } from "../../schema-builder/table/Table";
+import { View } from "../../schema-builder/view/View";
+import { TableForeignKey } from "../../schema-builder/table/TableForeignKey";
 
 /**
  * Organizes communication with MongoDB.
@@ -200,7 +203,8 @@ export class MongoDriver implements Driver {
         "monitorCommands",
         "useNewUrlParser",
         "useUnifiedTopology",
-        "autoEncryption"
+        "autoEncryption",
+        "retryWrites"
     ];
 
     // -------------------------------------------------------------------------
@@ -292,10 +296,37 @@ export class MongoDriver implements Driver {
 
     /**
      * Build full table name with database name, schema name and table name.
-     * E.g. "myDB"."mySchema"."myTable"
+     * E.g. myDB.mySchema.myTable
      */
     buildTableName(tableName: string, schema?: string, database?: string): string {
         return tableName;
+    }
+
+    /**
+     * Parse a target table name or other types and return a normalized table definition.
+     */
+    parseTableName(target: EntityMetadata | Table | View | TableForeignKey | string): { tableName: string; schema?: string; database?: string } {
+        if (target instanceof EntityMetadata) {
+            return {
+                tableName: target.tableName
+            };
+        }
+
+        if (target instanceof Table || target instanceof View) {
+            return {
+                tableName: target.name
+            };
+        }
+
+        if (target instanceof TableForeignKey) {
+            return {
+                tableName: target.referencedTableName
+            };
+        }
+
+        return {
+            tableName: target
+        };
     }
 
     /**
@@ -431,7 +462,8 @@ export class MongoDriver implements Driver {
      */
     protected loadDependencies(): any {
         try {
-            this.mongodb = PlatformTools.load("mongodb");  // try to load native driver dynamically
+            const mongodb = this.options.driver || PlatformTools.load("mongodb");
+            this.mongodb = mongodb;
 
         } catch (e) {
             throw new DriverPackageNotInstalledError("MongoDB", "mongodb");
@@ -442,20 +474,21 @@ export class MongoDriver implements Driver {
      * Builds connection url that is passed to underlying driver to perform connection to the mongodb database.
      */
     protected buildConnectionUrl(options: { [key: string]: any }): string {
-         const schemaUrlPart = options.type.toLowerCase();
-         const credentialsUrlPart = (options.username && options.password)
+        const schemaUrlPart = options.type.toLowerCase();
+        const credentialsUrlPart = (options.username && options.password)
             ? `${options.username}:${options.password}@`
             : "";
 
-        let connectionString = undefined;
+
         const portUrlPart = (schemaUrlPart === "mongodb+srv")
             ? ""
             : `:${options.port || "27017"}`;
 
+        let connectionString: string;
         if(options.replicaSet) {
-            connectionString = `${schemaUrlPart}://${credentialsUrlPart}${options.hostReplicaSet || options.host + portUrlPart || "127.0.0.1" + portUrlPart}/${options.database || ""}`;
+            connectionString = `${schemaUrlPart}://${credentialsUrlPart}${options.hostReplicaSet || options.host + portUrlPart || "127.0.0.1" + portUrlPart}/${options.database || ""}?replicaSet=${options.replicaSet}${options.tls ? "&tls=true" : ""}`;
         } else {
-            connectionString = `${schemaUrlPart}://${credentialsUrlPart}${options.host || "127.0.0.1"}${portUrlPart}/${options.database || ""}`;
+            connectionString = `${schemaUrlPart}://${credentialsUrlPart}${options.host || "127.0.0.1"}${portUrlPart}/${options.database || ""}${options.tls ? "?tls=true" : ""}`;
         }
 
         return connectionString;

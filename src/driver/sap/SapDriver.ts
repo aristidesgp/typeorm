@@ -1,4 +1,13 @@
-import {ColumnType, Connection, EntityMetadata, ObjectLiteral, TableColumn} from "../..";
+import {
+    ColumnType,
+    Connection,
+    EntityMetadata,
+    ObjectLiteral,
+    Table,
+    TableColumn,
+    TableForeignKey,
+    TypeORMError,
+} from "../..";
 import {DriverPackageNotInstalledError} from "../../error/DriverPackageNotInstalledError";
 import {ColumnMetadata} from "../../metadata/ColumnMetadata";
 import {PlatformTools} from "../../platform/PlatformTools";
@@ -13,6 +22,7 @@ import {SapConnectionOptions} from "./SapConnectionOptions";
 import {SapQueryRunner} from "./SapQueryRunner";
 import {ReplicationMode} from "../types/ReplicationMode";
 import {DriverUtils} from "../DriverUtils";
+import { View } from "../../schema-builder/view/View";
 
 /**
  * Organizes communication with SAP Hana DBMS.
@@ -56,9 +66,14 @@ export class SapDriver implements Driver {
     options: SapConnectionOptions;
 
     /**
-     * Master database used to perform all write queries.
+     * Database name used to perform all write queries.
      */
     database?: string;
+
+    /**
+     * Schema name used to perform all write queries.
+     */
+    schema?: string;
 
     /**
      * Indicates if replication is enabled.
@@ -201,6 +216,7 @@ export class SapDriver implements Driver {
         this.loadDependencies();
 
         this.database = DriverUtils.buildDriverOptions(this.options).database;
+        this.schema = DriverUtils.buildDriverOptions(this.options).schema;
     }
 
     // -------------------------------------------------------------------------
@@ -248,7 +264,19 @@ export class SapDriver implements Driver {
         // create the pool
         this.master = this.client.createPool(dbParams, options);
 
-        this.database = this.options.database;
+        if (!this.database || !this.schema) {
+            const queryRunner = await this.createQueryRunner("master");
+
+            if (!this.database) {
+                this.database = await queryRunner.getCurrentDatabase();
+            }
+
+            if (!this.schema) {
+                this.schema = await queryRunner.getCurrentSchema();
+            }
+
+            await queryRunner.release();
+        }
     }
 
     /**
@@ -297,7 +325,7 @@ export class SapDriver implements Driver {
         if (!parameters || !Object.keys(parameters).length)
             return [sql, escapedParameters];
 
-        sql = sql.replace(/:(\.\.\.)?([A-Za-z0-9_]+)/g, (full, isArray: string, key: string): string => {
+        sql = sql.replace(/:(\.\.\.)?([A-Za-z0-9_.]+)/g, (full, isArray: string, key: string): string => {
             if (!parameters.hasOwnProperty(key)) {
                 return full;
             }
@@ -336,10 +364,63 @@ export class SapDriver implements Driver {
 
     /**
      * Build full table name with schema name and table name.
-     * E.g. "mySchema"."myTable"
+     * E.g. myDB.mySchema.myTable
      */
     buildTableName(tableName: string, schema?: string): string {
-        return schema ? `${schema}.${tableName}` : tableName;
+        let tablePath = [ tableName ];
+
+        if (schema) {
+            tablePath.unshift(schema);
+        }
+
+        return tablePath.join(".");
+    }
+
+    /**
+     * Parse a target table name or other types and return a normalized table definition.
+     */
+    parseTableName(target: EntityMetadata | Table | View | TableForeignKey | string): { database?: string, schema?: string, tableName: string } {
+        const driverDatabase = this.database;
+        const driverSchema = this.schema;
+
+        if (target instanceof Table || target instanceof View) {
+            const parsed = this.parseTableName(target.name);
+
+            return {
+                database: target.database || parsed.database || driverDatabase,
+                schema: target.schema || parsed.schema || driverSchema,
+                tableName: parsed.tableName
+            };
+        }
+
+        if (target instanceof TableForeignKey) {
+            const parsed = this.parseTableName(target.referencedTableName);
+
+            return {
+                database: target.referencedDatabase || parsed.database || driverDatabase,
+                schema: target.referencedSchema || parsed.schema || driverSchema,
+                tableName: parsed.tableName
+            };
+        }
+
+        if (target instanceof EntityMetadata) {
+            // EntityMetadata tableName is never a path
+
+            return {
+                database: target.database || driverDatabase,
+                schema: target.schema || driverSchema,
+                tableName: target.tableName
+            };
+
+        }
+
+        const parts = target.split(".");
+
+        return {
+            database: driverDatabase,
+            schema: (parts.length > 1 ? parts[0] : undefined) || driverSchema,
+            tableName: parts.length > 1 ? parts[1] : parts[0]
+        };
     }
 
     /**
@@ -544,6 +625,10 @@ export class SapDriver implements Driver {
      * If replication is not setup then returns default connection's database connection.
      */
     obtainMasterConnection(): Promise<any> {
+        if (!this.master) {
+            throw new TypeORMError("Driver not Connected");
+        }
+
         return this.master.getConnection();
     }
 
@@ -654,14 +739,17 @@ export class SapDriver implements Driver {
      */
     protected loadDependencies(): void {
         try {
-            this.client = PlatformTools.load("hdb-pool");
+            const client = this.options.driver || PlatformTools.load("hdb-pool");
+            this.client = client;
 
         } catch (e) { // todo: better error for browser env
             throw new DriverPackageNotInstalledError("SAP Hana", "hdb-pool");
         }
 
         try {
-            PlatformTools.load("@sap/hana-client");
+            if (!this.options.hanaClientDriver) {
+                PlatformTools.load("@sap/hana-client");
+            }
 
         } catch (e) { // todo: better error for browser env
             throw new DriverPackageNotInstalledError("SAP Hana", "@sap/hana-client");

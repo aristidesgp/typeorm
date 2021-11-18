@@ -14,11 +14,11 @@ import {InsertValuesMissingError} from "../error/InsertValuesMissingError";
 import {ColumnMetadata} from "../metadata/ColumnMetadata";
 import {ReturningResultsEntityUpdator} from "./ReturningResultsEntityUpdator";
 import {AbstractSqliteDriver} from "../driver/sqlite-abstract/AbstractSqliteDriver";
-import {SqljsDriver} from "../driver/sqljs/SqljsDriver";
 import {BroadcasterResult} from "../subscriber/BroadcasterResult";
 import {EntitySchema} from "../entity-schema/EntitySchema";
 import {OracleDriver} from "../driver/oracle/OracleDriver";
 import {AuroraDataApiDriver} from "../driver/aurora-data-api/AuroraDataApiDriver";
+import { TypeORMError } from "../error";
 
 /**
  * Allows to build complex sql queries in a fashion way and execute those queries.
@@ -77,7 +77,7 @@ export class InsertQueryBuilder<Entity> extends QueryBuilder<Entity> {
                 valueSets.forEach(valueSet => {
                     queryRunner.broadcaster.broadcastBeforeInsertEvent(broadcastResult, this.expressionMap.mainAlias!.metadata, valueSet);
                 });
-                if (broadcastResult.promises.length > 0) await Promise.all(broadcastResult.promises);
+                await broadcastResult.wait();
             }
 
             let declareSql: string | null = null;
@@ -86,14 +86,30 @@ export class InsertQueryBuilder<Entity> extends QueryBuilder<Entity> {
             // if update entity mode is enabled we may need extra columns for the returning statement
             // console.time(".prepare returning statement");
             const returningResultsEntityUpdator = new ReturningResultsEntityUpdator(queryRunner, this.expressionMap);
+
+            const returningColumns: ColumnMetadata[] = [];
+
+            if (Array.isArray(this.expressionMap.returning) && this.expressionMap.mainAlias!.hasMetadata) {
+                for (const columnPath of this.expressionMap.returning) {
+                    returningColumns.push(
+                        ...this.expressionMap.mainAlias!.metadata.findColumnsWithPropertyPath(columnPath)
+                    );
+                }
+            }
+
             if (this.expressionMap.updateEntity === true && this.expressionMap.mainAlias!.hasMetadata) {
                 if (!(valueSets.length > 1 && this.connection.driver instanceof OracleDriver)) {
                     this.expressionMap.extraReturningColumns = returningResultsEntityUpdator.getInsertionReturningColumns();
                 }
-                if (this.expressionMap.extraReturningColumns.length > 0 && this.connection.driver instanceof SqlServerDriver) {
-                    declareSql = this.connection.driver.buildTableVariableDeclaration("@OutputTable", this.expressionMap.extraReturningColumns);
-                    selectOutputSql = `SELECT * FROM @OutputTable`;
-                }
+
+                returningColumns.push(...this.expressionMap.extraReturningColumns.filter(
+                    c => !returningColumns.includes(c)
+                ));
+            }
+
+            if (returningColumns.length > 0 && this.connection.driver instanceof SqlServerDriver) {
+                declareSql = this.connection.driver.buildTableVariableDeclaration("@OutputTable", returningColumns);
+                selectOutputSql = `SELECT * FROM @OutputTable`;
             }
             // console.timeEnd(".prepare returning statement");
 
@@ -101,13 +117,15 @@ export class InsertQueryBuilder<Entity> extends QueryBuilder<Entity> {
             // console.time(".getting query and parameters");
             const [insertSql, parameters] = this.getQueryAndParameters();
             // console.timeEnd(".getting query and parameters");
-            const insertResult = new InsertResult();
+
             // console.time(".query execution by database");
             const statements = [declareSql, insertSql, selectOutputSql];
-            insertResult.raw = await queryRunner.query(
-                statements.filter(sql => sql != null).join(";\n\n"),
-                parameters,
-            );
+            const sql = statements.filter(s => s != null).join(";\n\n");
+
+            const queryResult = await queryRunner.query(sql, parameters, true);
+
+            const insertResult = InsertResult.from(queryResult);
+
             // console.timeEnd(".query execution by database");
 
             // load returning results and set them to the entity if entity updation is enabled
@@ -123,7 +141,7 @@ export class InsertQueryBuilder<Entity> extends QueryBuilder<Entity> {
                 valueSets.forEach(valueSet => {
                     queryRunner.broadcaster.broadcastAfterInsertEvent(broadcastResult, this.expressionMap.mainAlias!.metadata, valueSet);
                 });
-                if (broadcastResult.promises.length > 0) await Promise.all(broadcastResult.promises);
+                await broadcastResult.wait();
             }
 
             // close transaction if we started it
@@ -150,9 +168,6 @@ export class InsertQueryBuilder<Entity> extends QueryBuilder<Entity> {
             // console.time(".releasing connection");
             if (queryRunner !== this.queryRunner) { // means we created our own query runner
                 await queryRunner.release();
-            }
-            if (this.connection.driver instanceof SqljsDriver && !queryRunner.isTransactionActive) {
-                await this.connection.driver.autoSave();
             }
             // console.timeEnd(".releasing connection");
             // console.timeEnd("QueryBuilder.execute");
@@ -248,6 +263,8 @@ export class InsertQueryBuilder<Entity> extends QueryBuilder<Entity> {
 
     /**
      * Adds additional ON CONFLICT statement supported in postgres and cockroach.
+     *
+     * @deprecated Use `orIgnore` or `orUpdate`
      */
     onConflict(statement: string): this {
         this.expressionMap.onConflict = statement;
@@ -258,31 +275,36 @@ export class InsertQueryBuilder<Entity> extends QueryBuilder<Entity> {
      * Adds additional ignore statement supported in databases.
      */
     orIgnore(statement: string | boolean = true): this {
-        this.expressionMap.onIgnore = statement;
+        this.expressionMap.onIgnore = !!statement;
         return this;
     }
 
     /**
+     * @deprecated
+     */
+    orUpdate(statement?: { columns?: string[], overwrite?: string[], conflict_target?: string | string[] }): this;
+
+    orUpdate(overwrite: string[], conflictTarget?: string | string[]): this;
+
+    /**
      * Adds additional update statement supported in databases.
      */
-    orUpdate(statement?: { columns?: string[], overwrite?: string[], conflict_target?: string | string[] }): this {
-      this.expressionMap.onUpdate = {};
-      if (statement && Array.isArray(statement.conflict_target))
-          this.expressionMap.onUpdate.conflict = ` ( ${statement.conflict_target.map((columnName) => this.escape(columnName)).join(", ")} ) `;
-      if (statement && typeof statement.conflict_target === "string")
-          this.expressionMap.onUpdate.conflict = ` ON CONSTRAINT ${this.escape(statement.conflict_target)} `;
-      if (statement && Array.isArray(statement.columns))
-          this.expressionMap.onUpdate.columns = statement.columns.map(column => `${this.escape(column)} = :${column}`).join(", ");
-      if (statement && Array.isArray(statement.overwrite)) {
-        if (this.connection.driver instanceof MysqlDriver || this.connection.driver instanceof AuroraDataApiDriver) {
-          this.expressionMap.onUpdate.overwrite = statement.overwrite.map(column => `${column} = VALUES(${column})`).join(", ");
-        } else if (this.connection.driver instanceof PostgresDriver || this.connection.driver instanceof AbstractSqliteDriver || this.connection.driver instanceof CockroachDriver) {
-          this.expressionMap.onUpdate.overwrite = statement.overwrite.map(column => `${this.escape(column)} = EXCLUDED.${this.escape(column)}`).join(", ");
+    orUpdate(statementOrOverwrite?: { columns?: string[], overwrite?: string[], conflict_target?: string | string[] } | string[], conflictTarget?: string | string[]): this {
+        if (!Array.isArray(statementOrOverwrite)) {
+            this.expressionMap.onUpdate = {
+                conflict: statementOrOverwrite?.conflict_target,
+                columns: statementOrOverwrite?.columns,
+                overwrite: statementOrOverwrite?.overwrite,
+            };
+            return this;
         }
-      }
-      return this;
-  }
 
+        this.expressionMap.onUpdate = {
+            overwrite: statementOrOverwrite,
+            conflict: conflictTarget,
+        };
+        return this;
+    }
 
     // -------------------------------------------------------------------------
     // Protected Methods
@@ -331,19 +353,49 @@ export class InsertQueryBuilder<Entity> extends QueryBuilder<Entity> {
                 query += ` DEFAULT VALUES`;
             }
         }
-        if (this.connection.driver instanceof PostgresDriver || this.connection.driver instanceof AbstractSqliteDriver || this.connection.driver instanceof CockroachDriver) {
-          query += `${this.expressionMap.onIgnore ? " ON CONFLICT DO NOTHING " : ""}`;
-          query += `${this.expressionMap.onConflict ? " ON CONFLICT " + this.expressionMap.onConflict : ""}`;
-          if (this.expressionMap.onUpdate) {
-            const { overwrite, columns, conflict } = this.expressionMap.onUpdate;
-            query += `${columns ? " ON CONFLICT " + conflict + " DO UPDATE SET " + columns : ""}`;
-            query += `${overwrite ? " ON CONFLICT " + conflict + " DO UPDATE SET " + overwrite : ""}`;
-          }
-        } else if (this.connection.driver instanceof MysqlDriver || this.connection.driver instanceof AuroraDataApiDriver) {
+        if (this.connection.driver.supportedUpsertType === "on-conflict-do-update") {
+            if (this.expressionMap.onIgnore) {
+                query += " ON CONFLICT DO NOTHING ";
+            } else if (this.expressionMap.onConflict) {
+                query += ` ON CONFLICT ${this.expressionMap.onConflict} `;
+            } else if (this.expressionMap.onUpdate) {
+                const { overwrite, columns, conflict } = this.expressionMap.onUpdate;
+
+                let conflictTarget = "ON CONFLICT";
+
+                if (Array.isArray(conflict)) {
+                    conflictTarget += ` ( ${conflict.map((column) => this.escape(column)).join(", ")} )`;
+                } else if (conflict) {
+                    conflictTarget += ` ON CONSTRAINT ${this.escape(conflict)}`;
+                }
+
+                if (Array.isArray(overwrite)) {
+                    query += ` ${conflictTarget} DO UPDATE SET `;
+                    query += overwrite?.map(column => `${this.escape(column)} = EXCLUDED.${this.escape(column)}`).join(", ");
+                    query += " ";
+                } else if (columns) {
+                    query += ` ${conflictTarget} DO UPDATE SET `;
+                    query += columns.map(column => `${this.escape(column)} = :${column}`).join(", ");
+                    query += " ";
+                }
+            }
+        } else if (this.connection.driver.supportedUpsertType === "on-duplicate-key-update") {
             if (this.expressionMap.onUpdate) {
-              const { overwrite, columns } = this.expressionMap.onUpdate;
-              query += `${columns ? " ON DUPLICATE KEY UPDATE " + columns : ""}`;
-              query += `${overwrite ? " ON DUPLICATE KEY UPDATE " + overwrite : ""}`;
+                const { overwrite, columns } = this.expressionMap.onUpdate;
+
+                if (Array.isArray(overwrite)) {
+                    query += " ON DUPLICATE KEY UPDATE ";
+                    query += overwrite.map(column => `${this.escape(column)} = VALUES(${this.escape(column)})`).join(", ");
+                    query += " ";
+                } else if (Array.isArray(columns)) {
+                    query += " ON DUPLICATE KEY UPDATE ";
+                    query += columns.map(column => `${this.escape(column)} = :${column}`).join(", ");
+                    query += " ";
+                }
+            }
+        } else {
+            if (this.expressionMap.onUpdate) {
+                throw new TypeORMError(`onUpdate is not supported by the current database driver`);
             }
         }
 

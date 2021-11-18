@@ -11,6 +11,7 @@ import {ColumnMetadata} from "../metadata/ColumnMetadata";
 import {RelationMetadata} from "../metadata/RelationMetadata";
 import {SelectQueryBuilderOption} from "./SelectQueryBuilderOption";
 import { TypeORMError } from "../error";
+import { WhereClause } from "./WhereClause";
 
 /**
  * Contains all properties of the QueryBuilder that needs to be build a final query.
@@ -90,12 +91,16 @@ export class QueryExpressionMap {
     /**
      * Optional on ignore statement used in insertion query in databases.
      */
-    onIgnore: string|boolean = false;
+    onIgnore: boolean = false;
 
     /**
      * Optional on update statement used in insertion query in databases.
      */
-    onUpdate: { columns?: string, conflict?: string, overwrite?: string };
+    onUpdate: {
+        conflict?: string | string[],
+        columns?: string[],
+        overwrite?: string[],
+    };
 
     /**
      * JOIN queries.
@@ -115,7 +120,7 @@ export class QueryExpressionMap {
     /**
      * WHERE queries.
      */
-    wheres: { type: "simple"|"and"|"or", condition: string }[] = [];
+    wheres: WhereClause[] = [];
 
     /**
      * HAVING queries.
@@ -151,6 +156,13 @@ export class QueryExpressionMap {
      * Number of rows to take using pagination.
      */
     take?: number;
+
+    /**
+     * Use certain index for the query.
+     *
+     * SELECT * FROM table_name USE INDEX (col1_index, col2_index) WHERE col1=1 AND col2=2 AND col3=3;
+     */
+    useIndex?: string;
 
     /**
      * Locking mode.

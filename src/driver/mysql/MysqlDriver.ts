@@ -20,6 +20,9 @@ import {OrmUtils} from "../../util/OrmUtils";
 import {ApplyValueTransformers} from "../../util/ApplyValueTransformers";
 import {ReplicationMode} from "../types/ReplicationMode";
 import { TypeORMError } from "../../error";
+import { Table } from "../../schema-builder/table/Table";
+import { View } from "../../schema-builder/view/View";
+import { TableForeignKey } from "../../schema-builder/table/TableForeignKey";
 
 /**
  * Organizes communication with MySQL DBMS.
@@ -137,6 +140,11 @@ export class MysqlDriver implements Driver {
         "multipolygon",
         "geometrycollection"
     ];
+
+    /**
+     * Returns type of upsert supported by driver if any
+     */
+    readonly supportedUpsertType = "on-duplicate-key-update";
 
     /**
      * Gets list of spatial column data types.
@@ -344,6 +352,14 @@ export class MysqlDriver implements Driver {
         } else {
             this.pool = await this.createPool(this.createConnectionOptions(this.options, this.options));
         }
+
+        if (!this.database) {
+            const queryRunner = await this.createQueryRunner("master");
+
+            this.database = await queryRunner.getCurrentDatabase();
+
+            await queryRunner.release();
+        }
     }
 
     /**
@@ -400,7 +416,7 @@ export class MysqlDriver implements Driver {
         if (!parameters || !Object.keys(parameters).length)
             return [sql, escapedParameters];
 
-        sql = sql.replace(/:(\.\.\.)?([A-Za-z0-9_]+)/g, (full, isArray: string, key: string): string => {
+        sql = sql.replace(/:(\.\.\.)?([A-Za-z0-9_.]+)/g, (full, isArray: string, key: string): string => {
             if (!parameters.hasOwnProperty(key)) {
                 return full;
             }
@@ -435,10 +451,63 @@ export class MysqlDriver implements Driver {
 
     /**
      * Build full table name with database name, schema name and table name.
-     * E.g. "myDB"."mySchema"."myTable"
+     * E.g. myDB.mySchema.myTable
      */
     buildTableName(tableName: string, schema?: string, database?: string): string {
-        return database ? `${database}.${tableName}` : tableName;
+        let tablePath = [ tableName ];
+
+        if (database) {
+            tablePath.unshift(database);
+        }
+
+        return tablePath.join(".");
+    }
+
+    /**
+     * Parse a target table name or other types and return a normalized table definition.
+     */
+    parseTableName(target: EntityMetadata | Table | View | TableForeignKey | string): { database?: string, schema?: string, tableName: string } {
+        const driverDatabase = this.database;
+        const driverSchema = undefined;
+
+        if (target instanceof Table || target instanceof View) {
+            const parsed = this.parseTableName(target.name);
+
+            return {
+                database: target.database || parsed.database || driverDatabase,
+                schema: target.schema || parsed.schema || driverSchema,
+                tableName: parsed.tableName
+            };
+        }
+
+        if (target instanceof TableForeignKey) {
+            const parsed = this.parseTableName(target.referencedTableName);
+
+            return {
+                database: target.referencedDatabase || parsed.database || driverDatabase,
+                schema: target.referencedSchema || parsed.schema || driverSchema,
+                tableName: parsed.tableName
+            };
+        }
+
+        if (target instanceof EntityMetadata) {
+            // EntityMetadata tableName is never a path
+
+            return {
+                database: target.database || driverDatabase,
+                schema: target.schema || driverSchema,
+                tableName: target.tableName
+            };
+
+        }
+
+        const parts = target.split(".");
+
+        return {
+            database: (parts.length > 1 ? parts[0] : undefined) || driverDatabase,
+            schema: driverSchema,
+            tableName: parts.length > 1 ? parts[1] : parts[0]
+        };
     }
 
     /**
@@ -590,7 +659,7 @@ export class MysqlDriver implements Driver {
         const defaultValue = columnMetadata.default;
 
         if (defaultValue === null) {
-            return undefined
+            return undefined;
         }
 
         if (
@@ -615,7 +684,7 @@ export class MysqlDriver implements Driver {
 
         if (typeof defaultValue === "function") {
             const value = defaultValue();
-            return this.normalizeDatetimeFunction(value)
+            return this.normalizeDatetimeFunction(value);
         }
 
         if (defaultValue === undefined) {
@@ -753,14 +822,9 @@ export class MysqlDriver implements Driver {
             if (!tableColumn)
                 return false; // we don't need new columns, we only need exist and changed
 
-            let columnMetadataLength = columnMetadata.length;
-            if (!columnMetadataLength && columnMetadata.generationStrategy === "uuid") { // fixing #3374
-                columnMetadataLength = this.getColumnLength(columnMetadata);
-            }
-
             const isColumnChanged = tableColumn.name !== columnMetadata.databaseName
                 || tableColumn.type !== this.normalizeType(columnMetadata)
-                || tableColumn.length !== columnMetadataLength
+                || tableColumn.length !== this.getColumnLength(columnMetadata)
                 || tableColumn.width !== columnMetadata.width
                 || (columnMetadata.precision !== undefined && tableColumn.precision !== columnMetadata.precision)
                 || (columnMetadata.scale !== undefined && tableColumn.scale !== columnMetadata.scale)
@@ -803,7 +867,7 @@ export class MysqlDriver implements Driver {
             //     console.log("==========================================");
             // }
 
-            return isColumnChanged
+            return isColumnChanged;
         });
     }
 
@@ -844,7 +908,9 @@ export class MysqlDriver implements Driver {
      */
     protected loadDependencies(): void {
         try {
-            this.mysql = PlatformTools.load("mysql");  // try to load first supported package
+            // try to load first supported package
+            const mysql = this.options.driver || PlatformTools.load("mysql");
+            this.mysql = mysql;
             /*
              * Some frameworks (such as Jest) may mess up Node's require cache and provide garbage for the 'mysql' module
              * if it was not installed. We check that the object we got actually contains something otherwise we treat
@@ -956,7 +1022,7 @@ export class MysqlDriver implements Driver {
      * Otherwise returns original input.
      */
     protected normalizeDatetimeFunction(value?: string) {
-        if (!value) return value
+        if (!value) return value;
 
         // check if input is datetime function
         const isDatetimeFunction = value.toUpperCase().indexOf("CURRENT_TIMESTAMP") !== -1
@@ -964,14 +1030,14 @@ export class MysqlDriver implements Driver {
 
         if (isDatetimeFunction) {
             // extract precision, e.g. "(3)"
-            const precision = value.match(/\(\d+\)/)
+            const precision = value.match(/\(\d+\)/);
             if (this.options.type === "mariadb") {
                 return precision ? `CURRENT_TIMESTAMP${precision[0]}` : "CURRENT_TIMESTAMP()";
             } else {
                 return precision ? `CURRENT_TIMESTAMP${precision[0]}` : "CURRENT_TIMESTAMP";
             }
         } else {
-            return value
+            return value;
         }
     }
 

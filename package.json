@@ -1,7 +1,7 @@
 {
   "name": "typeorm",
   "private": true,
-  "version": "0.2.34",
+  "version": "0.2.41",
   "description": "Data-Mapper ORM for TypeScript, ES7, ES6, ES5. Supports MySQL, PostgreSQL, MariaDB, SQLite, MS SQL Server, Oracle, MongoDB databases.",
   "license": "MIT",
   "readmeFilename": "README.md",
@@ -14,10 +14,10 @@
     "./browser/driver/aurora-data-api/AuroraDataApiDriver.js": "./browser/platform/BrowserDisabledDriversDummy.js",
     "./browser/driver/cockroachdb/CockroachDriver.js": "./browser/platform/BrowserDisabledDriversDummy.js",
     "./browser/driver/postgres/PostgresDriver.js": "./browser/platform/BrowserDisabledDriversDummy.js",
-    "./browser/driver/oracle/OracleDriver.ts": "./browser/platform/BrowserDisabledDriversDummy.js",
-    "./browser/driver/sap/SapDriver.ts": "./browser/platform/BrowserDisabledDriversDummy.js",
+    "./browser/driver/oracle/OracleDriver.js": "./browser/platform/BrowserDisabledDriversDummy.js",
+    "./browser/driver/sap/SapDriver.js": "./browser/platform/BrowserDisabledDriversDummy.js",
     "./browser/driver/mysql/MysqlDriver.js": "./browser/platform/BrowserDisabledDriversDummy.js",
-    "./browser/driver/sqlserver/SqlServerDriver.ts": "./browser/platform/BrowserDisabledDriversDummy.js",
+    "./browser/driver/sqlserver/SqlServerDriver.js": "./browser/platform/BrowserDisabledDriversDummy.js",
     "./browser/driver/mongodb/MongoDriver.js": "./browser/platform/BrowserDisabledDriversDummy.js",
     "./browser/driver/mongodb/MongoQueryRunner.js": "./browser/platform/BrowserDisabledDriversDummy.js",
     "./browser/entity-manager/MongoEntityManager.js": "./browser/platform/BrowserDisabledDriversDummy.js",
@@ -71,7 +71,7 @@
     "@types/sinon": "^9.0.10",
     "@types/source-map-support": "^0.5.3",
     "@types/xml2js": "^0.4.8",
-    "@types/yargs": "^16.0.0",
+    "@types/yargs": "^17.0.2",
     "@typescript-eslint/eslint-plugin": "^4.15.2",
     "@typescript-eslint/parser": "^4.15.2",
     "@babel/core": "^7.12.16",
@@ -126,9 +126,7 @@
     "better-sqlite3": "*",
     "hdb-pool": "*",
     "ioredis": "*",
-    "ioredis": "*",
-    "ioredis/cluster": "*",
-    "mongodb": "*",
+    "mongodb": "^3.6.0",
     "mssql": "*",
     "mysql2": "*",
     "oracledb": "*",
@@ -151,12 +149,6 @@
       "optional": true
     },
     "ioredis": {
-      "optional": true
-    },
-    "ioredis": {
-      "optional": true
-    },
-    "ioredis/cluster": {
       "optional": true
     },
     "mongodb": {
@@ -208,8 +200,7 @@
     "sha.js": "^2.4.11",
     "tslib": "^2.1.0",
     "xml2js": "^0.4.23",
-    "yargonaut": "^1.1.4",
-    "yargs": "^16.2.0",
+    "yargs": "^17.0.1",
     "zen-observable-ts": "^1.0.0"
   },
   "lint-staged": {
@@ -219,12 +210,12 @@
     ]
   },
   "scripts": {
-    "test-ci": "gulp ci-tests",
     "test": "rimraf ./build && tsc && mocha --file ./build/compiled/test/utils/test-setup.js --bail --recursive --timeout 60000 ./build/compiled/test",
     "test-fast": "mocha --file ./build/compiled/test/utils/test-setup.js --bail --recursive --timeout 60000 ./build/compiled/test",
     "compile": "rimraf ./build && tsc",
     "watch": "./node_modules/.bin/tsc -w",
     "package": "gulp package",
+    "pack": "gulp pack",
     "lint": "eslint -c ./.eslintrc.js src/**/*.ts test/**/*.ts sample/**/*.ts",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 2"
   },

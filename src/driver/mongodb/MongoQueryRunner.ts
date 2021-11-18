@@ -46,8 +46,9 @@ import {TableUnique} from "../../schema-builder/table/TableUnique";
 import {Broadcaster} from "../../subscriber/Broadcaster";
 import {TableCheck} from "../../schema-builder/table/TableCheck";
 import {TableExclusion} from "../../schema-builder/table/TableExclusion";
-import { TypeORMError } from "../../error";
-
+import {TypeORMError} from "../../error";
+import {ReplicationMode} from "../types/ReplicationMode";
+ 
 /**
  * Runs queries on a single MongoDB connection.
  */
@@ -507,6 +508,10 @@ export class MongoQueryRunner implements QueryRunner {
         throw new TypeORMError(`Schema update queries are not supported by MongoDB driver.`);
     }
 
+    getReplicationMode(): ReplicationMode {
+        return 'master';
+    }
+
     /**
      * Checks if database with the given name exist.
      */
@@ -566,7 +571,7 @@ export class MongoQueryRunner implements QueryRunner {
     /**
      * Creates a new table schema.
      */
-    async createSchema(schema: string, ifNotExist?: boolean): Promise<void> {
+    async createSchema(schemaPath: string, ifNotExist?: boolean): Promise<void> {
         throw new TypeORMError(`Schema create queries are not supported by MongoDB driver.`);
     }
 
@@ -657,7 +662,7 @@ export class MongoQueryRunner implements QueryRunner {
     /**
      * Drops the columns in the table.
      */
-    async dropColumns(tableOrName: Table | string, columns: TableColumn[]): Promise<void> {
+    async dropColumns(tableOrName: Table | string, columns: TableColumn[] | string[]): Promise<void> {
         throw new TypeORMError(`Schema update queries are not supported by MongoDB driver.`);
     }
 

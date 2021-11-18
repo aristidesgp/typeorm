@@ -7,14 +7,12 @@ import {Connection} from "../connection/Connection";
 import {QueryRunner} from "../query-runner/QueryRunner";
 import {SqlServerDriver} from "../driver/sqlserver/SqlServerDriver";
 import {PostgresDriver} from "../driver/postgres/PostgresDriver";
-import {WhereExpression} from "./WhereExpression";
+import {WhereExpressionBuilder} from "./WhereExpressionBuilder";
 import {Brackets} from "./Brackets";
 import {UpdateResult} from "./result/UpdateResult";
 import {ReturningStatementNotSupportedError} from "../error/ReturningStatementNotSupportedError";
 import {ReturningResultsEntityUpdator} from "./ReturningResultsEntityUpdator";
-import {SqljsDriver} from "../driver/sqljs/SqljsDriver";
 import {MysqlDriver} from "../driver/mysql/MysqlDriver";
-import {BroadcasterResult} from "../subscriber/BroadcasterResult";
 import {OrderByCondition} from "../find-options/OrderByCondition";
 import {LimitOnUpdateNotSupportedError} from "../error/LimitOnUpdateNotSupportedError";
 import {OracleDriver} from "../driver/oracle/OracleDriver";
@@ -22,13 +20,12 @@ import {UpdateValuesMissingError} from "../error/UpdateValuesMissingError";
 import {EntityColumnNotFound} from "../error/EntityColumnNotFound";
 import {QueryDeepPartialEntity} from "./QueryPartialEntity";
 import {AuroraDataApiDriver} from "../driver/aurora-data-api/AuroraDataApiDriver";
-import {BetterSqlite3Driver} from "../driver/better-sqlite3/BetterSqlite3Driver";
 import { TypeORMError } from "../error";
 
 /**
  * Allows to build complex sql queries in a fashion way and execute those queries.
  */
-export class UpdateQueryBuilder<Entity> extends QueryBuilder<Entity> implements WhereExpression {
+export class UpdateQueryBuilder<Entity> extends QueryBuilder<Entity> implements WhereExpressionBuilder {
 
     // -------------------------------------------------------------------------
     // Constructor
@@ -71,9 +68,7 @@ export class UpdateQueryBuilder<Entity> extends QueryBuilder<Entity> implements 
 
             // call before updation methods in listeners and subscribers
             if (this.expressionMap.callListeners === true && this.expressionMap.mainAlias!.hasMetadata) {
-                const broadcastResult = new BroadcasterResult();
-                queryRunner.broadcaster.broadcastBeforeUpdateEvent(broadcastResult, this.expressionMap.mainAlias!.metadata, this.expressionMap.valuesSet);
-                if (broadcastResult.promises.length > 0) await Promise.all(broadcastResult.promises);
+                await queryRunner.broadcaster.broadcast("BeforeUpdate", this.expressionMap.mainAlias!.metadata, this.expressionMap.valuesSet);
             }
 
             let declareSql: string | null = null;
@@ -81,45 +76,42 @@ export class UpdateQueryBuilder<Entity> extends QueryBuilder<Entity> implements 
 
             // if update entity mode is enabled we may need extra columns for the returning statement
             const returningResultsEntityUpdator = new ReturningResultsEntityUpdator(queryRunner, this.expressionMap);
+
+            const returningColumns: ColumnMetadata[] = [];
+
+            if (Array.isArray(this.expressionMap.returning) && this.expressionMap.mainAlias!.hasMetadata) {
+                for (const columnPath of this.expressionMap.returning) {
+                    returningColumns.push(
+                        ...this.expressionMap.mainAlias!.metadata.findColumnsWithPropertyPath(columnPath)
+                    );
+                }
+            }
+
             if (this.expressionMap.updateEntity === true &&
                 this.expressionMap.mainAlias!.hasMetadata &&
                 this.expressionMap.whereEntities.length > 0) {
                 this.expressionMap.extraReturningColumns = returningResultsEntityUpdator.getUpdationReturningColumns();
 
-                if (this.expressionMap.extraReturningColumns.length > 0 && this.connection.driver instanceof SqlServerDriver) {
-                    declareSql = this.connection.driver.buildTableVariableDeclaration("@OutputTable", this.expressionMap.extraReturningColumns);
-                    selectOutputSql = `SELECT * FROM @OutputTable`;
-                }
+                returningColumns.push(...this.expressionMap.extraReturningColumns.filter(
+                    c => !returningColumns.includes(c)
+                ));
+            }
+
+            if (returningColumns.length > 0 && this.connection.driver instanceof SqlServerDriver) {
+                declareSql = this.connection.driver.buildTableVariableDeclaration("@OutputTable", returningColumns);
+                selectOutputSql = `SELECT * FROM @OutputTable`;
             }
 
             // execute update query
             const [updateSql, parameters] = this.getQueryAndParameters();
-            const updateResult = new UpdateResult();
+
             const statements = [declareSql, updateSql, selectOutputSql];
-            const result = await queryRunner.query(
+            const queryResult = await queryRunner.query(
                 statements.filter(sql => sql != null).join(";\n\n"),
                 parameters,
+                true
             );
-
-            if (this.connection.driver instanceof PostgresDriver) {
-                updateResult.raw = result[0];
-                updateResult.affected = result[1];
-            }
-            else if (this.connection.driver instanceof MysqlDriver) {
-                updateResult.raw = result;
-                updateResult.affected = result.affectedRows;
-            }
-            else if (this.connection.driver instanceof AuroraDataApiDriver) {
-                updateResult.raw = result;
-                updateResult.affected = result.numberOfRecordsUpdated;
-            }
-            else if (this.connection.driver instanceof BetterSqlite3Driver) { // only works for better-sqlite3
-                updateResult.raw = result;
-                updateResult.affected = result.changes;
-            }
-            else {
-                updateResult.raw = result;
-            }
+            const updateResult = UpdateResult.from(queryResult);
 
             // if we are updating entities and entity updation is enabled we must update some of entity columns (like version, update date, etc.)
             if (this.expressionMap.updateEntity === true &&
@@ -130,9 +122,7 @@ export class UpdateQueryBuilder<Entity> extends QueryBuilder<Entity> implements 
 
             // call after updation methods in listeners and subscribers
             if (this.expressionMap.callListeners === true && this.expressionMap.mainAlias!.hasMetadata) {
-                const broadcastResult = new BroadcasterResult();
-                queryRunner.broadcaster.broadcastAfterUpdateEvent(broadcastResult, this.expressionMap.mainAlias!.metadata);
-                if (broadcastResult.promises.length > 0) await Promise.all(broadcastResult.promises);
+                await queryRunner.broadcaster.broadcast("AfterUpdate", this.expressionMap.mainAlias!.metadata, this.expressionMap.valuesSet);
             }
 
             // close transaction if we started it
@@ -154,9 +144,6 @@ export class UpdateQueryBuilder<Entity> extends QueryBuilder<Entity> implements 
         } finally {
             if (queryRunner !== this.queryRunner) { // means we created our own query runner
                 await queryRunner.release();
-            }
-            if (this.connection.driver instanceof SqljsDriver && !queryRunner.isTransactionActive) {
-                await this.connection.driver.autoSave();
             }
         }
     }
@@ -181,7 +168,7 @@ export class UpdateQueryBuilder<Entity> extends QueryBuilder<Entity> implements 
      */
     where(where: string|((qb: this) => string)|Brackets|ObjectLiteral|ObjectLiteral[], parameters?: ObjectLiteral): this {
         this.expressionMap.wheres = []; // don't move this block below since computeWhereParameter can add where expressions
-        const condition = this.computeWhereParameter(where);
+        const condition = this.getWhereCondition(where);
         if (condition)
             this.expressionMap.wheres = [{ type: "simple", condition: condition }];
         if (parameters)
@@ -194,7 +181,7 @@ export class UpdateQueryBuilder<Entity> extends QueryBuilder<Entity> implements 
      * Additionally you can add parameters used in where expression.
      */
     andWhere(where: string|((qb: this) => string)|Brackets|ObjectLiteral|ObjectLiteral[], parameters?: ObjectLiteral): this {
-        this.expressionMap.wheres.push({ type: "and", condition: this.computeWhereParameter(where) });
+        this.expressionMap.wheres.push({ type: "and", condition: this.getWhereCondition(where) });
         if (parameters) this.setParameters(parameters);
         return this;
     }
@@ -204,7 +191,7 @@ export class UpdateQueryBuilder<Entity> extends QueryBuilder<Entity> implements 
      * Additionally you can add parameters used in where expression.
      */
     orWhere(where: string|((qb: this) => string)|Brackets|ObjectLiteral|ObjectLiteral[], parameters?: ObjectLiteral): this {
-        this.expressionMap.wheres.push({ type: "or", condition: this.computeWhereParameter(where) });
+        this.expressionMap.wheres.push({ type: "or", condition: this.getWhereCondition(where) });
         if (parameters) this.setParameters(parameters);
         return this;
     }
@@ -411,10 +398,9 @@ export class UpdateQueryBuilder<Entity> extends QueryBuilder<Entity> implements 
 
                     //
                     let value = column.getEntityValue(valuesSet);
-                    if (column.referencedColumn && value instanceof Object) {
+                    if (column.referencedColumn && value instanceof Object && !(value instanceof Buffer)) {
                         value = column.referencedColumn.getEntityValue(value);
-                    }
-                    else if (!(value instanceof Function)) {
+                    } else if (!(value instanceof Function)) {
                         value = this.connection.driver.preparePersistentValue(value, column);
                     }
 
