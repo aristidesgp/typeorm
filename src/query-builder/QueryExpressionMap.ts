@@ -1,21 +1,21 @@
 import { Alias } from "./Alias"
-import { ObjectLiteral } from "../common/ObjectLiteral"
-import { OrderByCondition } from "../find-options/OrderByCondition"
+import type { ObjectLiteral } from "../common/ObjectLiteral"
+import type { OrderByCondition } from "../find-options/OrderByCondition"
 import { JoinAttribute } from "./JoinAttribute"
-import { QueryBuilder } from "./QueryBuilder"
-import { QueryBuilderCteOptions } from "./QueryBuilderCte"
+import type { QueryBuilder } from "./QueryBuilder"
+import type { QueryBuilderCteOptions } from "./QueryBuilderCte"
 import { RelationIdAttribute } from "./relation-id/RelationIdAttribute"
 import { RelationCountAttribute } from "./relation-count/RelationCountAttribute"
-import { DataSource } from "../data-source/DataSource"
-import { EntityMetadata } from "../metadata/EntityMetadata"
-import { SelectQuery } from "./SelectQuery"
-import { ColumnMetadata } from "../metadata/ColumnMetadata"
-import { RelationMetadata } from "../metadata/RelationMetadata"
-import { SelectQueryBuilderOption } from "./SelectQueryBuilderOption"
+import type { DataSource } from "../data-source/DataSource"
+import type { EntityMetadata } from "../metadata/EntityMetadata"
+import type { SelectQuery } from "./SelectQuery"
+import type { ColumnMetadata } from "../metadata/ColumnMetadata"
+import type { RelationMetadata } from "../metadata/RelationMetadata"
+import type { SelectQueryBuilderOption } from "./SelectQueryBuilderOption"
 import { TypeORMError } from "../error"
-import { WhereClause } from "./WhereClause"
-import { UpsertType } from "../driver/types/UpsertType"
-import { CockroachConnectionOptions } from "../driver/cockroachdb/CockroachConnectionOptions"
+import type { WhereClause } from "./WhereClause"
+import type { UpsertType } from "../driver/types/UpsertType"
+import type { CockroachConnectionOptions } from "../driver/cockroachdb/CockroachConnectionOptions"
 
 /**
  * Contains all properties of the QueryBuilder that needs to be build a final query.
@@ -33,7 +33,7 @@ export class QueryExpressionMap {
     /**
      * Indicates if QueryBuilder used to select entities and not a raw results.
      */
-    queryEntity: boolean = false
+    queryEntity = false
 
     /**
      * Main alias is a main selection object selected by QueryBuilder.
@@ -65,12 +65,12 @@ export class QueryExpressionMap {
     /**
      * Max execution time in millisecond.
      */
-    maxExecutionTime: number = 0
+    maxExecutionTime = 0
 
     /**
      * Whether SELECT is DISTINCT.
      */
-    selectDistinct: boolean = false
+    selectDistinct = false
 
     /**
      * SELECT DISTINCT ON query (postgres).
@@ -101,12 +101,12 @@ export class QueryExpressionMap {
     /**
      * Optional on conflict statement used in insertion query in postgres.
      */
-    onConflict: string = ""
+    onConflict = ""
 
     /**
      * Optional on ignore statement used in insertion query in databases.
      */
-    onIgnore: boolean = false
+    onIgnore = false
 
     /**
      * Optional on update statement used in insertion query in databases.
@@ -220,7 +220,7 @@ export class QueryExpressionMap {
      * Indicates if soft-deleted rows should be included in entity result.
      * By default the soft-deleted rows are not included.
      */
-    withDeleted: boolean = false
+    withDeleted = false
 
     /**
      * Parameters used to be escaped in final query.
@@ -232,37 +232,37 @@ export class QueryExpressionMap {
      *
      * todo: rename to isQuotingDisabled, also think if it should be named "escaping"
      */
-    disableEscaping: boolean = true
+    disableEscaping = true
 
     /**
      * Indicates if virtual columns should be included in entity result.
      *
      * todo: what to do with it? is it properly used? what about persistence?
      */
-    enableRelationIdValues: boolean = false
+    enableRelationIdValues = false
 
     /**
      * Extra where condition appended to the end of original where conditions with AND keyword.
      * Original condition will be wrapped into brackets.
      */
-    extraAppendedAndWhereCondition: string = ""
+    extraAppendedAndWhereCondition = ""
 
     /**
      * Indicates if query builder creates a subquery.
      */
-    subQuery: boolean = false
+    subQuery = false
 
     /**
      * Indicates if property names are prefixed with alias names during property replacement.
      * By default this is enabled, however we need this because aliases are not supported in UPDATE and DELETE queries,
      * but user can use them in WHERE expressions.
      */
-    aliasNamePrefixingEnabled: boolean = true
+    aliasNamePrefixingEnabled = true
 
     /**
      * Indicates if query result cache is enabled or not.
      */
-    cache: boolean = false
+    cache = false
 
     /**
      * Time in milliseconds in which cache will expire.
@@ -307,17 +307,17 @@ export class QueryExpressionMap {
      * Indicates if entity must be updated after insertion / updation.
      * This may produce extra query or use RETURNING / OUTPUT statement (depend on database).
      */
-    updateEntity: boolean = true
+    updateEntity = true
 
     /**
      * Indicates if listeners and subscribers must be called before and after query execution.
      */
-    callListeners: boolean = true
+    callListeners = true
 
     /**
      * Indicates if query must be wrapped into transaction.
      */
-    useTransaction: boolean = false
+    useTransaction = false
 
     /**
      * Indicates if query should be time travel query

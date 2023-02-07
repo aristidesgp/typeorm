@@ -1,4 +1,4 @@
-import { Driver } from "./Driver"
+import type { Driver } from "./Driver"
 import { hash, shorten } from "../util/StringUtils"
 import { VersionUtils } from "../util/VersionUtils"
 
@@ -234,7 +234,7 @@ export class DriverUtils {
         let hostReplicaSet = undefined
         let replicaSet = undefined
 
-        let optionsObject: any = {}
+        const optionsObject: any = {}
 
         if (afterBase && afterBase.indexOf("?") !== -1) {
             // split params
@@ -275,10 +275,10 @@ export class DriverUtils {
         if (replicaSet) {
             hostReplicaSet = hostAndPort
         } else {
-            ;[host, port] = hostAndPort.split(":")
+            [host, port] = hostAndPort.split(":")
         }
 
-        let connectionUrl: any = {
+        const connectionUrl: any = {
             type: type,
             host: host,
             hostReplicaSet: hostReplicaSet,

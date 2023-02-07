@@ -1,22 +1,22 @@
-import { ColumnMetadata } from "../metadata/ColumnMetadata"
+import type { ColumnMetadata } from "../metadata/ColumnMetadata"
 import { QueryBuilder } from "./QueryBuilder"
-import { ObjectLiteral } from "../common/ObjectLiteral"
-import { DataSource } from "../data-source/DataSource"
-import { QueryRunner } from "../query-runner/QueryRunner"
-import { WhereExpressionBuilder } from "./WhereExpressionBuilder"
-import { Brackets } from "./Brackets"
+import type { ObjectLiteral } from "../common/ObjectLiteral"
+import type { DataSource } from "../data-source/DataSource"
+import type { QueryRunner } from "../query-runner/QueryRunner"
+import type { WhereExpressionBuilder } from "./WhereExpressionBuilder"
+import type { Brackets } from "./Brackets"
 import { UpdateResult } from "./result/UpdateResult"
 import { ReturningStatementNotSupportedError } from "../error/ReturningStatementNotSupportedError"
 import { ReturningResultsEntityUpdator } from "./ReturningResultsEntityUpdator"
-import { MysqlDriver } from "../driver/mysql/MysqlDriver"
-import { OrderByCondition } from "../find-options/OrderByCondition"
+import type { MysqlDriver } from "../driver/mysql/MysqlDriver"
+import type { OrderByCondition } from "../find-options/OrderByCondition"
 import { LimitOnUpdateNotSupportedError } from "../error/LimitOnUpdateNotSupportedError"
 import { UpdateValuesMissingError } from "../error/UpdateValuesMissingError"
-import { QueryDeepPartialEntity } from "./QueryPartialEntity"
-import { AuroraMysqlDriver } from "../driver/aurora-mysql/AuroraMysqlDriver"
+import type { QueryDeepPartialEntity } from "./QueryPartialEntity"
+import type { AuroraMysqlDriver } from "../driver/aurora-mysql/AuroraMysqlDriver"
 import { TypeORMError } from "../error"
 import { EntityPropertyNotFoundError } from "../error/EntityPropertyNotFoundError"
-import { SqlServerDriver } from "../driver/sqlserver/SqlServerDriver"
+import type { SqlServerDriver } from "../driver/sqlserver/SqlServerDriver"
 import { DriverUtils } from "../driver/DriverUtils"
 
 /**
@@ -61,7 +61,7 @@ export class UpdateQueryBuilder<Entity extends ObjectLiteral>
      */
     async execute(): Promise<UpdateResult> {
         const queryRunner = this.obtainQueryRunner()
-        let transactionStartedByUs: boolean = false
+        let transactionStartedByUs = false
 
         try {
             // start transaction if it was enabled
@@ -480,7 +480,7 @@ export class UpdateQueryBuilder<Entity extends ObjectLiteral>
 
         // it doesn't make sense to update undefined properties, so just skip them
         const valuesSetNormalized: ObjectLiteral = {}
-        for (let key in valuesSet) {
+        for (const key in valuesSet) {
             if (valuesSet[key] !== undefined) {
                 valuesSetNormalized[key] = valuesSet[key]
             }
@@ -650,7 +650,7 @@ export class UpdateQueryBuilder<Entity extends ObjectLiteral>
             }
         } else {
             Object.keys(valuesSetNormalized).map((key) => {
-                let value = valuesSetNormalized[key]
+                const value = valuesSetNormalized[key]
 
                 // todo: duplication zone
                 if (typeof value === "function") {
@@ -740,7 +740,7 @@ export class UpdateQueryBuilder<Entity extends ObjectLiteral>
      * Creates "LIMIT" parts of SQL query.
      */
     protected createLimitExpression(): string {
-        let limit: number | undefined = this.expressionMap.limit
+        const limit: number | undefined = this.expressionMap.limit
 
         if (limit) {
             if (

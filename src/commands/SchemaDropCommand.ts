@@ -1,5 +1,5 @@
-import { DataSource } from "../data-source/DataSource"
-import * as yargs from "yargs"
+import type { DataSource } from "../data-source/DataSource"
+import type * as yargs from "yargs"
 import chalk from "chalk"
 import { PlatformTools } from "../platform/PlatformTools"
 import path from "path"

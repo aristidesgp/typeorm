@@ -1,9 +1,9 @@
-import { ObjectLiteral } from "../common/ObjectLiteral"
-import { EntityMetadata } from "../metadata/EntityMetadata"
-import { SubjectChangeMap } from "./SubjectChangeMap"
+import type { ObjectLiteral } from "../common/ObjectLiteral"
+import type { EntityMetadata } from "../metadata/EntityMetadata"
+import type { SubjectChangeMap } from "./SubjectChangeMap"
 import { OrmUtils } from "../util/OrmUtils"
-import { RelationMetadata } from "../metadata/RelationMetadata"
-import { ColumnMetadata } from "../metadata/ColumnMetadata"
+import type { RelationMetadata } from "../metadata/RelationMetadata"
+import type { ColumnMetadata } from "../metadata/ColumnMetadata"
 import { ObjectUtils } from "../util/ObjectUtils"
 import { InstanceChecker } from "../util/InstanceChecker"
 
@@ -65,7 +65,7 @@ export class Subject {
      * Indicates if database entity was loaded.
      * No matter if it was found or not, it indicates the fact of loading.
      */
-    databaseEntityLoaded: boolean = false
+    databaseEntityLoaded = false
 
     /**
      * Changes needs to be applied in the database for the given subject.
@@ -89,31 +89,31 @@ export class Subject {
      * Indicates if this subject can be inserted into the database.
      * This means that this subject either is newly persisted, either can be inserted by cascades.
      */
-    canBeInserted: boolean = false
+    canBeInserted = false
 
     /**
      * Indicates if this subject can be updated in the database.
      * This means that this subject either was persisted, either can be updated by cascades.
      */
-    canBeUpdated: boolean = false
+    canBeUpdated = false
 
     /**
      * Indicates if this subject MUST be removed from the database.
      * This means that this subject either was removed, either was removed by cascades.
      */
-    mustBeRemoved: boolean = false
+    mustBeRemoved = false
 
     /**
      * Indicates if this subject can be soft-removed from the database.
      * This means that this subject either was soft-removed, either was soft-removed by cascades.
      */
-    canBeSoftRemoved: boolean = false
+    canBeSoftRemoved = false
 
     /**
      * Indicates if this subject can be recovered from the database.
      * This means that this subject either was recovered, either was recovered by cascades.
      */
-    canBeRecovered: boolean = false
+    canBeRecovered = false
 
     /**
      * Relations updated by the change maps.

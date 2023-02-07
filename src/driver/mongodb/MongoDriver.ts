@@ -1,30 +1,30 @@
-import { Driver } from "../Driver"
+import type { Driver } from "../Driver"
 import { ConnectionIsNotSetError } from "../../error/ConnectionIsNotSetError"
 import { DriverPackageNotInstalledError } from "../../error/DriverPackageNotInstalledError"
-import { CteCapabilities } from "../types/CteCapabilities"
+import type { CteCapabilities } from "../types/CteCapabilities"
 import { MongoQueryRunner } from "./MongoQueryRunner"
-import { ObjectLiteral } from "../../common/ObjectLiteral"
-import { ColumnMetadata } from "../../metadata/ColumnMetadata"
+import type { ObjectLiteral } from "../../common/ObjectLiteral"
+import type { ColumnMetadata } from "../../metadata/ColumnMetadata"
 import { PlatformTools } from "../../platform/PlatformTools"
-import { DataSource } from "../../data-source/DataSource"
-import { MongoConnectionOptions } from "./MongoConnectionOptions"
-import { MappedColumnTypes } from "../types/MappedColumnTypes"
-import { ColumnType } from "../types/ColumnTypes"
+import type { DataSource } from "../../data-source/DataSource"
+import type { MongoConnectionOptions } from "./MongoConnectionOptions"
+import type { MappedColumnTypes } from "../types/MappedColumnTypes"
+import type { ColumnType } from "../types/ColumnTypes"
 import { MongoSchemaBuilder } from "../../schema-builder/MongoSchemaBuilder"
-import { DataTypeDefaults } from "../types/DataTypeDefaults"
-import { TableColumn } from "../../schema-builder/table/TableColumn"
-import { DataSourceOptions } from "../../data-source/DataSourceOptions"
-import { EntityMetadata } from "../../metadata/EntityMetadata"
+import type { DataTypeDefaults } from "../types/DataTypeDefaults"
+import type { TableColumn } from "../../schema-builder/table/TableColumn"
+import type { DataSourceOptions } from "../../data-source/DataSourceOptions"
+import type { EntityMetadata } from "../../metadata/EntityMetadata"
 import { ObjectUtils } from "../../util/ObjectUtils"
 import { ApplyValueTransformers } from "../../util/ApplyValueTransformers"
-import { ReplicationMode } from "../types/ReplicationMode"
+import type { ReplicationMode } from "../types/ReplicationMode"
 import { DriverUtils } from "../DriverUtils"
 import { TypeORMError } from "../../error"
-import { Table } from "../../schema-builder/table/Table"
-import { View } from "../../schema-builder/view/View"
-import { TableForeignKey } from "../../schema-builder/table/TableForeignKey"
+import type { Table } from "../../schema-builder/table/Table"
+import type { View } from "../../schema-builder/view/View"
+import type { TableForeignKey } from "../../schema-builder/table/TableForeignKey"
 import { InstanceChecker } from "../../util/InstanceChecker"
-import { UpsertType } from "../types/UpsertType"
+import type { UpsertType } from "../types/UpsertType"
 
 /**
  * Organizes communication with MongoDB.
@@ -62,7 +62,7 @@ export class MongoDriver implements Driver {
     /**
      * Indicates if replication is enabled.
      */
-    isReplicated: boolean = false
+    isReplicated = false
 
     /**
      * Indicates if tree tables are supported by this driver.

@@ -1,20 +1,20 @@
-import { PostgresConnectionOptions } from "../driver/postgres/PostgresConnectionOptions"
+import type { PostgresConnectionOptions } from "../driver/postgres/PostgresConnectionOptions"
 import { Query } from "../driver/Query"
 import { SqlInMemory } from "../driver/SqlInMemory"
-import { SqlServerConnectionOptions } from "../driver/sqlserver/SqlServerConnectionOptions"
-import { TableIndex } from "../schema-builder/table/TableIndex"
-import { View } from "../schema-builder/view/View"
-import { DataSource } from "../data-source/DataSource"
-import { Table } from "../schema-builder/table/Table"
-import { EntityManager } from "../entity-manager/EntityManager"
-import { TableColumn } from "../schema-builder/table/TableColumn"
-import { Broadcaster } from "../subscriber/Broadcaster"
-import { ReplicationMode } from "../driver/types/ReplicationMode"
+import type { SqlServerConnectionOptions } from "../driver/sqlserver/SqlServerConnectionOptions"
+import type { TableIndex } from "../schema-builder/table/TableIndex"
+import type { View } from "../schema-builder/view/View"
+import type { DataSource } from "../data-source/DataSource"
+import type { Table } from "../schema-builder/table/Table"
+import type { EntityManager } from "../entity-manager/EntityManager"
+import type { TableColumn } from "../schema-builder/table/TableColumn"
+import type { Broadcaster } from "../subscriber/Broadcaster"
+import type { ReplicationMode } from "../driver/types/ReplicationMode"
 import { TypeORMError } from "../error/TypeORMError"
-import { EntityMetadata } from "../metadata/EntityMetadata"
-import { TableForeignKey } from "../schema-builder/table/TableForeignKey"
+import type { EntityMetadata } from "../metadata/EntityMetadata"
+import type { TableForeignKey } from "../schema-builder/table/TableForeignKey"
 import { OrmUtils } from "../util/OrmUtils"
-import { MetadataTableType } from "../driver/types/MetadataTableType"
+import type { MetadataTableType } from "../driver/types/MetadataTableType"
 import { InstanceChecker } from "../util/InstanceChecker"
 
 export abstract class BaseQueryRunner {
@@ -76,7 +76,7 @@ export abstract class BaseQueryRunner {
     /**
      * Indicates if special query runner mode in which sql queries won't be executed is enabled.
      */
-    protected sqlMemoryMode: boolean = false
+    protected sqlMemoryMode = false
 
     /**
      * Sql-s stored if "sql in memory" mode is enabled.

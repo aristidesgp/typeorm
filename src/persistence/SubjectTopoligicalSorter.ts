@@ -1,5 +1,5 @@
-import { Subject } from "./Subject"
-import { EntityMetadata } from "../metadata/EntityMetadata"
+import type { Subject } from "./Subject"
+import type { EntityMetadata } from "../metadata/EntityMetadata"
 import { TypeORMError } from "../error"
 
 /**
@@ -166,9 +166,9 @@ export class SubjectTopoligicalSorter {
      */
     protected toposort(edges: any[][]) {
         function uniqueNodes(arr: any[]) {
-            let res = []
+            const res = []
             for (let i = 0, len = arr.length; i < len; i++) {
-                let edge: any = arr[i]
+                const edge: any = arr[i]
                 if (res.indexOf(edge[0]) < 0) res.push(edge[0])
                 if (res.indexOf(edge[1]) < 0) res.push(edge[1])
             }
@@ -203,13 +203,13 @@ export class SubjectTopoligicalSorter {
             visited[i] = true
 
             // outgoing edges
-            let outgoing = edges.filter(function (edge) {
+            const outgoing = edges.filter(function (edge) {
                 return edge[0] === node
             })
             if ((i = outgoing.length)) {
-                let preds = predecessors.concat(node)
+                const preds = predecessors.concat(node)
                 do {
-                    let child = outgoing[--i][1]
+                    const child = outgoing[--i][1]
                     visit(child, nodes.indexOf(child), preds)
                 } while (i)
             }

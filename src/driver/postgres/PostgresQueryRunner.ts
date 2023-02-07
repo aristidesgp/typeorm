@@ -1,13 +1,13 @@
-import { ObjectLiteral } from "../../common/ObjectLiteral"
+import type { ObjectLiteral } from "../../common/ObjectLiteral"
 import { TypeORMError } from "../../error"
 import { QueryFailedError } from "../../error/QueryFailedError"
 import { QueryRunnerAlreadyReleasedError } from "../../error/QueryRunnerAlreadyReleasedError"
 import { TransactionNotStartedError } from "../../error/TransactionNotStartedError"
-import { ReadStream } from "../../platform/PlatformTools"
+import type { ReadStream } from "../../platform/PlatformTools"
 import { BaseQueryRunner } from "../../query-runner/BaseQueryRunner"
 import { QueryResult } from "../../query-runner/QueryResult"
-import { QueryRunner } from "../../query-runner/QueryRunner"
-import { TableIndexOptions } from "../../schema-builder/options/TableIndexOptions"
+import type { QueryRunner } from "../../query-runner/QueryRunner"
+import type { TableIndexOptions } from "../../schema-builder/options/TableIndexOptions"
 import { Table } from "../../schema-builder/table/Table"
 import { TableCheck } from "../../schema-builder/table/TableCheck"
 import { TableColumn } from "../../schema-builder/table/TableColumn"
@@ -21,11 +21,11 @@ import { InstanceChecker } from "../../util/InstanceChecker"
 import { OrmUtils } from "../../util/OrmUtils"
 import { VersionUtils } from "../../util/VersionUtils"
 import { Query } from "../Query"
-import { ColumnType } from "../types/ColumnTypes"
-import { IsolationLevel } from "../types/IsolationLevel"
+import type { ColumnType } from "../types/ColumnTypes"
+import type { IsolationLevel } from "../types/IsolationLevel"
 import { MetadataTableType } from "../types/MetadataTableType"
-import { ReplicationMode } from "../types/ReplicationMode"
-import { PostgresDriver } from "./PostgresDriver"
+import type { ReplicationMode } from "../types/ReplicationMode"
+import type { PostgresDriver } from "./PostgresDriver"
 
 /**
  * Runs queries on a single postgres database connection.
@@ -237,7 +237,7 @@ export class PostgresQueryRunner
     async query(
         query: string,
         parameters?: any[],
-        useStructuredResult: boolean = false,
+        useStructuredResult = false,
     ): Promise<any> {
         if (this.isReleased) throw new QueryRunnerAlreadyReleasedError()
 
@@ -482,9 +482,9 @@ export class PostgresQueryRunner
      */
     async createTable(
         table: Table,
-        ifNotExist: boolean = false,
-        createForeignKeys: boolean = true,
-        createIndices: boolean = true,
+        ifNotExist = false,
+        createForeignKeys = true,
+        createIndices = true,
     ): Promise<void> {
         if (ifNotExist) {
             const isTableExist = await this.hasTable(table)
@@ -577,8 +577,8 @@ export class PostgresQueryRunner
     async dropTable(
         target: Table | string,
         ifExist?: boolean,
-        dropForeignKeys: boolean = true,
-        dropIndices: boolean = true,
+        dropForeignKeys = true,
+        dropIndices = true,
     ): Promise<void> {
         // It needs because if table does not exist and dropForeignKeys or dropIndices is true, we don't need
         // to perform drop queries for foreign keys and indices.
@@ -649,7 +649,7 @@ export class PostgresQueryRunner
      */
     async createView(
         view: View,
-        syncWithMetadata: boolean = false,
+        syncWithMetadata = false,
     ): Promise<void> {
         const upQueries: Query[] = []
         const downQueries: Query[] = []
@@ -901,7 +901,7 @@ export class PostgresQueryRunner
         const enumColumns = newTable.columns.filter(
             (column) => column.type === "enum" || column.type === "simple-enum",
         )
-        for (let column of enumColumns) {
+        for (const column of enumColumns) {
             // skip renaming for user-defined enum name
             if (column.enumName) continue
 
@@ -4275,7 +4275,7 @@ export class PostgresQueryRunner
         table: Table | View,
         indexOrName: TableIndex | string,
     ): Query {
-        let indexName = InstanceChecker.isTableIndex(indexOrName)
+        const indexName = InstanceChecker.isTableIndex(indexOrName)
             ? indexOrName.name
             : indexOrName
         const { schema } = this.driver.parseTableName(table)
@@ -4513,7 +4513,7 @@ export class PostgresQueryRunner
     protected buildEnumName(
         table: Table,
         column: TableColumn,
-        withSchema: boolean = true,
+        withSchema = true,
         disableEscape?: boolean,
         toOld?: boolean,
     ): string {

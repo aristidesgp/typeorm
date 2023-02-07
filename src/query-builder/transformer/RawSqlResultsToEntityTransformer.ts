@@ -1,14 +1,14 @@
-import { Driver } from "../../driver/Driver"
-import { RelationIdLoadResult } from "../relation-id/RelationIdLoadResult"
-import { ObjectLiteral } from "../../common/ObjectLiteral"
-import { ColumnMetadata } from "../../metadata/ColumnMetadata"
-import { Alias } from "../Alias"
-import { RelationCountLoadResult } from "../relation-count/RelationCountLoadResult"
-import { RelationMetadata } from "../../metadata/RelationMetadata"
+import type { Driver } from "../../driver/Driver"
+import type { RelationIdLoadResult } from "../relation-id/RelationIdLoadResult"
+import type { ObjectLiteral } from "../../common/ObjectLiteral"
+import type { ColumnMetadata } from "../../metadata/ColumnMetadata"
+import type { Alias } from "../Alias"
+import type { RelationCountLoadResult } from "../relation-count/RelationCountLoadResult"
+import type { RelationMetadata } from "../../metadata/RelationMetadata"
 import { OrmUtils } from "../../util/OrmUtils"
-import { QueryExpressionMap } from "../QueryExpressionMap"
-import { EntityMetadata } from "../../metadata/EntityMetadata"
-import { QueryRunner } from "../.."
+import type { QueryExpressionMap } from "../QueryExpressionMap"
+import type { EntityMetadata } from "../../metadata/EntityMetadata"
+import type { QueryRunner } from "../.."
 import { DriverUtils } from "../../driver/DriverUtils"
 import { ObjectUtils } from "../../util/ObjectUtils"
 
@@ -149,7 +149,7 @@ export class RawSqlResultsToEntityTransformer {
             )
             if (discriminatorMetadata) metadata = discriminatorMetadata
         }
-        let entity: any = metadata.create(this.queryRunner, {
+        const entity: any = metadata.create(this.queryRunner, {
             fromDeserializer: true,
             pojo: this.expressionMap.options.indexOf("create-pojo") !== -1,
         })

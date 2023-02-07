@@ -1,15 +1,15 @@
 import { AbstractSqliteDriver } from "../sqlite-abstract/AbstractSqliteDriver"
-import { SqljsConnectionOptions } from "./SqljsConnectionOptions"
+import type { SqljsConnectionOptions } from "./SqljsConnectionOptions"
 import { SqljsQueryRunner } from "./SqljsQueryRunner"
-import { QueryRunner } from "../../query-runner/QueryRunner"
-import { DataSource } from "../../data-source/DataSource"
+import type { QueryRunner } from "../../query-runner/QueryRunner"
+import type { DataSource } from "../../data-source/DataSource"
 import { DriverPackageNotInstalledError } from "../../error/DriverPackageNotInstalledError"
 import { DriverOptionNotSetError } from "../../error/DriverOptionNotSetError"
 import { PlatformTools } from "../../platform/PlatformTools"
-import { EntityMetadata } from "../../metadata/EntityMetadata"
+import type { EntityMetadata } from "../../metadata/EntityMetadata"
 import { OrmUtils } from "../../util/OrmUtils"
-import { ObjectLiteral } from "../../common/ObjectLiteral"
-import { ReplicationMode } from "../types/ReplicationMode"
+import type { ObjectLiteral } from "../../common/ObjectLiteral"
+import type { ReplicationMode } from "../types/ReplicationMode"
 import { TypeORMError } from "../../error"
 
 // This is needed to satisfy the typescript compiler.
@@ -78,7 +78,7 @@ export class SqljsDriver extends AbstractSqliteDriver {
      */
     async load(
         fileNameOrLocalStorageOrData: string | Uint8Array,
-        checkIfFileOrLocalStorageExists: boolean = true,
+        checkIfFileOrLocalStorageExists = true,
     ): Promise<any> {
         if (typeof fileNameOrLocalStorageOrData === "string") {
             // content has to be loaded
@@ -231,7 +231,7 @@ export class SqljsDriver extends AbstractSqliteDriver {
                 ) {
                     const query = "SELECT last_insert_rowid()"
                     try {
-                        let result = this.databaseConnection.exec(query)
+                        const result = this.databaseConnection.exec(query)
                         this.connection.logger.logQuery(query)
                         return OrmUtils.mergeDeep(
                             map,

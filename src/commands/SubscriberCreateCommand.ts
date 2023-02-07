@@ -1,4 +1,4 @@
-import * as yargs from "yargs"
+import type * as yargs from "yargs"
 import chalk from "chalk"
 import path from "path"
 import { PlatformTools } from "../platform/PlatformTools"

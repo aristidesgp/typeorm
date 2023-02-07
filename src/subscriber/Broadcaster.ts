@@ -1,10 +1,10 @@
-import { EntitySubscriberInterface } from "./EntitySubscriberInterface"
-import { ObjectLiteral } from "../common/ObjectLiteral"
-import { QueryRunner } from "../query-runner/QueryRunner"
-import { EntityMetadata } from "../metadata/EntityMetadata"
+import type { EntitySubscriberInterface } from "./EntitySubscriberInterface"
+import type { ObjectLiteral } from "../common/ObjectLiteral"
+import type { QueryRunner } from "../query-runner/QueryRunner"
+import type { EntityMetadata } from "../metadata/EntityMetadata"
 import { BroadcasterResult } from "./BroadcasterResult"
-import { ColumnMetadata } from "../metadata/ColumnMetadata"
-import { RelationMetadata } from "../metadata/RelationMetadata"
+import type { ColumnMetadata } from "../metadata/ColumnMetadata"
+import type { RelationMetadata } from "../metadata/RelationMetadata"
 import { ObjectUtils } from "../util/ObjectUtils"
 
 interface BroadcasterEvents {
@@ -98,7 +98,7 @@ export class Broadcaster {
         const broadcastFunction = this[`broadcast${event}Event` as keyof this]
 
         if (typeof broadcastFunction === "function") {
-            ;(broadcastFunction as any).call(this, result, ...args)
+            (broadcastFunction as any).call(this, result, ...args)
         }
 
         await result.wait()

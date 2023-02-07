@@ -1,9 +1,9 @@
 import { AbstractSqliteDriver } from "../sqlite-abstract/AbstractSqliteDriver"
-import { ExpoConnectionOptions } from "./ExpoConnectionOptions"
+import type { ExpoConnectionOptions } from "./ExpoConnectionOptions"
 import { ExpoQueryRunner } from "./ExpoQueryRunner"
-import { QueryRunner } from "../../query-runner/QueryRunner"
-import { DataSource } from "../../data-source/DataSource"
-import { ReplicationMode } from "../types/ReplicationMode"
+import type { QueryRunner } from "../../query-runner/QueryRunner"
+import type { DataSource } from "../../data-source/DataSource"
+import type { ReplicationMode } from "../types/ReplicationMode"
 
 export class ExpoDriver extends AbstractSqliteDriver {
     options: ExpoConnectionOptions

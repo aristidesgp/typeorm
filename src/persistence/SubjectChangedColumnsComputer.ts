@@ -1,6 +1,6 @@
-import { Subject } from "./Subject"
+import type { Subject } from "./Subject"
 import { DateUtils } from "../util/DateUtils"
-import { ObjectLiteral } from "../common/ObjectLiteral"
+import type { ObjectLiteral } from "../common/ObjectLiteral"
 import { OrmUtils } from "../util/OrmUtils"
 import { ApplyValueTransformers } from "../util/ApplyValueTransformers"
 import { ObjectUtils } from "../util/ObjectUtils"

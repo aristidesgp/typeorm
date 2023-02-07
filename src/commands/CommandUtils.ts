@@ -2,7 +2,7 @@ import * as fs from "fs"
 import * as path from "path"
 import mkdirp from "mkdirp"
 import { TypeORMError } from "../error"
-import { DataSource } from "../data-source"
+import type { DataSource } from "../data-source"
 import { InstanceChecker } from "../util/InstanceChecker"
 import { importOrRequireFile } from "../util/ImportUtils"
 
@@ -15,7 +15,7 @@ export class CommandUtils {
     ): Promise<DataSource> {
         let dataSourceFileExports
         try {
-            ;[dataSourceFileExports] = await importOrRequireFile(
+            [dataSourceFileExports] = await importOrRequireFile(
                 dataSourceFilePath,
             )
         } catch (err) {
@@ -71,7 +71,7 @@ export class CommandUtils {
     static async createFile(
         filePath: string,
         content: string,
-        override: boolean = true,
+        override = true,
     ): Promise<void> {
         await CommandUtils.createDirectories(path.dirname(filePath))
         return new Promise<void>((ok, fail) => {

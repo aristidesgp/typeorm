@@ -1,5 +1,5 @@
-import { EntityMetadata } from "../../metadata/EntityMetadata"
-import { ObjectLiteral } from "../../common/ObjectLiteral"
+import type { EntityMetadata } from "../../metadata/EntityMetadata"
+import type { ObjectLiteral } from "../../common/ObjectLiteral"
 import { ObjectUtils } from "../../util/ObjectUtils"
 
 /**
@@ -15,7 +15,7 @@ export class PlainObjectToNewEntityTransformer {
         newEntity: T,
         object: ObjectLiteral,
         metadata: EntityMetadata,
-        getLazyRelationsPromiseValue: boolean = false,
+        getLazyRelationsPromiseValue = false,
     ): T {
         // console.log("groupAndTransform entity:", newEntity);
         // console.log("groupAndTransform object:", object);
@@ -41,7 +41,7 @@ export class PlainObjectToNewEntityTransformer {
         entity: ObjectLiteral,
         object: ObjectLiteral,
         metadata: EntityMetadata,
-        getLazyRelationsPromiseValue: boolean = false,
+        getLazyRelationsPromiseValue = false,
     ): void {
         // console.log("groupAndTransform entity:", entity);
         // console.log("groupAndTransform object:", object);

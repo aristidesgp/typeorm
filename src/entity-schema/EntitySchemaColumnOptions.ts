@@ -1,6 +1,6 @@
-import { ColumnType } from "../driver/types/ColumnTypes"
-import { ValueTransformer } from "../decorator/options/ValueTransformer"
-import { SpatialColumnOptions } from "../decorator/options/SpatialColumnOptions"
+import type { ColumnType } from "../driver/types/ColumnTypes"
+import type { ValueTransformer } from "../decorator/options/ValueTransformer"
+import type { SpatialColumnOptions } from "../decorator/options/SpatialColumnOptions"
 
 export interface EntitySchemaColumnOptions extends SpatialColumnOptions {
     /**

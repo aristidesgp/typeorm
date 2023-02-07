@@ -1,8 +1,8 @@
-import { RelationIdAttribute } from "./RelationIdAttribute"
-import { DataSource } from "../../data-source/DataSource"
-import { RelationIdLoadResult } from "./RelationIdLoadResult"
-import { ObjectLiteral } from "../../common/ObjectLiteral"
-import { QueryRunner } from "../../query-runner/QueryRunner"
+import type { RelationIdAttribute } from "./RelationIdAttribute"
+import type { DataSource } from "../../data-source/DataSource"
+import type { RelationIdLoadResult } from "./RelationIdLoadResult"
+import type { ObjectLiteral } from "../../common/ObjectLiteral"
+import type { QueryRunner } from "../../query-runner/QueryRunner"
 import { DriverUtils } from "../../driver/DriverUtils"
 import { TypeORMError } from "../../error/TypeORMError"
 import { OrmUtils } from "../../util/OrmUtils"
@@ -387,7 +387,7 @@ export class RelationIdLoader {
 
                     const results = await qb.getRawMany()
                     results.forEach((result) => {
-                        ;[...joinColumns, ...inverseJoinColumns].forEach(
+                        [...joinColumns, ...inverseJoinColumns].forEach(
                             (column) => {
                                 result[column.databaseName] =
                                     this.connection.driver.prepareHydratedValue(

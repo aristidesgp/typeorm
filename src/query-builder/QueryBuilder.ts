@@ -1,28 +1,28 @@
-import { ObjectLiteral } from "../common/ObjectLiteral"
-import { QueryRunner } from "../query-runner/QueryRunner"
-import { DataSource } from "../data-source/DataSource"
-import { QueryBuilderCteOptions } from "./QueryBuilderCte"
+import type { ObjectLiteral } from "../common/ObjectLiteral"
+import type { QueryRunner } from "../query-runner/QueryRunner"
+import type { DataSource } from "../data-source/DataSource"
+import type { QueryBuilderCteOptions } from "./QueryBuilderCte"
 import { QueryExpressionMap } from "./QueryExpressionMap"
-import { SelectQueryBuilder } from "./SelectQueryBuilder"
-import { UpdateQueryBuilder } from "./UpdateQueryBuilder"
-import { DeleteQueryBuilder } from "./DeleteQueryBuilder"
-import { SoftDeleteQueryBuilder } from "./SoftDeleteQueryBuilder"
-import { InsertQueryBuilder } from "./InsertQueryBuilder"
-import { RelationQueryBuilder } from "./RelationQueryBuilder"
-import { EntityTarget } from "../common/EntityTarget"
-import { Alias } from "./Alias"
+import type { SelectQueryBuilder } from "./SelectQueryBuilder"
+import type { UpdateQueryBuilder } from "./UpdateQueryBuilder"
+import type { DeleteQueryBuilder } from "./DeleteQueryBuilder"
+import type { SoftDeleteQueryBuilder } from "./SoftDeleteQueryBuilder"
+import type { InsertQueryBuilder } from "./InsertQueryBuilder"
+import type { RelationQueryBuilder } from "./RelationQueryBuilder"
+import type { EntityTarget } from "../common/EntityTarget"
+import type { Alias } from "./Alias"
 import { Brackets } from "./Brackets"
-import { QueryDeepPartialEntity } from "./QueryPartialEntity"
-import { EntityMetadata } from "../metadata/EntityMetadata"
-import { ColumnMetadata } from "../metadata/ColumnMetadata"
+import type { QueryDeepPartialEntity } from "./QueryPartialEntity"
+import type { EntityMetadata } from "../metadata/EntityMetadata"
+import type { ColumnMetadata } from "../metadata/ColumnMetadata"
 import { FindOperator } from "../find-options/FindOperator"
 import { In } from "../find-options/operator/In"
 import { TypeORMError } from "../error"
-import { WhereClause, WhereClauseCondition } from "./WhereClause"
-import { NotBrackets } from "./NotBrackets"
+import type { WhereClause, WhereClauseCondition } from "./WhereClause"
+import type { NotBrackets } from "./NotBrackets"
 import { EntityPropertyNotFoundError } from "../error/EntityPropertyNotFoundError"
-import { ReturningType } from "../driver/Driver"
-import { OracleDriver } from "../driver/oracle/OracleDriver"
+import type { ReturningType } from "../driver/Driver"
+import type { OracleDriver } from "../driver/oracle/OracleDriver"
 import { InstanceChecker } from "../util/InstanceChecker"
 import { escapeRegExp } from "../util/escapeRegExp"
 
@@ -963,7 +963,7 @@ export abstract class QueryBuilder<Entity extends ObjectLiteral> {
     protected getReturningColumns(): ColumnMetadata[] {
         const columns: ColumnMetadata[] = []
         if (Array.isArray(this.expressionMap.returning)) {
-            ;(this.expressionMap.returning as string[]).forEach(
+            (this.expressionMap.returning as string[]).forEach(
                 (columnName) => {
                     if (this.expressionMap.mainAlias!.hasMetadata) {
                         columns.push(
@@ -1003,7 +1003,7 @@ export abstract class QueryBuilder<Entity extends ObjectLiteral> {
      */
     protected createWhereConditionExpression(
         condition: WhereClauseCondition,
-        alwaysWrap: boolean = false,
+        alwaysWrap = false,
     ): string {
         if (typeof condition === "string") return condition
 
@@ -1302,7 +1302,7 @@ export abstract class QueryBuilder<Entity extends ObjectLiteral> {
     protected createPropertyPath(
         metadata: EntityMetadata,
         entity: ObjectLiteral,
-        prefix: string = "",
+        prefix = "",
     ) {
         const paths: string[] = []
 
@@ -1459,7 +1459,7 @@ export abstract class QueryBuilder<Entity extends ObjectLiteral> {
         parameterValue: any,
     ): WhereClauseCondition {
         if (InstanceChecker.isFindOperator(parameterValue)) {
-            let parameters: any[] = []
+            const parameters: any[] = []
             if (parameterValue.useParameter) {
                 if (parameterValue.objectLiteralParameters) {
                     this.setParameters(parameterValue.objectLiteralParameters)

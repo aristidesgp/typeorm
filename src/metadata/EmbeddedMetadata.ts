@@ -1,13 +1,13 @@
-import { ColumnMetadata } from "./ColumnMetadata"
-import { RelationMetadata } from "./RelationMetadata"
-import { EntityMetadata } from "./EntityMetadata"
-import { EmbeddedMetadataArgs } from "../metadata-args/EmbeddedMetadataArgs"
-import { RelationIdMetadata } from "./RelationIdMetadata"
-import { RelationCountMetadata } from "./RelationCountMetadata"
-import { DataSource } from "../data-source/DataSource"
-import { EntityListenerMetadata } from "./EntityListenerMetadata"
-import { IndexMetadata } from "./IndexMetadata"
-import { UniqueMetadata } from "./UniqueMetadata"
+import type { ColumnMetadata } from "./ColumnMetadata"
+import type { RelationMetadata } from "./RelationMetadata"
+import type { EntityMetadata } from "./EntityMetadata"
+import type { EmbeddedMetadataArgs } from "../metadata-args/EmbeddedMetadataArgs"
+import type { RelationIdMetadata } from "./RelationIdMetadata"
+import type { RelationCountMetadata } from "./RelationCountMetadata"
+import type { DataSource } from "../data-source/DataSource"
+import type { EntityListenerMetadata } from "./EntityListenerMetadata"
+import type { IndexMetadata } from "./IndexMetadata"
+import type { UniqueMetadata } from "./UniqueMetadata"
 import { TypeORMError } from "../error"
 
 /**
@@ -89,14 +89,14 @@ export class EmbeddedMetadata {
      * Indicates if the entity should be instantiated using the constructor
      * or via allocating a new object via `Object.create()`.
      */
-    isAlwaysUsingConstructor: boolean = true
+    isAlwaysUsingConstructor = true
 
     /**
      * Indicates if this embedded is in array mode.
      *
      * This option works only in mongodb.
      */
-    isArray: boolean = false
+    isArray = false
 
     /**
      * Prefix of the embedded, used instead of propertyName.
@@ -262,7 +262,7 @@ export class EmbeddedMetadata {
         if (connection.driver.options.type === "mongodb")
             return this.propertyName
 
-        let prefixes: string[] = []
+        const prefixes: string[] = []
         if (this.parentEmbeddedMetadata)
             prefixes.push(this.parentEmbeddedMetadata.buildPrefix(connection))
 

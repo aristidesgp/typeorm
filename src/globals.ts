@@ -1,21 +1,21 @@
 import { MetadataArgsStorage } from "./metadata-args/MetadataArgsStorage"
 import { PlatformTools } from "./platform/PlatformTools"
-import { DataSourceOptions } from "./data-source/DataSourceOptions"
+import type { DataSourceOptions } from "./data-source/DataSourceOptions"
 import { ConnectionOptionsReader } from "./connection/ConnectionOptionsReader"
 import { ConnectionManager } from "./connection/ConnectionManager"
 import { getFromContainer } from "./container"
-import { DataSource } from "./data-source/DataSource"
-import { EntityManager } from "./entity-manager/EntityManager"
-import { MongoEntityManager } from "./entity-manager/MongoEntityManager"
-import { SqljsEntityManager } from "./entity-manager/SqljsEntityManager"
-import { EntityTarget } from "./common/EntityTarget"
-import { Repository } from "./repository/Repository"
-import { TreeRepository } from "./repository/TreeRepository"
-import { ObjectType } from "./common/ObjectType"
-import { MongoRepository } from "./repository/MongoRepository"
-import { SelectQueryBuilder } from "./query-builder/SelectQueryBuilder"
+import type { DataSource } from "./data-source/DataSource"
+import type { EntityManager } from "./entity-manager/EntityManager"
+import type { MongoEntityManager } from "./entity-manager/MongoEntityManager"
+import type { SqljsEntityManager } from "./entity-manager/SqljsEntityManager"
+import type { EntityTarget } from "./common/EntityTarget"
+import type { Repository } from "./repository/Repository"
+import type { TreeRepository } from "./repository/TreeRepository"
+import type { ObjectType } from "./common/ObjectType"
+import type { MongoRepository } from "./repository/MongoRepository"
+import type { SelectQueryBuilder } from "./query-builder/SelectQueryBuilder"
 import { ObjectUtils } from "./util/ObjectUtils"
-import { ObjectLiteral } from "./common/ObjectLiteral"
+import type { ObjectLiteral } from "./common/ObjectLiteral"
 
 /**
  * Gets metadata args storage.
@@ -42,7 +42,7 @@ export function getMetadataArgsStorage(): MetadataArgsStorage {
  * @deprecated
  */
 export async function getConnectionOptions(
-    connectionName: string = "default",
+    connectionName = "default",
 ): Promise<DataSourceOptions> {
     return new ConnectionOptionsReader().get(connectionName)
 }
@@ -129,7 +129,7 @@ export async function createConnections(
  *
  * @deprecated
  */
-export function getConnection(connectionName: string = "default"): DataSource {
+export function getConnection(connectionName = "default"): DataSource {
     return getConnectionManager().get(connectionName)
 }
 
@@ -139,7 +139,7 @@ export function getConnection(connectionName: string = "default"): DataSource {
  *
  * @deprecated
  */
-export function getManager(connectionName: string = "default"): EntityManager {
+export function getManager(connectionName = "default"): EntityManager {
     return getConnectionManager().get(connectionName).manager
 }
 
@@ -150,7 +150,7 @@ export function getManager(connectionName: string = "default"): EntityManager {
  * @deprecated
  */
 export function getMongoManager(
-    connectionName: string = "default",
+    connectionName = "default",
 ): MongoEntityManager {
     return getConnectionManager().get(connectionName)
         .manager as MongoEntityManager
@@ -164,7 +164,7 @@ export function getMongoManager(
  * @deprecated
  */
 export function getSqljsManager(
-    connectionName: string = "default",
+    connectionName = "default",
 ): SqljsEntityManager {
     return getConnectionManager().get(connectionName)
         .manager as SqljsEntityManager
@@ -177,7 +177,7 @@ export function getSqljsManager(
  */
 export function getRepository<Entity extends ObjectLiteral>(
     entityClass: EntityTarget<Entity>,
-    connectionName: string = "default",
+    connectionName = "default",
 ): Repository<Entity> {
     return getConnectionManager()
         .get(connectionName)
@@ -191,7 +191,7 @@ export function getRepository<Entity extends ObjectLiteral>(
  */
 export function getTreeRepository<Entity extends ObjectLiteral>(
     entityClass: EntityTarget<Entity>,
-    connectionName: string = "default",
+    connectionName = "default",
 ): TreeRepository<Entity> {
     return getConnectionManager()
         .get(connectionName)
@@ -205,7 +205,7 @@ export function getTreeRepository<Entity extends ObjectLiteral>(
  */
 export function getCustomRepository<T>(
     customRepository: ObjectType<T>,
-    connectionName: string = "default",
+    connectionName = "default",
 ): T {
     return getConnectionManager()
         .get(connectionName)
@@ -219,7 +219,7 @@ export function getCustomRepository<T>(
  */
 export function getMongoRepository<Entity extends ObjectLiteral>(
     entityClass: EntityTarget<Entity>,
-    connectionName: string = "default",
+    connectionName = "default",
 ): MongoRepository<Entity> {
     return getConnectionManager()
         .get(connectionName)
@@ -234,7 +234,7 @@ export function getMongoRepository<Entity extends ObjectLiteral>(
 export function createQueryBuilder<Entity extends ObjectLiteral>(
     entityClass?: EntityTarget<Entity>,
     alias?: string,
-    connectionName: string = "default",
+    connectionName = "default",
 ): SelectQueryBuilder<Entity> {
     if (entityClass) {
         return getRepository(entityClass, connectionName).createQueryBuilder(

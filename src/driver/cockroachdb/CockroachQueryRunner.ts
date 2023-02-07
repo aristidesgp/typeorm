@@ -1,6 +1,6 @@
 import { QueryResult } from "../../query-runner/QueryResult"
-import { QueryRunner } from "../../query-runner/QueryRunner"
-import { ObjectLiteral } from "../../common/ObjectLiteral"
+import type { QueryRunner } from "../../query-runner/QueryRunner"
+import type { ObjectLiteral } from "../../common/ObjectLiteral"
 import { TransactionNotStartedError } from "../../error/TransactionNotStartedError"
 import { TableColumn } from "../../schema-builder/table/TableColumn"
 import { Table } from "../../schema-builder/table/Table"
@@ -9,19 +9,19 @@ import { TableForeignKey } from "../../schema-builder/table/TableForeignKey"
 import { QueryRunnerAlreadyReleasedError } from "../../error/QueryRunnerAlreadyReleasedError"
 import { View } from "../../schema-builder/view/View"
 import { Query } from "../Query"
-import { CockroachDriver } from "./CockroachDriver"
-import { ReadStream } from "../../platform/PlatformTools"
+import type { CockroachDriver } from "./CockroachDriver"
+import type { ReadStream } from "../../platform/PlatformTools"
 import { QueryFailedError } from "../../error/QueryFailedError"
 import { Broadcaster } from "../../subscriber/Broadcaster"
-import { TableIndexOptions } from "../../schema-builder/options/TableIndexOptions"
+import type { TableIndexOptions } from "../../schema-builder/options/TableIndexOptions"
 import { TableUnique } from "../../schema-builder/table/TableUnique"
 import { BaseQueryRunner } from "../../query-runner/BaseQueryRunner"
 import { OrmUtils } from "../../util/OrmUtils"
 import { TableCheck } from "../../schema-builder/table/TableCheck"
-import { ColumnType } from "../types/ColumnTypes"
-import { IsolationLevel } from "../types/IsolationLevel"
+import type { ColumnType } from "../types/ColumnTypes"
+import type { IsolationLevel } from "../types/IsolationLevel"
 import { TableExclusion } from "../../schema-builder/table/TableExclusion"
-import { ReplicationMode } from "../types/ReplicationMode"
+import type { ReplicationMode } from "../types/ReplicationMode"
 import { TypeORMError } from "../../error"
 import { MetadataTableType } from "../types/MetadataTableType"
 import { InstanceChecker } from "../../util/InstanceChecker"
@@ -65,7 +65,7 @@ export class CockroachQueryRunner
     /**
      * Indicates if running queries must be stored
      */
-    protected storeQueries: boolean = false
+    protected storeQueries = false
 
     // -------------------------------------------------------------------------
     // Constructor
@@ -490,9 +490,9 @@ export class CockroachQueryRunner
      */
     async createTable(
         table: Table,
-        ifNotExist: boolean = false,
-        createForeignKeys: boolean = true,
-        createIndices: boolean = true,
+        ifNotExist = false,
+        createForeignKeys = true,
+        createIndices = true,
     ): Promise<void> {
         if (ifNotExist) {
             const isTableExist = await this.hasTable(table)
@@ -608,8 +608,8 @@ export class CockroachQueryRunner
     async dropTable(
         target: Table | string,
         ifExist?: boolean,
-        dropForeignKeys: boolean = true,
-        dropIndices: boolean = true,
+        dropForeignKeys = true,
+        dropIndices = true,
     ): Promise<void> {
         // It needs because if table does not exist and dropForeignKeys or dropIndices is true, we don't need
         // to perform drop queries for foreign keys and indices.
@@ -703,7 +703,7 @@ export class CockroachQueryRunner
      */
     async createView(
         view: View,
-        syncWithMetadata: boolean = false,
+        syncWithMetadata = false,
     ): Promise<void> {
         const upQueries: Query[] = []
         const downQueries: Query[] = []
@@ -927,7 +927,7 @@ export class CockroachQueryRunner
         const enumColumns = newTable.columns.filter(
             (column) => column.type === "enum" || column.type === "simple-enum",
         )
-        for (let column of enumColumns) {
+        for (const column of enumColumns) {
             // skip renaming for user-defined enum name
             if (column.enumName) continue
 
@@ -3810,7 +3810,7 @@ export class CockroachQueryRunner
         table: Table,
         indexOrName: TableIndex | TableUnique | string,
     ): Query {
-        let indexName =
+        const indexName =
             InstanceChecker.isTableIndex(indexOrName) ||
             InstanceChecker.isTableUnique(indexOrName)
                 ? indexOrName.name
@@ -4003,7 +4003,7 @@ export class CockroachQueryRunner
     protected buildEnumName(
         table: Table,
         column: TableColumn,
-        withSchema: boolean = true,
+        withSchema = true,
         disableEscape?: boolean,
         toOld?: boolean,
     ): string {

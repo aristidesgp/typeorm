@@ -1,5 +1,5 @@
-import { BaseDataSourceOptions } from "../../data-source/BaseDataSourceOptions"
-import { CockroachConnectionCredentialsOptions } from "./CockroachConnectionCredentialsOptions"
+import type { BaseDataSourceOptions } from "../../data-source/BaseDataSourceOptions"
+import type { CockroachConnectionCredentialsOptions } from "./CockroachConnectionCredentialsOptions"
 
 /**
  * Cockroachdb-specific connection options.

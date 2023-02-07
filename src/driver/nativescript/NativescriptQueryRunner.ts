@@ -1,8 +1,8 @@
-import { ObjectLiteral } from "../../common/ObjectLiteral"
+import type { ObjectLiteral } from "../../common/ObjectLiteral"
 import { QueryRunnerAlreadyReleasedError } from "../../error/QueryRunnerAlreadyReleasedError"
 import { QueryFailedError } from "../../error/QueryFailedError"
 import { AbstractSqliteQueryRunner } from "../sqlite-abstract/AbstractSqliteQueryRunner"
-import { NativescriptDriver } from "./NativescriptDriver"
+import type { NativescriptDriver } from "./NativescriptDriver"
 import { Broadcaster } from "../../subscriber/Broadcaster"
 import { QueryResult } from "../../query-runner/QueryResult"
 
@@ -120,7 +120,7 @@ export class NativescriptQueryRunner extends AbstractSqliteQueryRunner {
      */
     protected parametrize(
         objectLiteral: ObjectLiteral,
-        startIndex: number = 0,
+        startIndex = 0,
     ): string[] {
         return Object.keys(objectLiteral).map((key, index) => `"${key}"` + "=?")
     }

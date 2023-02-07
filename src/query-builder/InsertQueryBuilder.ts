@@ -1,20 +1,20 @@
 import { v4 as uuidv4 } from "uuid"
-import { EntityTarget } from "../common/EntityTarget"
-import { ObjectLiteral } from "../common/ObjectLiteral"
-import { AuroraMysqlDriver } from "../driver/aurora-mysql/AuroraMysqlDriver"
+import type { EntityTarget } from "../common/EntityTarget"
+import type { ObjectLiteral } from "../common/ObjectLiteral"
+import type { AuroraMysqlDriver } from "../driver/aurora-mysql/AuroraMysqlDriver"
 import { DriverUtils } from "../driver/DriverUtils"
-import { MysqlDriver } from "../driver/mysql/MysqlDriver"
-import { SqlServerDriver } from "../driver/sqlserver/SqlServerDriver"
+import type { MysqlDriver } from "../driver/mysql/MysqlDriver"
+import type { SqlServerDriver } from "../driver/sqlserver/SqlServerDriver"
 import { TypeORMError } from "../error"
 import { InsertValuesMissingError } from "../error/InsertValuesMissingError"
 import { ReturningStatementNotSupportedError } from "../error/ReturningStatementNotSupportedError"
-import { ColumnMetadata } from "../metadata/ColumnMetadata"
+import type { ColumnMetadata } from "../metadata/ColumnMetadata"
 import { BroadcasterResult } from "../subscriber/BroadcasterResult"
 import { InstanceChecker } from "../util/InstanceChecker"
 import { ObjectUtils } from "../util/ObjectUtils"
-import { InsertOrUpdateOptions } from "./InsertOrUpdateOptions"
+import type { InsertOrUpdateOptions } from "./InsertOrUpdateOptions"
 import { QueryBuilder } from "./QueryBuilder"
-import { QueryDeepPartialEntity } from "./QueryPartialEntity"
+import type { QueryDeepPartialEntity } from "./QueryPartialEntity"
 import { InsertResult } from "./result/InsertResult"
 import { ReturningResultsEntityUpdator } from "./ReturningResultsEntityUpdator"
 
@@ -60,7 +60,7 @@ export class InsertQueryBuilder<
         // console.time("QueryBuilder.execute");
         // console.time(".database stuff");
         const queryRunner = this.obtainQueryRunner()
-        let transactionStartedByUs: boolean = false
+        let transactionStartedByUs = false
 
         try {
             // start transaction if it was enabled

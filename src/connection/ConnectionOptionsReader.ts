@@ -1,6 +1,6 @@
 import appRootPath from "app-root-path"
 import path from "path"
-import { DataSourceOptions } from "../data-source/DataSourceOptions"
+import type { DataSourceOptions } from "../data-source/DataSourceOptions"
 import { PlatformTools } from "../platform/PlatformTools"
 import { ConnectionOptionsEnvReader } from "./options-reader/ConnectionOptionsEnvReader"
 import { ConnectionOptionsYmlReader } from "./options-reader/ConnectionOptionsYmlReader"

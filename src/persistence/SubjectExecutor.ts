@@ -1,19 +1,19 @@
-import { QueryRunner } from "../query-runner/QueryRunner"
-import { Subject } from "./Subject"
+import type { QueryRunner } from "../query-runner/QueryRunner"
+import type { Subject } from "./Subject"
 import { SubjectTopoligicalSorter } from "./SubjectTopoligicalSorter"
 import { SubjectChangedColumnsComputer } from "./SubjectChangedColumnsComputer"
 import { SubjectWithoutIdentifierError } from "../error/SubjectWithoutIdentifierError"
 import { SubjectRemovedAndUpdatedError } from "../error/SubjectRemovedAndUpdatedError"
-import { MongoEntityManager } from "../entity-manager/MongoEntityManager"
-import { ObjectLiteral } from "../common/ObjectLiteral"
-import { SaveOptions } from "../repository/SaveOptions"
-import { RemoveOptions } from "../repository/RemoveOptions"
+import type { MongoEntityManager } from "../entity-manager/MongoEntityManager"
+import type { ObjectLiteral } from "../common/ObjectLiteral"
+import type { SaveOptions } from "../repository/SaveOptions"
+import type { RemoveOptions } from "../repository/RemoveOptions"
 import { BroadcasterResult } from "../subscriber/BroadcasterResult"
 import { NestedSetSubjectExecutor } from "./tree/NestedSetSubjectExecutor"
 import { ClosureSubjectExecutor } from "./tree/ClosureSubjectExecutor"
 import { MaterializedPathSubjectExecutor } from "./tree/MaterializedPathSubjectExecutor"
 import { OrmUtils } from "../util/OrmUtils"
-import { UpdateResult } from "../query-builder/result/UpdateResult"
+import type { UpdateResult } from "../query-builder/result/UpdateResult"
 import { ObjectUtils } from "../util/ObjectUtils"
 import { InstanceChecker } from "../util/InstanceChecker"
 
@@ -29,7 +29,7 @@ export class SubjectExecutor {
     /**
      * Indicates if executor has any operations to execute (e.g. has insert / update / delete operations to be executed).
      */
-    hasExecutableOperations: boolean = false
+    hasExecutableOperations = false
 
     // -------------------------------------------------------------------------
     // Protected Properties
@@ -609,7 +609,7 @@ export class SubjectExecutor {
                 }
 
                 const updateResult = await updateQueryBuilder.execute()
-                let updateGeneratedMap = updateResult.generatedMaps[0]
+                const updateGeneratedMap = updateResult.generatedMaps[0]
                 if (updateGeneratedMap) {
                     subject.metadata.columns.forEach((column) => {
                         const value = column.getEntityValue(updateGeneratedMap!)

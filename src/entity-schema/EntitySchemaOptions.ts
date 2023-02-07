@@ -1,17 +1,17 @@
-import {
+import type {
     DataSource,
     EntitySchemaEmbeddedColumnOptions,
     SelectQueryBuilder,
 } from ".."
-import { EntitySchemaIndexOptions } from "./EntitySchemaIndexOptions"
-import { EntitySchemaColumnOptions } from "./EntitySchemaColumnOptions"
-import { EntitySchemaRelationOptions } from "./EntitySchemaRelationOptions"
-import { OrderByCondition } from "../find-options/OrderByCondition"
-import { TableType } from "../metadata/types/TableTypes"
-import { EntitySchemaUniqueOptions } from "./EntitySchemaUniqueOptions"
-import { EntitySchemaCheckOptions } from "./EntitySchemaCheckOptions"
-import { EntitySchemaExclusionOptions } from "./EntitySchemaExclusionOptions"
-import { EntitySchemaRelationIdOptions } from "./EntitySchemaRelationIdOptions"
+import type { EntitySchemaIndexOptions } from "./EntitySchemaIndexOptions"
+import type { EntitySchemaColumnOptions } from "./EntitySchemaColumnOptions"
+import type { EntitySchemaRelationOptions } from "./EntitySchemaRelationOptions"
+import type { OrderByCondition } from "../find-options/OrderByCondition"
+import type { TableType } from "../metadata/types/TableTypes"
+import type { EntitySchemaUniqueOptions } from "./EntitySchemaUniqueOptions"
+import type { EntitySchemaCheckOptions } from "./EntitySchemaCheckOptions"
+import type { EntitySchemaExclusionOptions } from "./EntitySchemaExclusionOptions"
+import type { EntitySchemaRelationIdOptions } from "./EntitySchemaRelationIdOptions"
 
 /**
  * Interface for entity metadata mappings stored inside "schemas" instead of models decorated by decorators.

@@ -1,10 +1,10 @@
 import { QueryRunnerAlreadyReleasedError } from "../../error/QueryRunnerAlreadyReleasedError"
 import { TransactionNotStartedError } from "../../error/TransactionNotStartedError"
-import { QueryRunner } from "../../query-runner/QueryRunner"
-import { IsolationLevel } from "../types/IsolationLevel"
-import { AuroraPostgresDriver } from "./AuroraPostgresDriver"
+import type { QueryRunner } from "../../query-runner/QueryRunner"
+import type { IsolationLevel } from "../types/IsolationLevel"
+import type { AuroraPostgresDriver } from "./AuroraPostgresDriver"
 import { PostgresQueryRunner } from "../postgres/PostgresQueryRunner"
-import { ReplicationMode } from "../types/ReplicationMode"
+import type { ReplicationMode } from "../types/ReplicationMode"
 import { QueryResult } from "../../query-runner/QueryResult"
 
 class PostgresQueryRunnerWrapper extends PostgresQueryRunner {

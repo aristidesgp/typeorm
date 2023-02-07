@@ -1,8 +1,8 @@
-import { Subject } from "../Subject"
-import { QueryRunner } from "../../query-runner/QueryRunner"
+import type { Subject } from "../Subject"
+import type { QueryRunner } from "../../query-runner/QueryRunner"
 import { OrmUtils } from "../../util/OrmUtils"
-import { ObjectLiteral } from "../../common/ObjectLiteral"
-import { ColumnMetadata } from "../../metadata/ColumnMetadata"
+import type { ObjectLiteral } from "../../common/ObjectLiteral"
+import type { ColumnMetadata } from "../../metadata/ColumnMetadata"
 import { EntityMetadata } from "../../metadata/EntityMetadata"
 import { Brackets } from "../../query-builder/Brackets"
 
@@ -35,7 +35,7 @@ export class MaterializedPathSubjectExecutor {
 
         const parentId = subject.metadata.getEntityIdMap(parent)
 
-        let parentPath: string = ""
+        let parentPath = ""
         if (parentId) {
             parentPath = await this.getEntityPath(subject, parentId)
         }
@@ -98,12 +98,12 @@ export class MaterializedPathSubjectExecutor {
             return
         }
 
-        let newParentPath: string = ""
+        let newParentPath = ""
         if (newParentId) {
             newParentPath = await this.getEntityPath(subject, newParentId)
         }
 
-        let oldParentPath: string = ""
+        let oldParentPath = ""
         if (oldParentId) {
             oldParentPath =
                 (await this.getEntityPath(subject, oldParentId)) || ""

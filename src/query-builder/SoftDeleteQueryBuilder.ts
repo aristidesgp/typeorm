@@ -1,14 +1,14 @@
 import { QueryBuilder } from "./QueryBuilder"
-import { ObjectLiteral } from "../common/ObjectLiteral"
-import { EntityTarget } from "../common/EntityTarget"
-import { DataSource } from "../data-source/DataSource"
-import { QueryRunner } from "../query-runner/QueryRunner"
-import { WhereExpressionBuilder } from "./WhereExpressionBuilder"
-import { Brackets } from "./Brackets"
+import type { ObjectLiteral } from "../common/ObjectLiteral"
+import type { EntityTarget } from "../common/EntityTarget"
+import type { DataSource } from "../data-source/DataSource"
+import type { QueryRunner } from "../query-runner/QueryRunner"
+import type { WhereExpressionBuilder } from "./WhereExpressionBuilder"
+import type { Brackets } from "./Brackets"
 import { UpdateResult } from "./result/UpdateResult"
 import { ReturningStatementNotSupportedError } from "../error/ReturningStatementNotSupportedError"
 import { ReturningResultsEntityUpdator } from "./ReturningResultsEntityUpdator"
-import { OrderByCondition } from "../find-options/OrderByCondition"
+import type { OrderByCondition } from "../find-options/OrderByCondition"
 import { LimitOnUpdateNotSupportedError } from "../error/LimitOnUpdateNotSupportedError"
 import { MissingDeleteDateColumnError } from "../error/MissingDeleteDateColumnError"
 import { UpdateValuesMissingError } from "../error/UpdateValuesMissingError"
@@ -57,7 +57,7 @@ export class SoftDeleteQueryBuilder<Entity extends ObjectLiteral>
      */
     async execute(): Promise<UpdateResult> {
         const queryRunner = this.obtainQueryRunner()
-        let transactionStartedByUs: boolean = false
+        let transactionStartedByUs = false
 
         try {
             // start transaction if it was enabled
@@ -550,7 +550,7 @@ export class SoftDeleteQueryBuilder<Entity extends ObjectLiteral>
      * Creates "LIMIT" parts of SQL query.
      */
     protected createLimitExpression(): string {
-        let limit: number | undefined = this.expressionMap.limit
+        const limit: number | undefined = this.expressionMap.limit
 
         if (limit) {
             if (DriverUtils.isMySQLFamily(this.connection.driver)) {

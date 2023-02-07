@@ -1,8 +1,8 @@
-import { RelationMetadata } from "../metadata/RelationMetadata"
-import { ColumnMetadata } from "../metadata/ColumnMetadata"
-import { DataSource } from "../data-source/DataSource"
-import { ObjectLiteral } from "../common/ObjectLiteral"
-import { SelectQueryBuilder } from "./SelectQueryBuilder"
+import type { RelationMetadata } from "../metadata/RelationMetadata"
+import type { ColumnMetadata } from "../metadata/ColumnMetadata"
+import type { DataSource } from "../data-source/DataSource"
+import type { ObjectLiteral } from "../common/ObjectLiteral"
+import type { SelectQueryBuilder } from "./SelectQueryBuilder"
 import { DriverUtils } from "../driver/DriverUtils"
 
 /**
@@ -175,7 +175,7 @@ export class RelationIdLoader {
                     })
                     if (relatedEntityMatched) {
                         if (isMany) {
-                            ;(group.related as E2[]).push(relatedEntity)
+                            (group.related as E2[]).push(relatedEntity)
                         } else {
                             group.related = relatedEntity
                         }
@@ -425,9 +425,9 @@ export class RelationIdLoader {
             },
         )
         if (relatedEntities && hasAllJoinColumnsInEntity) {
-            let relationIdMaps: ObjectLiteral[] = []
+            const relationIdMaps: ObjectLiteral[] = []
             entities.forEach((entity) => {
-                let relationIdMap: ObjectLiteral = {}
+                const relationIdMap: ObjectLiteral = {}
                 relation.entityMetadata.primaryColumns.forEach(
                     (primaryColumn) => {
                         const key =
@@ -509,7 +509,7 @@ export class RelationIdLoader {
         })
 
         // add condition for entities
-        let condition: string = ""
+        let condition = ""
         if (relation.entityMetadata.primaryColumns.length === 1) {
             const values = entities.map((entity) =>
                 relation.entityMetadata.primaryColumns[0].getEntityValue(
@@ -646,7 +646,7 @@ export class RelationIdLoader {
         })
 
         // add condition for entities
-        let condition: string = ""
+        let condition = ""
         if (relation.joinColumns.length === 1) {
             const values = entities.map((entity) =>
                 relation.joinColumns[0].referencedColumn!.getEntityValue(

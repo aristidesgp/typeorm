@@ -1,4 +1,4 @@
-import { MixedList } from "../common/MixedList"
+import type { MixedList } from "../common/MixedList"
 
 export class ObjectUtils {
     /**
@@ -51,7 +51,7 @@ export class ObjectUtils {
     static assign(target: object, ...sources: any[]): void {
         for (const source of sources) {
             for (const prop of Object.getOwnPropertyNames(source)) {
-                ;(target as any)[prop] = source[prop]
+                (target as any)[prop] = source[prop]
             }
         }
     }

@@ -1,6 +1,6 @@
 import ymlParser from "js-yaml"
 import { PlatformTools } from "../../platform/PlatformTools"
-import { DataSourceOptions } from "../../data-source/DataSourceOptions"
+import type { DataSourceOptions } from "../../data-source/DataSourceOptions"
 
 /**
  * Reads connection options defined in the yml file.

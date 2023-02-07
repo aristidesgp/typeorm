@@ -1,7 +1,7 @@
 import { Subject } from "../Subject"
 import { OrmUtils } from "../../util/OrmUtils"
-import { ObjectLiteral } from "../../common/ObjectLiteral"
-import { RelationMetadata } from "../../metadata/RelationMetadata"
+import type { ObjectLiteral } from "../../common/ObjectLiteral"
+import type { RelationMetadata } from "../../metadata/RelationMetadata"
 
 /**
  * Builds operations needs to be executed for one-to-one non-owner relations of the given subjects.
@@ -68,7 +68,7 @@ export class OneToOneInverseSideSubjectBuilder {
 
         // get related entities of persisted entity
         // by example: get category from the passed to persist post entity
-        let relatedEntity: ObjectLiteral | null = relation.getEntityValue(
+        const relatedEntity: ObjectLiteral | null = relation.getEntityValue(
             subject.entity!,
         ) // by example: relatedEntity is a category here
         if (relatedEntity === undefined)

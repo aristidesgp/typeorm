@@ -1,9 +1,9 @@
 import { TableColumn } from "./TableColumn"
 import { TableIndex } from "./TableIndex"
 import { TableForeignKey } from "./TableForeignKey"
-import { Driver } from "../../driver/Driver"
-import { TableOptions } from "../options/TableOptions"
-import { EntityMetadata } from "../../metadata/EntityMetadata"
+import type { Driver } from "../../driver/Driver"
+import type { TableOptions } from "../options/TableOptions"
+import type { EntityMetadata } from "../../metadata/EntityMetadata"
 import { TableUtils } from "../util/TableUtils"
 import { TableUnique } from "./TableUnique"
 import { TableCheck } from "./TableCheck"
@@ -71,7 +71,7 @@ export class Table {
      * This is needed, for example to check if we need to skip primary keys creation
      * for new tables.
      */
-    justCreated: boolean = false
+    justCreated = false
 
     /**
      * Enables Sqlite "WITHOUT ROWID" modifier for the "CREATE TABLE" statement
@@ -279,7 +279,7 @@ export class Table {
     /**
      * Adds index.
      */
-    addIndex(index: TableIndex, isMysql: boolean = false): void {
+    addIndex(index: TableIndex, isMysql = false): void {
         this.indices.push(index)
 
         // in Mysql unique indices and unique constraints are the same thing
@@ -295,7 +295,7 @@ export class Table {
     /**
      * Removes index.
      */
-    removeIndex(tableIndex: TableIndex, isMysql: boolean = false): void {
+    removeIndex(tableIndex: TableIndex, isMysql = false): void {
         const index = this.indices.find(
             (index) => index.name === tableIndex.name,
         )

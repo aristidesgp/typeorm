@@ -1,11 +1,11 @@
-import { FindManyOptions } from "./FindManyOptions"
-import { FindOneOptions } from "./FindOneOptions"
-import { SelectQueryBuilder } from "../query-builder/SelectQueryBuilder"
+import type { FindManyOptions } from "./FindManyOptions"
+import type { FindOneOptions } from "./FindOneOptions"
+import type { SelectQueryBuilder } from "../query-builder/SelectQueryBuilder"
 import { FindRelationsNotFoundError } from "../error/FindRelationsNotFoundError"
-import { EntityMetadata } from "../metadata/EntityMetadata"
+import type { EntityMetadata } from "../metadata/EntityMetadata"
 import { DriverUtils } from "../driver/DriverUtils"
-import { FindTreeOptions } from "./FindTreeOptions"
-import { ObjectLiteral } from "../common/ObjectLiteral"
+import type { FindTreeOptions } from "./FindTreeOptions"
+import type { ObjectLiteral } from "../common/ObjectLiteral"
 
 /**
  * Utilities to work with FindOptions.
@@ -299,7 +299,7 @@ export class FindOptionsUtils {
         // go through all matched relations and add join for them
         matchedBaseRelations.forEach((relation) => {
             // generate a relation alias
-            let relationAlias: string = DriverUtils.buildAlias(
+            const relationAlias: string = DriverUtils.buildAlias(
                 qb.connection.driver,
                 { joiner: "__" },
                 alias,

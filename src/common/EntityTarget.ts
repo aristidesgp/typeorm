@@ -1,5 +1,5 @@
-import { ObjectType } from "./ObjectType"
-import { EntitySchema } from ".."
+import type { ObjectType } from "./ObjectType"
+import type { EntitySchema } from ".."
 
 /**
  * Entity target.

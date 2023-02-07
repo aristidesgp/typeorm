@@ -5,7 +5,7 @@ export class BroadcasterResult {
     /**
      * Number of executed listeners and subscribers.
      */
-    count: number = 0
+    count = 0
 
     /**
      * Promises returned by listeners and subscribers which needs to be awaited.

@@ -1,11 +1,11 @@
-import { ObjectLiteral } from "../common/ObjectLiteral"
-import { SaveOptions } from "../repository/SaveOptions"
-import { RemoveOptions } from "../repository/RemoveOptions"
+import type { ObjectLiteral } from "../common/ObjectLiteral"
+import type { SaveOptions } from "../repository/SaveOptions"
+import type { RemoveOptions } from "../repository/RemoveOptions"
 import { MustBeEntityError } from "../error/MustBeEntityError"
 import { SubjectExecutor } from "./SubjectExecutor"
 import { CannotDetermineEntityError } from "../error/CannotDetermineEntityError"
-import { QueryRunner } from "../query-runner/QueryRunner"
-import { DataSource } from "../data-source/DataSource"
+import type { QueryRunner } from "../query-runner/QueryRunner"
+import type { DataSource } from "../data-source/DataSource"
 import { Subject } from "./Subject"
 import { OneToManySubjectBuilder } from "./subject-builder/OneToManySubjectBuilder"
 import { OneToOneInverseSideSubjectBuilder } from "./subject-builder/OneToOneInverseSideSubjectBuilder"
@@ -53,7 +53,7 @@ export class EntityPersistExecutor {
 
         // save data in the query runner - this is useful functionality to share data from outside of the world
         // with third classes - like subscribers and listener methods
-        let oldQueryRunnerData = queryRunner.data
+        const oldQueryRunnerData = queryRunner.data
         if (this.options && this.options.data) {
             queryRunner.data = this.options.data
         }

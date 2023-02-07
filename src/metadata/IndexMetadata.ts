@@ -1,8 +1,8 @@
-import { EntityMetadata } from "./EntityMetadata"
-import { IndexMetadataArgs } from "../metadata-args/IndexMetadataArgs"
-import { NamingStrategyInterface } from "../naming-strategy/NamingStrategyInterface"
-import { ColumnMetadata } from "./ColumnMetadata"
-import { EmbeddedMetadata } from "./EmbeddedMetadata"
+import type { EntityMetadata } from "./EntityMetadata"
+import type { IndexMetadataArgs } from "../metadata-args/IndexMetadataArgs"
+import type { NamingStrategyInterface } from "../naming-strategy/NamingStrategyInterface"
+import type { ColumnMetadata } from "./ColumnMetadata"
+import type { EmbeddedMetadata } from "./EmbeddedMetadata"
 import { TypeORMError } from "../error"
 
 /**
@@ -26,19 +26,19 @@ export class IndexMetadata {
     /**
      * Indicates if this index must be unique.
      */
-    isUnique: boolean = false
+    isUnique = false
 
     /**
      * The SPATIAL modifier indexes the entire column and does not allow indexed columns to contain NULL values.
      * Works only in MySQL.
      */
-    isSpatial: boolean = false
+    isSpatial = false
 
     /**
      * The FULLTEXT modifier indexes the entire column and does not allow prefixing.
      * Works only in MySQL.
      */
-    isFulltext: boolean = false
+    isFulltext = false
 
     /**
      * NULL_FILTERED indexes are particularly useful for indexing sparse columns, where most rows contain a NULL value.
@@ -47,7 +47,7 @@ export class IndexMetadata {
      *
      * Works only in Spanner.
      */
-    isNullFiltered: boolean = false
+    isNullFiltered = false
 
     /**
      * Fulltext parser.
@@ -58,7 +58,7 @@ export class IndexMetadata {
     /**
      * Indicates if this index must synchronize with database index.
      */
-    synchronize: boolean = true
+    synchronize = true
 
     /**
      * If true, the index only references documents with the specified field.

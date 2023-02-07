@@ -1,8 +1,8 @@
-import { ObjectLiteral } from "../../common/ObjectLiteral"
+import type { ObjectLiteral } from "../../common/ObjectLiteral"
 import { QueryRunnerAlreadyReleasedError } from "../../error/QueryRunnerAlreadyReleasedError"
 import { QueryFailedError } from "../../error/QueryFailedError"
 import { AbstractSqliteQueryRunner } from "../sqlite-abstract/AbstractSqliteQueryRunner"
-import { CordovaDriver } from "./CordovaDriver"
+import type { CordovaDriver } from "./CordovaDriver"
 import { Broadcaster } from "../../subscriber/Broadcaster"
 import { TypeORMError } from "../../error"
 import { QueryResult } from "../../query-runner/QueryResult"
@@ -87,7 +87,7 @@ export class CordovaQueryRunner extends AbstractSqliteQueryRunner {
             if (query.substr(0, 11) === "INSERT INTO") {
                 result.raw = raw.insertId
             } else {
-                let resultSet = []
+                const resultSet = []
                 for (let i = 0; i < raw.rows.length; i++) {
                     resultSet.push(raw.rows.item(i))
                 }
@@ -211,7 +211,7 @@ export class CordovaQueryRunner extends AbstractSqliteQueryRunner {
      */
     protected parametrize(
         objectLiteral: ObjectLiteral,
-        startIndex: number = 0,
+        startIndex = 0,
     ): string[] {
         return Object.keys(objectLiteral).map((key, index) => `"${key}"` + "=?")
     }

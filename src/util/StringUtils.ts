@@ -5,7 +5,7 @@ import shajs from "sha.js"
  *
  * @see http://stackoverflow.com/questions/2970525/converting-any-string-into-camel-case
  */
-export function camelCase(str: string, firstCapital: boolean = false): string {
+export function camelCase(str: string, firstCapital = false): string {
     return str.replace(
         /^([A-Z])|[\s-_](\w)/g,
         function (match, p1, p2, offset) {
@@ -46,7 +46,7 @@ export function titleCase(str: string): string {
 /**
  * Builds abbreviated string from given string;
  */
-export function abbreviate(str: string, abbrLettersCount: number = 1): string {
+export function abbreviate(str: string, abbrLettersCount = 1): string {
     const words = str
         .replace(/([a-z\xE0-\xFF])([A-Z\xC0\xDF])/g, "$1 $2")
         .split(" ")

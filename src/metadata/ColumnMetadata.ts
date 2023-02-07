@@ -1,16 +1,16 @@
-import { ColumnType } from "../driver/types/ColumnTypes"
-import { EntityMetadata } from "./EntityMetadata"
-import { EmbeddedMetadata } from "./EmbeddedMetadata"
-import { RelationMetadata } from "./RelationMetadata"
-import { ObjectLiteral } from "../common/ObjectLiteral"
-import { ColumnMetadataArgs } from "../metadata-args/ColumnMetadataArgs"
-import { DataSource } from "../data-source/DataSource"
+import type { ColumnType } from "../driver/types/ColumnTypes"
+import type { EntityMetadata } from "./EntityMetadata"
+import type { EmbeddedMetadata } from "./EmbeddedMetadata"
+import type { RelationMetadata } from "./RelationMetadata"
+import type { ObjectLiteral } from "../common/ObjectLiteral"
+import type { ColumnMetadataArgs } from "../metadata-args/ColumnMetadataArgs"
+import type { DataSource } from "../data-source/DataSource"
 import { OrmUtils } from "../util/OrmUtils"
-import { ValueTransformer } from "../decorator/options/ValueTransformer"
+import type { ValueTransformer } from "../decorator/options/ValueTransformer"
 import { ApplyValueTransformers } from "../util/ApplyValueTransformers"
 import { ObjectUtils } from "../util/ObjectUtils"
 import { InstanceChecker } from "../util/InstanceChecker"
-import { VirtualColumnOptions } from "../decorator/options/VirtualColumnOptions"
+import type { VirtualColumnOptions } from "../decorator/options/VirtualColumnOptions"
 
 /**
  * This metadata contains all information about entity's column.
@@ -60,7 +60,7 @@ export class ColumnMetadata {
     /**
      * Type's length in the database.
      */
-    length: string = ""
+    length = ""
 
     /**
      * Type's display width in the database.
@@ -80,32 +80,32 @@ export class ColumnMetadata {
     /**
      * Indicates if this column is a primary key.
      */
-    isPrimary: boolean = false
+    isPrimary = false
 
     /**
      * Indicates if this column is generated (auto increment or generated other way).
      */
-    isGenerated: boolean = false
+    isGenerated = false
 
     /**
      * Indicates if column can contain nulls or not.
      */
-    isNullable: boolean = false
+    isNullable = false
 
     /**
      * Indicates if column is selected by query builder or not.
      */
-    isSelect: boolean = true
+    isSelect = true
 
     /**
      * Indicates if column is inserted by default or not.
      */
-    isInsert: boolean = true
+    isInsert = true
 
     /**
      * Indicates if column allows updates or not.
      */
-    isUpdate: boolean = true
+    isUpdate = true
 
     /**
      * Specifies generation strategy if this column will use auto increment.
@@ -156,12 +156,12 @@ export class ColumnMetadata {
      * Puts ZEROFILL attribute on to numeric column. Works only for MySQL.
      * If you specify ZEROFILL for a numeric column, MySQL automatically adds the UNSIGNED attribute to the column
      */
-    zerofill: boolean = false
+    zerofill = false
 
     /**
      * Puts UNSIGNED attribute on to numeric column. Works only for MySQL.
      */
-    unsigned: boolean = false
+    unsigned = false
 
     /**
      * Array of possible enumerated values.
@@ -195,7 +195,7 @@ export class ColumnMetadata {
     /**
      * Indicates if this column is an array.
      */
-    isArray: boolean = false
+    isArray = false
 
     /**
      * Gets full path to this column property (including column property name).
@@ -237,14 +237,14 @@ export class ColumnMetadata {
     /**
      * Indicates if column is virtual. Virtual columns are not mapped to the entity.
      */
-    isVirtual: boolean = false
+    isVirtual = false
 
     /**
      * Indicates if column is a virtual property. Virtual properties are not mapped to the entity.
      * This property is used in tandem the virtual column decorator.
      * @See https://typeorm.io/decorator-reference#virtualcolumn for more details.
      */
-    isVirtualProperty: boolean = false
+    isVirtualProperty = false
 
     /**
      * Query to be used to populate the column data. This query is used when generating the relational db script.
@@ -256,37 +256,37 @@ export class ColumnMetadata {
     /**
      * Indicates if column is discriminator. Discriminator columns are not mapped to the entity.
      */
-    isDiscriminator: boolean = false
+    isDiscriminator = false
 
     /**
      * Indicates if column is tree-level column. Tree-level columns are used in closure entities.
      */
-    isTreeLevel: boolean = false
+    isTreeLevel = false
 
     /**
      * Indicates if this column contains an entity creation date.
      */
-    isCreateDate: boolean = false
+    isCreateDate = false
 
     /**
      * Indicates if this column contains an entity update date.
      */
-    isUpdateDate: boolean = false
+    isUpdateDate = false
 
     /**
      * Indicates if this column contains an entity delete date.
      */
-    isDeleteDate: boolean = false
+    isDeleteDate = false
 
     /**
      * Indicates if this column contains an entity version.
      */
-    isVersion: boolean = false
+    isVersion = false
 
     /**
      * Indicates if this column contains an object id.
      */
-    isObjectId: boolean = false
+    isObjectId = false
 
     /**
      * If this column is foreign key then it references some other column,
@@ -320,19 +320,19 @@ export class ColumnMetadata {
      * Indicates if this column is nested set's left column.
      * Used only in tree entities with nested-set type.
      */
-    isNestedSetLeft: boolean = false
+    isNestedSetLeft = false
 
     /**
      * Indicates if this column is nested set's right column.
      * Used only in tree entities with nested-set type.
      */
-    isNestedSetRight: boolean = false
+    isNestedSetRight = false
 
     /**
      * Indicates if this column is materialized path's path column.
      * Used only in tree entities with materialized path type.
      */
-    isMaterializedPath: boolean = false
+    isMaterializedPath = false
 
     /**
      * Spatial Feature Type (Geometry, Point, Polygon, etc.)
@@ -728,7 +728,7 @@ export class ColumnMetadata {
      */
     getEntityValue(
         entity: ObjectLiteral,
-        transform: boolean = false,
+        transform = false,
     ): any | undefined {
         if (entity === undefined || entity === null) return undefined
 

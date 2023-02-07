@@ -1,33 +1,33 @@
-import { ObjectLiteral } from "../../common/ObjectLiteral"
-import { DataSource } from "../../data-source/DataSource"
+import type { ObjectLiteral } from "../../common/ObjectLiteral"
+import type { DataSource } from "../../data-source/DataSource"
 import { ConnectionIsNotSetError } from "../../error/ConnectionIsNotSetError"
 import { DriverPackageNotInstalledError } from "../../error/DriverPackageNotInstalledError"
-import { ColumnMetadata } from "../../metadata/ColumnMetadata"
-import { EntityMetadata } from "../../metadata/EntityMetadata"
+import type { ColumnMetadata } from "../../metadata/ColumnMetadata"
+import type { EntityMetadata } from "../../metadata/EntityMetadata"
 import { PlatformTools } from "../../platform/PlatformTools"
-import { QueryRunner } from "../../query-runner/QueryRunner"
+import type { QueryRunner } from "../../query-runner/QueryRunner"
 import { RdbmsSchemaBuilder } from "../../schema-builder/RdbmsSchemaBuilder"
-import { TableColumn } from "../../schema-builder/table/TableColumn"
+import type { TableColumn } from "../../schema-builder/table/TableColumn"
 import { ApplyValueTransformers } from "../../util/ApplyValueTransformers"
 import { DateUtils } from "../../util/DateUtils"
 import { OrmUtils } from "../../util/OrmUtils"
-import { Driver } from "../Driver"
-import { ColumnType } from "../types/ColumnTypes"
-import { CteCapabilities } from "../types/CteCapabilities"
-import { DataTypeDefaults } from "../types/DataTypeDefaults"
-import { MappedColumnTypes } from "../types/MappedColumnTypes"
-import { ReplicationMode } from "../types/ReplicationMode"
+import type { Driver } from "../Driver"
+import type { ColumnType } from "../types/ColumnTypes"
+import type { CteCapabilities } from "../types/CteCapabilities"
+import type { DataTypeDefaults } from "../types/DataTypeDefaults"
+import type { MappedColumnTypes } from "../types/MappedColumnTypes"
+import type { ReplicationMode } from "../types/ReplicationMode"
 import { VersionUtils } from "../../util/VersionUtils"
-import { PostgresConnectionCredentialsOptions } from "./PostgresConnectionCredentialsOptions"
-import { PostgresConnectionOptions } from "./PostgresConnectionOptions"
+import type { PostgresConnectionCredentialsOptions } from "./PostgresConnectionCredentialsOptions"
+import type { PostgresConnectionOptions } from "./PostgresConnectionOptions"
 import { PostgresQueryRunner } from "./PostgresQueryRunner"
 import { DriverUtils } from "../DriverUtils"
 import { TypeORMError } from "../../error"
-import { Table } from "../../schema-builder/table/Table"
-import { View } from "../../schema-builder/view/View"
-import { TableForeignKey } from "../../schema-builder/table/TableForeignKey"
+import type { Table } from "../../schema-builder/table/Table"
+import type { View } from "../../schema-builder/view/View"
+import type { TableForeignKey } from "../../schema-builder/table/TableForeignKey"
 import { InstanceChecker } from "../../util/InstanceChecker"
-import { UpsertType } from "../types/UpsertType"
+import type { UpsertType } from "../types/UpsertType"
 
 /**
  * Organizes communication with PostgreSQL DBMS.
@@ -100,7 +100,7 @@ export class PostgresDriver implements Driver {
     /**
      * Indicates if replication is enabled.
      */
-    isReplicated: boolean = false
+    isReplicated = false
 
     /**
      * Indicates if tree tables are supported by this driver.
@@ -277,7 +277,7 @@ export class PostgresDriver implements Driver {
      */
     maxAliasLength = 63
 
-    isGeneratedColumnsSupported: boolean = false
+    isGeneratedColumnsSupported = false
 
     cteCapabilities: CteCapabilities = {
         enabled: true,
@@ -837,7 +837,7 @@ export class PostgresDriver implements Driver {
                     return full
                 }
 
-                let value: any = parameters[key]
+                const value: any = parameters[key]
 
                 if (isArray) {
                     return value
@@ -874,7 +874,7 @@ export class PostgresDriver implements Driver {
      * E.g. myDB.mySchema.myTable
      */
     buildTableName(tableName: string, schema?: string): string {
-        let tablePath = [tableName]
+        const tablePath = [tableName]
 
         if (schema) {
             tablePath.unshift(schema)

@@ -1,10 +1,10 @@
 import { QueryBuilder } from "./QueryBuilder"
-import { ObjectLiteral } from "../common/ObjectLiteral"
-import { EntityTarget } from "../common/EntityTarget"
-import { DataSource } from "../data-source/DataSource"
-import { QueryRunner } from "../query-runner/QueryRunner"
-import { WhereExpressionBuilder } from "./WhereExpressionBuilder"
-import { Brackets } from "./Brackets"
+import type { ObjectLiteral } from "../common/ObjectLiteral"
+import type { EntityTarget } from "../common/EntityTarget"
+import type { DataSource } from "../data-source/DataSource"
+import type { QueryRunner } from "../query-runner/QueryRunner"
+import type { WhereExpressionBuilder } from "./WhereExpressionBuilder"
+import type { Brackets } from "./Brackets"
 import { DeleteResult } from "./result/DeleteResult"
 import { ReturningStatementNotSupportedError } from "../error/ReturningStatementNotSupportedError"
 import { InstanceChecker } from "../util/InstanceChecker"
@@ -50,7 +50,7 @@ export class DeleteQueryBuilder<Entity extends ObjectLiteral>
     async execute(): Promise<DeleteResult> {
         const [sql, parameters] = this.getQueryAndParameters()
         const queryRunner = this.obtainQueryRunner()
-        let transactionStartedByUs: boolean = false
+        let transactionStartedByUs = false
 
         try {
             // start transaction if it was enabled

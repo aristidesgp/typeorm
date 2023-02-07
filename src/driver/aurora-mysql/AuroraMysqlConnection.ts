@@ -1,8 +1,8 @@
-import { AuroraMysqlQueryRunner } from "./AuroraMysqlQueryRunner"
+import type { AuroraMysqlQueryRunner } from "./AuroraMysqlQueryRunner"
 import { DataSource } from "../../data-source/DataSource"
-import { ReplicationMode } from "../types/ReplicationMode"
-import { DataSourceOptions } from "../../data-source"
-import { QueryRunner } from "../../query-runner/QueryRunner"
+import type { ReplicationMode } from "../types/ReplicationMode"
+import type { DataSourceOptions } from "../../data-source"
+import type { QueryRunner } from "../../query-runner/QueryRunner"
 
 /**
  * Organizes communication with MySQL DBMS.

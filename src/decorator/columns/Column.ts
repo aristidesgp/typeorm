@@ -1,5 +1,5 @@
 import { getMetadataArgsStorage } from "../../globals"
-import {
+import type {
     ColumnType,
     SimpleColumnType,
     SpatialColumnType,
@@ -7,19 +7,19 @@ import {
     WithPrecisionColumnType,
     WithWidthColumnType,
 } from "../../driver/types/ColumnTypes"
-import { ColumnMetadataArgs } from "../../metadata-args/ColumnMetadataArgs"
-import { ColumnCommonOptions } from "../options/ColumnCommonOptions"
-import { SpatialColumnOptions } from "../options/SpatialColumnOptions"
-import { ColumnWithLengthOptions } from "../options/ColumnWithLengthOptions"
-import { ColumnNumericOptions } from "../options/ColumnNumericOptions"
-import { ColumnEnumOptions } from "../options/ColumnEnumOptions"
-import { ColumnEmbeddedOptions } from "../options/ColumnEmbeddedOptions"
-import { EmbeddedMetadataArgs } from "../../metadata-args/EmbeddedMetadataArgs"
+import type { ColumnMetadataArgs } from "../../metadata-args/ColumnMetadataArgs"
+import type { ColumnCommonOptions } from "../options/ColumnCommonOptions"
+import type { SpatialColumnOptions } from "../options/SpatialColumnOptions"
+import type { ColumnWithLengthOptions } from "../options/ColumnWithLengthOptions"
+import type { ColumnNumericOptions } from "../options/ColumnNumericOptions"
+import type { ColumnEnumOptions } from "../options/ColumnEnumOptions"
+import type { ColumnEmbeddedOptions } from "../options/ColumnEmbeddedOptions"
+import type { EmbeddedMetadataArgs } from "../../metadata-args/EmbeddedMetadataArgs"
 import { ColumnTypeUndefinedError } from "../../error/ColumnTypeUndefinedError"
-import { ColumnHstoreOptions } from "../options/ColumnHstoreOptions"
-import { ColumnWithWidthOptions } from "../options/ColumnWithWidthOptions"
-import { GeneratedMetadataArgs } from "../../metadata-args/GeneratedMetadataArgs"
-import { ColumnOptions } from "../options/ColumnOptions"
+import type { ColumnHstoreOptions } from "../options/ColumnHstoreOptions"
+import type { ColumnWithWidthOptions } from "../options/ColumnWithWidthOptions"
+import type { GeneratedMetadataArgs } from "../../metadata-args/GeneratedMetadataArgs"
+import type { ColumnOptions } from "../options/ColumnOptions"
 
 /**
  * Column decorator is used to mark a specific class property as a table column. Only properties decorated with this

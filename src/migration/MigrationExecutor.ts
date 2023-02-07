@@ -1,10 +1,10 @@
 import { Table } from "../schema-builder/table/Table"
-import { DataSource } from "../data-source/DataSource"
+import type { DataSource } from "../data-source/DataSource"
 import { Migration } from "./Migration"
-import { ObjectLiteral } from "../common/ObjectLiteral"
-import { QueryRunner } from "../query-runner/QueryRunner"
+import type { ObjectLiteral } from "../common/ObjectLiteral"
+import type { QueryRunner } from "../query-runner/QueryRunner"
 import { MssqlParameter } from "../driver/sqlserver/MssqlParameter"
-import { MongoQueryRunner } from "../driver/mongodb/MongoQueryRunner"
+import type { MongoQueryRunner } from "../driver/mongodb/MongoQueryRunner"
 import { ForbiddenTransactionModeOverrideError, TypeORMError } from "../error"
 import { InstanceChecker } from "../util/InstanceChecker"
 
@@ -206,7 +206,7 @@ export class MigrationExecutor {
         )
 
         // get the time when last migration was executed
-        let lastTimeExecutedMigration =
+        const lastTimeExecutedMigration =
             this.getLatestTimestampMigration(executedMigrations)
 
         // get all user's migrations in the source code
@@ -403,7 +403,7 @@ export class MigrationExecutor {
         )
 
         // get the time when last migration was executed
-        let lastTimeExecutedMigration =
+        const lastTimeExecutedMigration =
             this.getLatestExecutedMigration(executedMigrations)
 
         // if no migrations found in the database then nothing to revert

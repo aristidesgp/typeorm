@@ -1,11 +1,11 @@
-import {
+import type {
     DataSource,
     Driver,
     EntityMetadata,
     SelectQueryBuilder,
     TableIndex,
 } from "../.."
-import { ViewOptions } from "../options/ViewOptions"
+import type { ViewOptions } from "../options/ViewOptions"
 
 /**
  * View in the database represented in this class.

@@ -1,16 +1,16 @@
-import { ObjectLiteral } from "../../common/ObjectLiteral"
+import type { ObjectLiteral } from "../../common/ObjectLiteral"
 import { QueryFailedError } from "../../error/QueryFailedError"
 import { QueryRunnerAlreadyReleasedError } from "../../error/QueryRunnerAlreadyReleasedError"
 import { TransactionNotStartedError } from "../../error/TransactionNotStartedError"
-import { ColumnType } from "../types/ColumnTypes"
-import { ReadStream } from "../../platform/PlatformTools"
+import type { ColumnType } from "../types/ColumnTypes"
+import type { ReadStream } from "../../platform/PlatformTools"
 import { BaseQueryRunner } from "../../query-runner/BaseQueryRunner"
-import { QueryRunner } from "../../query-runner/QueryRunner"
-import { TableIndexOptions } from "../../schema-builder/options/TableIndexOptions"
+import type { QueryRunner } from "../../query-runner/QueryRunner"
+import type { TableIndexOptions } from "../../schema-builder/options/TableIndexOptions"
 import { Table } from "../../schema-builder/table/Table"
 import { TableCheck } from "../../schema-builder/table/TableCheck"
 import { TableColumn } from "../../schema-builder/table/TableColumn"
-import { TableExclusion } from "../../schema-builder/table/TableExclusion"
+import type { TableExclusion } from "../../schema-builder/table/TableExclusion"
 import { TableForeignKey } from "../../schema-builder/table/TableForeignKey"
 import { TableIndex } from "../../schema-builder/table/TableIndex"
 import { TableUnique } from "../../schema-builder/table/TableUnique"
@@ -18,12 +18,12 @@ import { View } from "../../schema-builder/view/View"
 import { Broadcaster } from "../../subscriber/Broadcaster"
 import { OrmUtils } from "../../util/OrmUtils"
 import { Query } from "../Query"
-import { IsolationLevel } from "../types/IsolationLevel"
-import { ReplicationMode } from "../types/ReplicationMode"
+import type { IsolationLevel } from "../types/IsolationLevel"
+import type { ReplicationMode } from "../types/ReplicationMode"
 import { TypeORMError } from "../../error"
 import { QueryResult } from "../../query-runner/QueryResult"
 import { MetadataTableType } from "../types/MetadataTableType"
-import { SpannerDriver } from "./SpannerDriver"
+import type { SpannerDriver } from "./SpannerDriver"
 
 /**
  * Runs queries on a single postgres database connection.
@@ -151,7 +151,7 @@ export class SpannerQueryRunner extends BaseQueryRunner implements QueryRunner {
     async query(
         query: string,
         parameters?: any[],
-        useStructuredResult: boolean = false,
+        useStructuredResult = false,
     ): Promise<any> {
         if (this.isReleased) throw new QueryRunnerAlreadyReleasedError()
 
@@ -472,9 +472,9 @@ export class SpannerQueryRunner extends BaseQueryRunner implements QueryRunner {
      */
     async createTable(
         table: Table,
-        ifNotExist: boolean = false,
-        createForeignKeys: boolean = true,
-        createIndices: boolean = true,
+        ifNotExist = false,
+        createForeignKeys = true,
+        createIndices = true,
     ): Promise<void> {
         if (ifNotExist) {
             const isTableExist = await this.hasTable(table)
@@ -539,8 +539,8 @@ export class SpannerQueryRunner extends BaseQueryRunner implements QueryRunner {
     async dropTable(
         target: Table | string,
         ifExist?: boolean,
-        dropForeignKeys: boolean = true,
-        dropIndices: boolean = true,
+        dropForeignKeys = true,
+        dropIndices = true,
     ): Promise<void> {
         // It needs because if table does not exist and dropForeignKeys or dropIndices is true, we don't need
         // to perform drop queries for foreign keys and indices.
@@ -1450,10 +1450,10 @@ export class SpannerQueryRunner extends BaseQueryRunner implements QueryRunner {
         const isAnotherTransactionActive = this.isTransactionActive
         if (!isAnotherTransactionActive) await this.startTransaction()
         try {
-            for (let query of dropIndexQueries) {
+            for (const query of dropIndexQueries) {
                 await this.updateDDL(query["query"])
             }
-            for (let query of dropFKQueries) {
+            for (const query of dropFKQueries) {
                 await this.updateDDL(query["query"])
             }
 
@@ -1461,7 +1461,7 @@ export class SpannerQueryRunner extends BaseQueryRunner implements QueryRunner {
             //     await this.updateDDL(query["query"])
             // }
 
-            for (let query of dropTableQueries) {
+            for (const query of dropTableQueries) {
                 await this.updateDDL(query["query"])
             }
 
@@ -1997,7 +1997,7 @@ export class SpannerQueryRunner extends BaseQueryRunner implements QueryRunner {
     }
 
     protected async insertViewDefinitionSql(view: View): Promise<Query> {
-        let { schema, tableName: name } = this.driver.parseTableName(view)
+        const { schema, tableName: name } = this.driver.parseTableName(view)
 
         const type = view.materialized
             ? MetadataTableType.MATERIALIZED_VIEW
@@ -2028,7 +2028,7 @@ export class SpannerQueryRunner extends BaseQueryRunner implements QueryRunner {
      * Builds remove view sql.
      */
     protected async deleteViewDefinitionSql(view: View): Promise<Query> {
-        let { schema, tableName: name } = this.driver.parseTableName(view)
+        const { schema, tableName: name } = this.driver.parseTableName(view)
 
         const type = view.materialized
             ? MetadataTableType.MATERIALIZED_VIEW
@@ -2061,7 +2061,7 @@ export class SpannerQueryRunner extends BaseQueryRunner implements QueryRunner {
         table: Table,
         indexOrName: TableIndex | string,
     ): Query {
-        let indexName =
+        const indexName =
             indexOrName instanceof TableIndex ? indexOrName.name : indexOrName
         return new Query(`DROP INDEX \`${indexName}\``)
     }
@@ -2109,7 +2109,7 @@ export class SpannerQueryRunner extends BaseQueryRunner implements QueryRunner {
         const referencedColumnNames = foreignKey.referencedColumnNames
             .map((column) => this.driver.escape(column))
             .join(",")
-        let sql =
+        const sql =
             `ALTER TABLE ${this.escapePath(table)} ADD CONSTRAINT \`${
                 foreignKey.name
             }\` FOREIGN KEY (${columnNames}) ` +

@@ -1,4 +1,4 @@
-import { ColumnMetadata } from "../metadata/ColumnMetadata"
+import type { ColumnMetadata } from "../metadata/ColumnMetadata"
 import { parseISO } from "date-fns"
 
 /**
@@ -44,7 +44,7 @@ export class DateUtils {
      */
     static mixedDateToDate(
         mixedDate: Date | string,
-        toUtc: boolean = false,
+        toUtc = false,
         useMilliseconds = true,
     ): Date {
         /**
@@ -85,7 +85,7 @@ export class DateUtils {
      */
     static mixedDateToTimeString(
         value: Date | any,
-        skipSeconds: boolean = false,
+        skipSeconds = false,
     ): string | any {
         if (value instanceof Date)
             return (
@@ -121,7 +121,7 @@ export class DateUtils {
      */
     static mixedTimeToString(
         value: string | any,
-        skipSeconds: boolean = false,
+        skipSeconds = false,
     ): string | any {
         value =
             value instanceof Date

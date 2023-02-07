@@ -1,10 +1,10 @@
 import { AbstractSqliteDriver } from "../sqlite-abstract/AbstractSqliteDriver"
-import { CapacitorConnectionOptions } from "./CapacitorConnectionOptions"
+import type { CapacitorConnectionOptions } from "./CapacitorConnectionOptions"
 import { CapacitorQueryRunner } from "./CapacitorQueryRunner"
-import { QueryRunner } from "../../query-runner/QueryRunner"
-import { DataSource } from "../../data-source/DataSource"
+import type { QueryRunner } from "../../query-runner/QueryRunner"
+import type { DataSource } from "../../data-source/DataSource"
 import { DriverPackageNotInstalledError } from "../../error"
-import { ReplicationMode } from "../types/ReplicationMode"
+import type { ReplicationMode } from "../types/ReplicationMode"
 
 export class CapacitorDriver extends AbstractSqliteDriver {
     driver: any

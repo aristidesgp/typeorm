@@ -1,5 +1,5 @@
-import { BaseConnectionOptions } from "../../connection/BaseConnectionOptions"
-import { SpannerConnectionCredentialsOptions } from "./SpannerConnectionCredentialsOptions"
+import type { BaseConnectionOptions } from "../../connection/BaseConnectionOptions"
+import type { SpannerConnectionCredentialsOptions } from "./SpannerConnectionCredentialsOptions"
 
 /**
  * Spanner specific connection options.

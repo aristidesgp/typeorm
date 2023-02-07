@@ -1,5 +1,5 @@
-import { ObjectLiteral } from "../common/ObjectLiteral"
-import { FindOperatorType } from "./FindOperatorType"
+import type { ObjectLiteral } from "../common/ObjectLiteral"
+import type { FindOperatorType } from "./FindOperatorType"
 import { InstanceChecker } from "../util/InstanceChecker"
 
 type SqlGeneratorType = (aliasPath: string) => string
@@ -51,8 +51,8 @@ export class FindOperator<T> {
     constructor(
         type: FindOperatorType,
         value: T | FindOperator<T>,
-        useParameter: boolean = true,
-        multipleParameters: boolean = false,
+        useParameter = true,
+        multipleParameters = false,
         getSql?: SqlGeneratorType,
         objectLiteralParameters?: ObjectLiteral,
     ) {

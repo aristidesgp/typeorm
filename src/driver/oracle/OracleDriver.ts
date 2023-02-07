@@ -1,31 +1,31 @@
-import { Driver } from "../Driver"
+import type { Driver } from "../Driver"
 import { ConnectionIsNotSetError } from "../../error/ConnectionIsNotSetError"
 import { DriverPackageNotInstalledError } from "../../error/DriverPackageNotInstalledError"
-import { CteCapabilities } from "../types/CteCapabilities"
+import type { CteCapabilities } from "../types/CteCapabilities"
 import { OracleQueryRunner } from "./OracleQueryRunner"
-import { ObjectLiteral } from "../../common/ObjectLiteral"
-import { ColumnMetadata } from "../../metadata/ColumnMetadata"
+import type { ObjectLiteral } from "../../common/ObjectLiteral"
+import type { ColumnMetadata } from "../../metadata/ColumnMetadata"
 import { DateUtils } from "../../util/DateUtils"
 import { PlatformTools } from "../../platform/PlatformTools"
-import { DataSource } from "../../data-source/DataSource"
+import type { DataSource } from "../../data-source/DataSource"
 import { RdbmsSchemaBuilder } from "../../schema-builder/RdbmsSchemaBuilder"
-import { OracleConnectionOptions } from "./OracleConnectionOptions"
-import { MappedColumnTypes } from "../types/MappedColumnTypes"
-import { ColumnType } from "../types/ColumnTypes"
-import { DataTypeDefaults } from "../types/DataTypeDefaults"
-import { TableColumn } from "../../schema-builder/table/TableColumn"
-import { OracleConnectionCredentialsOptions } from "./OracleConnectionCredentialsOptions"
+import type { OracleConnectionOptions } from "./OracleConnectionOptions"
+import type { MappedColumnTypes } from "../types/MappedColumnTypes"
+import type { ColumnType } from "../types/ColumnTypes"
+import type { DataTypeDefaults } from "../types/DataTypeDefaults"
+import type { TableColumn } from "../../schema-builder/table/TableColumn"
+import type { OracleConnectionCredentialsOptions } from "./OracleConnectionCredentialsOptions"
 import { DriverUtils } from "../DriverUtils"
-import { EntityMetadata } from "../../metadata/EntityMetadata"
+import type { EntityMetadata } from "../../metadata/EntityMetadata"
 import { OrmUtils } from "../../util/OrmUtils"
 import { ApplyValueTransformers } from "../../util/ApplyValueTransformers"
-import { ReplicationMode } from "../types/ReplicationMode"
-import { Table } from "../../schema-builder/table/Table"
-import { View } from "../../schema-builder/view/View"
-import { TableForeignKey } from "../../schema-builder/table/TableForeignKey"
+import type { ReplicationMode } from "../types/ReplicationMode"
+import type { Table } from "../../schema-builder/table/Table"
+import type { View } from "../../schema-builder/view/View"
+import type { TableForeignKey } from "../../schema-builder/table/TableForeignKey"
 import { TypeORMError } from "../../error"
 import { InstanceChecker } from "../../util/InstanceChecker"
-import { UpsertType } from "../types/UpsertType"
+import type { UpsertType } from "../types/UpsertType"
 
 /**
  * Organizes communication with Oracle RDBMS.
@@ -78,7 +78,7 @@ export class OracleDriver implements Driver {
     /**
      * Indicates if replication is enabled.
      */
-    isReplicated: boolean = false
+    isReplicated = false
 
     /**
      * Indicates if tree tables are supported by this driver.
@@ -366,7 +366,7 @@ export class OracleDriver implements Driver {
                     return full
                 }
 
-                let value: any = parameters[key]
+                const value: any = parameters[key]
 
                 if (isArray) {
                     return value
@@ -411,7 +411,7 @@ export class OracleDriver implements Driver {
         schema?: string,
         database?: string,
     ): string {
-        let tablePath = [tableName]
+        const tablePath = [tableName]
 
         if (schema) {
             tablePath.unshift(schema)

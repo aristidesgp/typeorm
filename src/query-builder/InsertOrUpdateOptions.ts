@@ -1,4 +1,4 @@
-import { UpsertType } from "../driver/types/UpsertType"
+import type { UpsertType } from "../driver/types/UpsertType"
 
 export type InsertOrUpdateOptions = {
     /**

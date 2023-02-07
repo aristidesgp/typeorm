@@ -1,6 +1,6 @@
-import { DataSource, SelectQueryBuilder } from ".."
-import { OrderByCondition } from "../find-options/OrderByCondition"
-import { TableType } from "../metadata/types/TableTypes"
+import type { DataSource, SelectQueryBuilder } from ".."
+import type { OrderByCondition } from "../find-options/OrderByCondition"
+import type { TableType } from "../metadata/types/TableTypes"
 
 /**
  * Arguments for TableMetadata class, helps to construct an TableMetadata object.

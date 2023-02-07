@@ -1,6 +1,6 @@
 import { QueryRunnerAlreadyReleasedError } from "../../error/QueryRunnerAlreadyReleasedError"
 import { AbstractSqliteQueryRunner } from "../sqlite-abstract/AbstractSqliteQueryRunner"
-import { SqljsDriver } from "./SqljsDriver"
+import type { SqljsDriver } from "./SqljsDriver"
 import { Broadcaster } from "../../subscriber/Broadcaster"
 import { QueryFailedError } from "../../error/QueryFailedError"
 import { QueryResult } from "../../query-runner/QueryResult"

@@ -1,5 +1,5 @@
-import { QueryRunner } from "../../query-runner/QueryRunner"
-import { ObjectLiteral } from "../../common/ObjectLiteral"
+import type { QueryRunner } from "../../query-runner/QueryRunner"
+import type { ObjectLiteral } from "../../common/ObjectLiteral"
 import { TransactionNotStartedError } from "../../error/TransactionNotStartedError"
 import { TableColumn } from "../../schema-builder/table/TableColumn"
 import { Table } from "../../schema-builder/table/Table"
@@ -7,15 +7,15 @@ import { TableIndex } from "../../schema-builder/table/TableIndex"
 import { TableForeignKey } from "../../schema-builder/table/TableForeignKey"
 import { View } from "../../schema-builder/view/View"
 import { Query } from "../Query"
-import { AbstractSqliteDriver } from "./AbstractSqliteDriver"
-import { ReadStream } from "../../platform/PlatformTools"
-import { TableIndexOptions } from "../../schema-builder/options/TableIndexOptions"
+import type { AbstractSqliteDriver } from "./AbstractSqliteDriver"
+import type { ReadStream } from "../../platform/PlatformTools"
+import type { TableIndexOptions } from "../../schema-builder/options/TableIndexOptions"
 import { TableUnique } from "../../schema-builder/table/TableUnique"
 import { BaseQueryRunner } from "../../query-runner/BaseQueryRunner"
 import { OrmUtils } from "../../util/OrmUtils"
 import { TableCheck } from "../../schema-builder/table/TableCheck"
-import { IsolationLevel } from "../types/IsolationLevel"
-import { TableExclusion } from "../../schema-builder/table/TableExclusion"
+import type { IsolationLevel } from "../types/IsolationLevel"
+import type { TableExclusion } from "../../schema-builder/table/TableExclusion"
 import { TransactionAlreadyStartedError, TypeORMError } from "../../error"
 import { MetadataTableType } from "../types/MetadataTableType"
 import { InstanceChecker } from "../../util/InstanceChecker"
@@ -282,9 +282,9 @@ export abstract class AbstractSqliteQueryRunner
      */
     async createTable(
         table: Table,
-        ifNotExist: boolean = false,
-        createForeignKeys: boolean = true,
-        createIndices: boolean = true,
+        ifNotExist = false,
+        createForeignKeys = true,
+        createIndices = true,
     ): Promise<void> {
         const upQueries: Query[] = []
         const downQueries: Query[] = []
@@ -343,8 +343,8 @@ export abstract class AbstractSqliteQueryRunner
     async dropTable(
         tableOrName: Table | string,
         ifExist?: boolean,
-        dropForeignKeys: boolean = true,
-        dropIndices: boolean = true,
+        dropForeignKeys = true,
+        dropIndices = true,
     ): Promise<void> {
         if (ifExist) {
             const isTableExist = await this.hasTable(tableOrName)
@@ -400,7 +400,7 @@ export abstract class AbstractSqliteQueryRunner
      */
     async createView(
         view: View,
-        syncWithMetadata: boolean = false,
+        syncWithMetadata = false,
     ): Promise<void> {
         const upQueries: Query[] = []
         const downQueries: Query[] = []
@@ -1369,7 +1369,7 @@ export abstract class AbstractSqliteQueryRunner
                 // find column name with auto increment
                 let autoIncrementColumnName: string | undefined = undefined
                 const tableSql: string = dbTable["sql"]
-                let autoIncrementIndex = tableSql
+                const autoIncrementIndex = tableSql
                     .toUpperCase()
                     .indexOf("AUTOINCREMENT")
                 if (autoIncrementIndex !== -1) {
@@ -1470,16 +1470,16 @@ export abstract class AbstractSqliteQueryRunner
                         }
 
                         // parse datatype and attempt to retrieve length, precision and scale
-                        let pos = tableColumn.type.indexOf("(")
+                        const pos = tableColumn.type.indexOf("(")
                         if (pos !== -1) {
                             const fullType = tableColumn.type
-                            let dataType = fullType.substr(0, pos)
+                            const dataType = fullType.substr(0, pos)
                             if (
-                                !!this.driver.withLengthColumnTypes.find(
+                                this.driver.withLengthColumnTypes.find(
                                     (col) => col === dataType,
                                 )
                             ) {
-                                let len = parseInt(
+                                const len = parseInt(
                                     fullType.substring(
                                         pos + 1,
                                         fullType.length - 1,
@@ -1491,7 +1491,7 @@ export abstract class AbstractSqliteQueryRunner
                                 }
                             }
                             if (
-                                !!this.driver.withPrecisionColumnTypes.find(
+                                this.driver.withPrecisionColumnTypes.find(
                                     (col) => col === dataType,
                                 )
                             ) {
@@ -1503,7 +1503,7 @@ export abstract class AbstractSqliteQueryRunner
                                     tableColumn.precision = +matches[1]
                                 }
                                 if (
-                                    !!this.driver.withScaleColumnTypes.find(
+                                    this.driver.withScaleColumnTypes.find(
                                         (col) => col === dataType,
                                     )
                                 ) {
@@ -1737,7 +1737,7 @@ export abstract class AbstractSqliteQueryRunner
             table.name,
         )} (${columnDefinitions}`
 
-        let [databaseNew, tableName] = this.splitTablePath(table.name)
+        const [databaseNew, tableName] = this.splitTablePath(table.name)
         const newTableName = temporaryTable
             ? `${databaseNew ? `${databaseNew}.` : ""}${tableName.replace(
                   /^temporary_/,
@@ -1943,7 +1943,7 @@ export abstract class AbstractSqliteQueryRunner
      * Builds drop index sql.
      */
     protected dropIndexSql(indexOrName: TableIndex | string): Query {
-        let indexName = InstanceChecker.isTableIndex(indexOrName)
+        const indexName = InstanceChecker.isTableIndex(indexOrName)
             ? indexOrName.name
             : indexOrName
         return new Query(`DROP INDEX ${this.escapePath(indexName!)}`)
@@ -2008,7 +2008,7 @@ export abstract class AbstractSqliteQueryRunner
 
         // change table name into 'temporary_table'
         let [databaseNew, tableNameNew] = this.splitTablePath(newTable.name)
-        let [, tableNameOld] = this.splitTablePath(oldTable.name)
+        const [, tableNameOld] = this.splitTablePath(oldTable.name)
         newTable.name = tableNameNew = `${
             databaseNew ? `${databaseNew}.` : ""
         }temporary_${tableNameNew}`

@@ -1,5 +1,5 @@
 import { getMetadataArgsStorage } from "../globals"
-import { ExclusionMetadataArgs } from "../metadata-args/ExclusionMetadataArgs"
+import type { ExclusionMetadataArgs } from "../metadata-args/ExclusionMetadataArgs"
 import { TypeORMError } from "../error"
 
 /**

@@ -1,31 +1,32 @@
-import {
+import type {
     ColumnType,
     DataSource,
     EntityMetadata,
     ObjectLiteral,
     Table,
     TableColumn,
-    TableForeignKey,
+    TableForeignKey} from "../..";
+import {
     TypeORMError,
 } from "../.."
 import { DriverPackageNotInstalledError } from "../../error/DriverPackageNotInstalledError"
-import { ColumnMetadata } from "../../metadata/ColumnMetadata"
+import type { ColumnMetadata } from "../../metadata/ColumnMetadata"
 import { PlatformTools } from "../../platform/PlatformTools"
 import { RdbmsSchemaBuilder } from "../../schema-builder/RdbmsSchemaBuilder"
 import { ApplyValueTransformers } from "../../util/ApplyValueTransformers"
 import { DateUtils } from "../../util/DateUtils"
 import { OrmUtils } from "../../util/OrmUtils"
-import { Driver } from "../Driver"
-import { CteCapabilities } from "../types/CteCapabilities"
-import { DataTypeDefaults } from "../types/DataTypeDefaults"
-import { MappedColumnTypes } from "../types/MappedColumnTypes"
-import { SapConnectionOptions } from "./SapConnectionOptions"
+import type { Driver } from "../Driver"
+import type { CteCapabilities } from "../types/CteCapabilities"
+import type { DataTypeDefaults } from "../types/DataTypeDefaults"
+import type { MappedColumnTypes } from "../types/MappedColumnTypes"
+import type { SapConnectionOptions } from "./SapConnectionOptions"
 import { SapQueryRunner } from "./SapQueryRunner"
-import { ReplicationMode } from "../types/ReplicationMode"
+import type { ReplicationMode } from "../types/ReplicationMode"
 import { DriverUtils } from "../DriverUtils"
-import { View } from "../../schema-builder/view/View"
+import type { View } from "../../schema-builder/view/View"
 import { InstanceChecker } from "../../util/InstanceChecker"
-import { UpsertType } from "../types/UpsertType"
+import type { UpsertType } from "../types/UpsertType"
 
 /**
  * Organizes communication with SAP Hana DBMS.
@@ -80,7 +81,7 @@ export class SapDriver implements Driver {
     /**
      * Indicates if replication is enabled.
      */
-    isReplicated: boolean = false
+    isReplicated = false
 
     /**
      * Indicates if tree tables are supported by this driver.
@@ -365,7 +366,7 @@ export class SapDriver implements Driver {
                     return full
                 }
 
-                let value: any = parameters[key]
+                const value: any = parameters[key]
 
                 if (isArray) {
                     return value
@@ -406,7 +407,7 @@ export class SapDriver implements Driver {
      * E.g. myDB.mySchema.myTable
      */
     buildTableName(tableName: string, schema?: string): string {
-        let tablePath = [tableName]
+        const tablePath = [tableName]
 
         if (schema) {
             tablePath.unshift(schema)

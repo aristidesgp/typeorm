@@ -1,6 +1,6 @@
 import { QueryResult } from "../../query-runner/QueryResult"
-import { QueryRunner } from "../../query-runner/QueryRunner"
-import { ObjectLiteral } from "../../common/ObjectLiteral"
+import type { QueryRunner } from "../../query-runner/QueryRunner"
+import type { ObjectLiteral } from "../../common/ObjectLiteral"
 import { TransactionNotStartedError } from "../../error/TransactionNotStartedError"
 import { TableColumn } from "../../schema-builder/table/TableColumn"
 import { Table } from "../../schema-builder/table/Table"
@@ -9,17 +9,17 @@ import { TableIndex } from "../../schema-builder/table/TableIndex"
 import { QueryRunnerAlreadyReleasedError } from "../../error/QueryRunnerAlreadyReleasedError"
 import { View } from "../../schema-builder/view/View"
 import { Query } from "../Query"
-import { AuroraMysqlDriver } from "./AuroraMysqlDriver"
-import { ReadStream } from "../../platform/PlatformTools"
+import type { AuroraMysqlDriver } from "./AuroraMysqlDriver"
+import type { ReadStream } from "../../platform/PlatformTools"
 import { OrmUtils } from "../../util/OrmUtils"
-import { TableIndexOptions } from "../../schema-builder/options/TableIndexOptions"
+import type { TableIndexOptions } from "../../schema-builder/options/TableIndexOptions"
 import { TableUnique } from "../../schema-builder/table/TableUnique"
 import { BaseQueryRunner } from "../../query-runner/BaseQueryRunner"
 import { Broadcaster } from "../../subscriber/Broadcaster"
-import { ColumnType } from "../types/ColumnTypes"
-import { TableCheck } from "../../schema-builder/table/TableCheck"
-import { IsolationLevel } from "../types/IsolationLevel"
-import { TableExclusion } from "../../schema-builder/table/TableExclusion"
+import type { ColumnType } from "../types/ColumnTypes"
+import type { TableCheck } from "../../schema-builder/table/TableCheck"
+import type { IsolationLevel } from "../types/IsolationLevel"
+import type { TableExclusion } from "../../schema-builder/table/TableExclusion"
 import { TypeORMError } from "../../error"
 import { MetadataTableType } from "../types/MetadataTableType"
 import { InstanceChecker } from "../../util/InstanceChecker"
@@ -332,8 +332,8 @@ export class AuroraMysqlQueryRunner
      */
     async createTable(
         table: Table,
-        ifNotExist: boolean = false,
-        createForeignKeys: boolean = true,
+        ifNotExist = false,
+        createForeignKeys = true,
     ): Promise<void> {
         if (ifNotExist) {
             const isTableExist = await this.hasTable(table)
@@ -370,7 +370,7 @@ export class AuroraMysqlQueryRunner
     async dropTable(
         target: Table | string,
         ifExist?: boolean,
-        dropForeignKeys: boolean = true,
+        dropForeignKeys = true,
     ): Promise<void> {
         // It needs because if table does not exist and dropForeignKeys or dropIndices is true, we don't need
         // to perform drop queries for foreign keys and indices.
@@ -406,7 +406,7 @@ export class AuroraMysqlQueryRunner
      */
     async createView(
         view: View,
-        syncWithMetadata: boolean = false,
+        syncWithMetadata = false,
     ): Promise<void> {
         const upQueries: Query[] = []
         const downQueries: Query[] = []
@@ -2623,7 +2623,7 @@ export class AuroraMysqlQueryRunner
         table: Table,
         indexOrName: TableIndex | string,
     ): Query {
-        let indexName = InstanceChecker.isTableIndex(indexOrName)
+        const indexName = InstanceChecker.isTableIndex(indexOrName)
             ? indexOrName.name
             : indexOrName
         return new Query(
@@ -2734,7 +2734,7 @@ export class AuroraMysqlQueryRunner
     protected buildCreateColumnSql(
         column: TableColumn,
         skipPrimary: boolean,
-        skipName: boolean = false,
+        skipName = false,
     ) {
         let c = ""
         if (skipName) {

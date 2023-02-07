@@ -1,14 +1,14 @@
-import { RelationType } from "./types/RelationTypes"
+import type { RelationType } from "./types/RelationTypes"
 import { EntityMetadata } from "./EntityMetadata"
-import { ForeignKeyMetadata } from "./ForeignKeyMetadata"
-import { ObjectLiteral } from "../common/ObjectLiteral"
-import { ColumnMetadata } from "./ColumnMetadata"
-import { EmbeddedMetadata } from "./EmbeddedMetadata"
-import { RelationMetadataArgs } from "../metadata-args/RelationMetadataArgs"
-import { DeferrableType } from "./types/DeferrableType"
-import { OnUpdateType } from "./types/OnUpdateType"
-import { OnDeleteType } from "./types/OnDeleteType"
-import { PropertyTypeFactory } from "./types/PropertyTypeInFunction"
+import type { ForeignKeyMetadata } from "./ForeignKeyMetadata"
+import type { ObjectLiteral } from "../common/ObjectLiteral"
+import type { ColumnMetadata } from "./ColumnMetadata"
+import type { EmbeddedMetadata } from "./EmbeddedMetadata"
+import type { RelationMetadataArgs } from "../metadata-args/RelationMetadataArgs"
+import type { DeferrableType } from "./types/DeferrableType"
+import type { OnUpdateType } from "./types/OnUpdateType"
+import type { OnDeleteType } from "./types/OnDeleteType"
+import type { PropertyTypeFactory } from "./types/PropertyTypeInFunction"
 import { TypeORMError } from "../error"
 import { ObjectUtils } from "../util/ObjectUtils"
 import { InstanceChecker } from "../util/InstanceChecker"
@@ -80,28 +80,28 @@ export class RelationMetadata {
     /**
      * Indicates if this is a parent (can be only many-to-one relation) relation in the tree tables.
      */
-    isTreeParent: boolean = false
+    isTreeParent = false
 
     /**
      * Indicates if this is a children (can be only one-to-many relation) relation in the tree tables.
      */
-    isTreeChildren: boolean = false
+    isTreeChildren = false
 
     /**
      * Indicates if this relation's column is a primary key.
      * Can be used only for many-to-one and owner one-to-one relations.
      */
-    isPrimary: boolean = false
+    isPrimary = false
 
     /**
      * Indicates if this relation is lazily loaded.
      */
-    isLazy: boolean = false
+    isLazy = false
 
     /**
      * Indicates if this relation is eagerly loaded.
      */
-    isEager: boolean = false
+    isEager = false
 
     /**
      * Indicates if persistence is enabled for the relation.
@@ -109,7 +109,7 @@ export class RelationMetadata {
      * If its disabled you can only change a relation from inverse side of a relation or using relation query builder functionality.
      * This is useful for performance optimization since its disabling avoid multiple extra queries during entity save.
      */
-    persistenceEnabled: boolean = true
+    persistenceEnabled = true
 
     /**
      * When a parent is saved (with cascading but) without a child row that still exists in database, this will control what shall happen to them.
@@ -121,32 +121,32 @@ export class RelationMetadata {
     /**
      * If set to true then related objects are allowed to be inserted to the database.
      */
-    isCascadeInsert: boolean = false
+    isCascadeInsert = false
 
     /**
      * If set to true then related objects are allowed to be updated in the database.
      */
-    isCascadeUpdate: boolean = false
+    isCascadeUpdate = false
 
     /**
      * If set to true then related objects are allowed to be remove from the database.
      */
-    isCascadeRemove: boolean = false
+    isCascadeRemove = false
 
     /**
      * If set to true then related objects are allowed to be soft-removed from the database.
      */
-    isCascadeSoftRemove: boolean = false
+    isCascadeSoftRemove = false
 
     /**
      * If set to true then related objects are allowed to be recovered from the database.
      */
-    isCascadeRecover: boolean = false
+    isCascadeRecover = false
 
     /**
      * Indicates if relation column value can be nullable or not.
      */
-    isNullable: boolean = true
+    isNullable = true
 
     /**
      * What to do with a relation on deletion of the row containing a foreign key.
@@ -168,7 +168,7 @@ export class RelationMetadata {
      * Can be used only for many-to-one and owner one-to-one relations.
      * Defaults to true.
      */
-    createForeignKeyConstraints: boolean = true
+    createForeignKeyConstraints = true
 
     /**
      * Gets the property's type to which this relation is applied.
@@ -180,56 +180,56 @@ export class RelationMetadata {
     /**
      * Indicates if this side is an owner of this relation.
      */
-    isOwning: boolean = false
+    isOwning = false
 
     /**
      * Checks if this relation's type is "one-to-one".
      */
-    isOneToOne: boolean = false
+    isOneToOne = false
 
     /**
      * Checks if this relation is owner side of the "one-to-one" relation.
      * Owner side means this side of relation has a join column in the table.
      */
-    isOneToOneOwner: boolean = false
+    isOneToOneOwner = false
 
     /**
      * Checks if this relation has a join column (e.g. is it many-to-one or one-to-one owner side).
      */
-    isWithJoinColumn: boolean = false
+    isWithJoinColumn = false
 
     /**
      * Checks if this relation is NOT owner side of the "one-to-one" relation.
      * NOT owner side means this side of relation does not have a join column in the table.
      */
-    isOneToOneNotOwner: boolean = false
+    isOneToOneNotOwner = false
 
     /**
      * Checks if this relation's type is "one-to-many".
      */
-    isOneToMany: boolean = false
+    isOneToMany = false
 
     /**
      * Checks if this relation's type is "many-to-one".
      */
-    isManyToOne: boolean = false
+    isManyToOne = false
 
     /**
      * Checks if this relation's type is "many-to-many".
      */
-    isManyToMany: boolean = false
+    isManyToMany = false
 
     /**
      * Checks if this relation's type is "many-to-many", and is owner side of the relationship.
      * Owner side means this side of relation has a join table.
      */
-    isManyToManyOwner: boolean = false
+    isManyToManyOwner = false
 
     /**
      * Checks if this relation's type is "many-to-many", and is NOT owner side of the relationship.
      * Not owner side means this side of relation does not have a join table.
      */
-    isManyToManyNotOwner: boolean = false
+    isManyToManyNotOwner = false
 
     /**
      * Gets the property path of the inverse side of the relation.
@@ -410,7 +410,7 @@ export class RelationMetadata {
      */
     getEntityValue(
         entity: ObjectLiteral,
-        getLazyRelationsPromiseValue: boolean = false,
+        getLazyRelationsPromiseValue = false,
     ): any | undefined {
         if (entity === null || entity === undefined) return undefined
         // extract column value from embeddeds of entity if column is in embedded

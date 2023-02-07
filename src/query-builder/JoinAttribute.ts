@@ -1,9 +1,9 @@
-import { EntityMetadata } from "../metadata/EntityMetadata"
-import { DataSource } from "../data-source/DataSource"
-import { RelationMetadata } from "../metadata/RelationMetadata"
+import type { EntityMetadata } from "../metadata/EntityMetadata"
+import type { DataSource } from "../data-source/DataSource"
+import type { RelationMetadata } from "../metadata/RelationMetadata"
 import { QueryBuilderUtils } from "./QueryBuilderUtils"
-import { QueryExpressionMap } from "./QueryExpressionMap"
-import { Alias } from "./Alias"
+import type { QueryExpressionMap } from "./QueryExpressionMap"
+import type { Alias } from "./Alias"
 import { ObjectUtils } from "../util/ObjectUtils"
 import { TypeORMError } from "../error"
 import { DriverUtils } from "../driver/DriverUtils"
@@ -72,13 +72,13 @@ export class JoinAttribute {
     }
 
     isSelectedCache: boolean
-    isSelectedEvaluated: boolean = false
+    isSelectedEvaluated = false
     /**
      * Indicates if this join is selected.
      */
     get isSelected(): boolean {
         if (!this.isSelectedEvaluated) {
-            let getValue = () => {
+            const getValue = () => {
                 for (const select of this.queryExpressionMap.selects) {
                     if (select.selection === this.alias.name) return true
 
@@ -143,7 +143,7 @@ export class JoinAttribute {
     }
 
     relationCache: RelationMetadata | undefined
-    relationEvaluated: boolean = false
+    relationEvaluated = false
     /**
      * Relation of the parent.
      * This is used to understand what is joined.
@@ -152,7 +152,7 @@ export class JoinAttribute {
      */
     get relation(): RelationMetadata | undefined {
         if (!this.relationEvaluated) {
-            let getValue = () => {
+            const getValue = () => {
                 if (!QueryBuilderUtils.isAliasProperty(this.entityOrProperty))
                     return undefined
 

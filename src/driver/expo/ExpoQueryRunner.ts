@@ -2,7 +2,7 @@ import { QueryRunnerAlreadyReleasedError } from "../../error/QueryRunnerAlreadyR
 import { QueryFailedError } from "../../error/QueryFailedError"
 import { AbstractSqliteQueryRunner } from "../sqlite-abstract/AbstractSqliteQueryRunner"
 import { TransactionNotStartedError } from "../../error/TransactionNotStartedError"
-import { ExpoDriver } from "./ExpoDriver"
+import type { ExpoDriver } from "./ExpoDriver"
 import { Broadcaster } from "../../subscriber/Broadcaster"
 import { QueryResult } from "../../query-runner/QueryResult"
 
@@ -202,7 +202,7 @@ export class ExpoQueryRunner extends AbstractSqliteQueryRunner {
                             }
 
                             if (raw?.hasOwnProperty("rows")) {
-                                let resultSet = []
+                                const resultSet = []
                                 for (let i = 0; i < raw.rows.length; i++) {
                                     resultSet.push(raw.rows.item(i))
                                 }

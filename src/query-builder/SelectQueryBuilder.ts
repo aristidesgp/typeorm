@@ -1,5 +1,5 @@
 import { RawSqlResultsToEntityTransformer } from "./transformer/RawSqlResultsToEntityTransformer"
-import { ObjectLiteral } from "../common/ObjectLiteral"
+import type { ObjectLiteral } from "../common/ObjectLiteral"
 import { PessimisticLockTransactionRequiredError } from "../error/PessimisticLockTransactionRequiredError"
 import { NoVersionOrUpdateDateColumnError } from "../error/NoVersionOrUpdateDateColumnError"
 import { OptimisticLockVersionMismatchError } from "../error/OptimisticLockVersionMismatchError"
@@ -12,36 +12,36 @@ import { RelationIdMetadataToAttributeTransformer } from "./relation-id/Relation
 import { RelationCountLoader } from "./relation-count/RelationCountLoader"
 import { RelationCountMetadataToAttributeTransformer } from "./relation-count/RelationCountMetadataToAttributeTransformer"
 import { QueryBuilder } from "./QueryBuilder"
-import { ReadStream } from "../platform/PlatformTools"
+import type { ReadStream } from "../platform/PlatformTools"
 import { LockNotSupportedOnGivenDriverError } from "../error/LockNotSupportedOnGivenDriverError"
-import { MysqlDriver } from "../driver/mysql/MysqlDriver"
-import { SelectQuery } from "./SelectQuery"
-import { EntityMetadata } from "../metadata/EntityMetadata"
-import { ColumnMetadata } from "../metadata/ColumnMetadata"
-import { OrderByCondition } from "../find-options/OrderByCondition"
-import { QueryExpressionMap } from "./QueryExpressionMap"
-import { EntityTarget } from "../common/EntityTarget"
-import { QueryRunner } from "../query-runner/QueryRunner"
-import { WhereExpressionBuilder } from "./WhereExpressionBuilder"
-import { Brackets } from "./Brackets"
-import { QueryResultCacheOptions } from "../cache/QueryResultCacheOptions"
+import type { MysqlDriver } from "../driver/mysql/MysqlDriver"
+import type { SelectQuery } from "./SelectQuery"
+import type { EntityMetadata } from "../metadata/EntityMetadata"
+import type { ColumnMetadata } from "../metadata/ColumnMetadata"
+import type { OrderByCondition } from "../find-options/OrderByCondition"
+import type { QueryExpressionMap } from "./QueryExpressionMap"
+import type { EntityTarget } from "../common/EntityTarget"
+import type { QueryRunner } from "../query-runner/QueryRunner"
+import type { WhereExpressionBuilder } from "./WhereExpressionBuilder"
+import type { Brackets } from "./Brackets"
+import type { QueryResultCacheOptions } from "../cache/QueryResultCacheOptions"
 import { OffsetWithoutLimitNotSupportedError } from "../error/OffsetWithoutLimitNotSupportedError"
-import { SelectQueryBuilderOption } from "./SelectQueryBuilderOption"
+import type { SelectQueryBuilderOption } from "./SelectQueryBuilderOption"
 import { ObjectUtils } from "../util/ObjectUtils"
 import { DriverUtils } from "../driver/DriverUtils"
 import { EntityNotFoundError } from "../error/EntityNotFoundError"
 import { TypeORMError } from "../error"
-import { FindManyOptions } from "../find-options/FindManyOptions"
-import { FindOptionsSelect } from "../find-options/FindOptionsSelect"
-import { RelationMetadata } from "../metadata/RelationMetadata"
-import { FindOptionsOrder } from "../find-options/FindOptionsOrder"
-import { FindOptionsWhere } from "../find-options/FindOptionsWhere"
+import type { FindManyOptions } from "../find-options/FindManyOptions"
+import type { FindOptionsSelect } from "../find-options/FindOptionsSelect"
+import type { RelationMetadata } from "../metadata/RelationMetadata"
+import type { FindOptionsOrder } from "../find-options/FindOptionsOrder"
+import type { FindOptionsWhere } from "../find-options/FindOptionsWhere"
 import { FindOptionsUtils } from "../find-options/FindOptionsUtils"
-import { FindOptionsRelations } from "../find-options/FindOptionsRelations"
+import type { FindOptionsRelations } from "../find-options/FindOptionsRelations"
 import { ApplyValueTransformers } from "../util/ApplyValueTransformers"
 import { OrmUtils } from "../util/OrmUtils"
 import { EntityPropertyNotFoundError } from "../error/EntityPropertyNotFoundError"
-import { AuroraMysqlDriver } from "../driver/aurora-mysql/AuroraMysqlDriver"
+import type { AuroraMysqlDriver } from "../driver/aurora-mysql/AuroraMysqlDriver"
 import { InstanceChecker } from "../util/InstanceChecker"
 
 /**
@@ -63,7 +63,7 @@ export class SelectQueryBuilder<Entity extends ObjectLiteral>
         select: boolean
         selection: FindOptionsSelect<any> | undefined
     }[] = []
-    protected conditions: string = ""
+    protected conditions = ""
     protected orderBys: {
         alias: string
         direction: "ASC" | "DESC"
@@ -236,7 +236,7 @@ export class SelectQueryBuilder<Entity extends ObjectLiteral>
     /**
      * Sets whether the selection is DISTINCT.
      */
-    distinct(distinct: boolean = true): this {
+    distinct(distinct = true): this {
         this.expressionMap.selectDistinct = distinct
         return this
     }
@@ -1603,7 +1603,7 @@ export class SelectQueryBuilder<Entity extends ObjectLiteral>
 
         this.expressionMap.queryEntity = false
         const queryRunner = this.obtainQueryRunner()
-        let transactionStartedByUs: boolean = false
+        let transactionStartedByUs = false
         try {
             // start transaction if it was enabled
             if (
@@ -1646,7 +1646,7 @@ export class SelectQueryBuilder<Entity extends ObjectLiteral>
         raw: T[]
     }> {
         const queryRunner = this.obtainQueryRunner()
-        let transactionStartedByUs: boolean = false
+        let transactionStartedByUs = false
         try {
             // start transaction if it was enabled
             if (
@@ -1761,7 +1761,7 @@ export class SelectQueryBuilder<Entity extends ObjectLiteral>
             throw new OptimisticLockCanNotBeUsedError()
 
         const queryRunner = this.obtainQueryRunner()
-        let transactionStartedByUs: boolean = false
+        let transactionStartedByUs = false
         try {
             // start transaction if it was enabled
             if (
@@ -1805,7 +1805,7 @@ export class SelectQueryBuilder<Entity extends ObjectLiteral>
             throw new OptimisticLockCanNotBeUsedError()
 
         const queryRunner = this.obtainQueryRunner()
-        let transactionStartedByUs: boolean = false
+        let transactionStartedByUs = false
         try {
             // start transaction if it was enabled
             if (
@@ -1849,7 +1849,7 @@ export class SelectQueryBuilder<Entity extends ObjectLiteral>
             throw new OptimisticLockCanNotBeUsedError()
 
         const queryRunner = this.obtainQueryRunner()
-        let transactionStartedByUs: boolean = false
+        let transactionStartedByUs = false
         try {
             // start transaction if it was enabled
             if (
@@ -1900,7 +1900,7 @@ export class SelectQueryBuilder<Entity extends ObjectLiteral>
         this.expressionMap.queryEntity = false
         const [sql, parameters] = this.getQueryAndParameters()
         const queryRunner = this.obtainQueryRunner()
-        let transactionStartedByUs: boolean = false
+        let transactionStartedByUs = false
         try {
             // start transaction if it was enabled
             if (
@@ -2049,7 +2049,7 @@ export class SelectQueryBuilder<Entity extends ObjectLiteral>
                 })
             }
         } else {
-            let subQuery: string = ""
+            let subQuery = ""
             if (typeof entityOrProperty === "function") {
                 const subQueryBuilder: SelectQueryBuilder<any> = (
                     entityOrProperty as any
@@ -2150,7 +2150,7 @@ export class SelectQueryBuilder<Entity extends ObjectLiteral>
         if (allSelects.length === 0) allSelects.push({ selection: "*" })
 
         // Use certain index
-        let useIndex: string = ""
+        let useIndex = ""
         if (this.expressionMap.useIndex) {
             if (DriverUtils.isMySQLFamily(this.connection.driver)) {
                 useIndex = ` USE INDEX (${this.expressionMap.useIndex})`
@@ -3786,7 +3786,7 @@ export class SelectQueryBuilder<Entity extends ObjectLiteral>
         alias: string,
         embedPrefix?: string,
     ) {
-        for (let key in select) {
+        for (const key in select) {
             if (select[key] === undefined || select[key] === false) continue
 
             const propertyPath = embedPrefix ? embedPrefix + "." + key : key
@@ -4031,7 +4031,7 @@ export class SelectQueryBuilder<Entity extends ObjectLiteral>
         alias: string,
         embedPrefix?: string,
     ) {
-        for (let key in order) {
+        for (const key in order) {
             if (order[key] === undefined) continue
 
             const propertyPath = embedPrefix ? embedPrefix + "." + key : key
@@ -4132,7 +4132,7 @@ export class SelectQueryBuilder<Entity extends ObjectLiteral>
         alias: string,
         embedPrefix?: string,
     ) {
-        let condition: string = ""
+        let condition = ""
         // let parameterIndex = Object.keys(this.expressionMap.nativeParameters).length;
         if (Array.isArray(where) && where.length) {
             condition =
@@ -4151,8 +4151,8 @@ export class SelectQueryBuilder<Entity extends ObjectLiteral>
                     .join(" OR ") +
                 ")"
         } else {
-            let andConditions: string[] = []
-            for (let key in where) {
+            const andConditions: string[] = []
+            for (const key in where) {
                 if (where[key] === undefined || where[key] === null) continue
 
                 const propertyPath = embedPrefix ? embedPrefix + "." + key : key

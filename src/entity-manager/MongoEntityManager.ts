@@ -1,7 +1,7 @@
-import { DataSource } from "../data-source/DataSource"
+import type { DataSource } from "../data-source/DataSource"
 import { EntityManager } from "./EntityManager"
-import { EntityTarget } from "../common/EntityTarget"
-import {
+import type { EntityTarget } from "../common/EntityTarget"
+import type {
     AggregationCursor,
     BulkWriteOpResultObject,
     ChangeStream,
@@ -37,25 +37,25 @@ import {
     UnorderedBulkOperation,
     UpdateWriteOpResult,
 } from "../driver/mongodb/typings"
-import { ObjectLiteral } from "../common/ObjectLiteral"
-import { MongoQueryRunner } from "../driver/mongodb/MongoQueryRunner"
-import { MongoDriver } from "../driver/mongodb/MongoDriver"
+import type { ObjectLiteral } from "../common/ObjectLiteral"
+import type { MongoQueryRunner } from "../driver/mongodb/MongoQueryRunner"
+import type { MongoDriver } from "../driver/mongodb/MongoDriver"
 import { DocumentToEntityTransformer } from "../query-builder/transformer/DocumentToEntityTransformer"
 import { FindOptionsUtils } from "../find-options/FindOptionsUtils"
 import { PlatformTools } from "../platform/PlatformTools"
-import { QueryDeepPartialEntity } from "../query-builder/QueryPartialEntity"
+import type { QueryDeepPartialEntity } from "../query-builder/QueryPartialEntity"
 import { InsertResult } from "../query-builder/result/InsertResult"
 import { UpdateResult } from "../query-builder/result/UpdateResult"
 import { DeleteResult } from "../query-builder/result/DeleteResult"
-import { EntityMetadata } from "../metadata/EntityMetadata"
-import { FindOptionsWhere } from "../find-options/FindOptionsWhere"
-import {
+import type { EntityMetadata } from "../metadata/EntityMetadata"
+import type { FindOptionsWhere } from "../find-options/FindOptionsWhere"
+import type {
     FindOptionsSelect,
     FindOptionsSelectByString,
 } from "../find-options/FindOptionsSelect"
-import { MongoFindManyOptions } from "../find-options/mongodb/MongoFindManyOptions"
-import { MongoFindOneOptions } from "../find-options/mongodb/MongoFindOneOptions"
-import { ColumnMetadata } from "../metadata/ColumnMetadata"
+import type { MongoFindManyOptions } from "../find-options/mongodb/MongoFindManyOptions"
+import type { MongoFindOneOptions } from "../find-options/mongodb/MongoFindOneOptions"
+import type { ColumnMetadata } from "../metadata/ColumnMetadata"
 import { ObjectUtils } from "../util/ObjectUtils"
 
 /**
@@ -250,7 +250,7 @@ export class MongoEntityManager extends EntityManager {
         if (Array.isArray(entity)) {
             result.raw = await this.insertMany(target, entity)
             Object.keys(result.raw.insertedIds).forEach((key: any) => {
-                let insertedId = result.raw.insertedIds[key]
+                const insertedId = result.raw.insertedIds[key]
                 result.generatedMaps.push(
                     this.connection.driver.createGeneratedMap(
                         this.connection.getMetadata(target),

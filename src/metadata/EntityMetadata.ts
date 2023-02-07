@@ -1,25 +1,25 @@
-import { QueryRunner, SelectQueryBuilder } from ".."
-import { ObjectLiteral } from "../common/ObjectLiteral"
-import { DataSource } from "../data-source/DataSource"
+import type { QueryRunner, SelectQueryBuilder } from ".."
+import type { ObjectLiteral } from "../common/ObjectLiteral"
+import type { DataSource } from "../data-source/DataSource"
 import { CannotCreateEntityIdMapError } from "../error/CannotCreateEntityIdMapError"
-import { OrderByCondition } from "../find-options/OrderByCondition"
-import { TableMetadataArgs } from "../metadata-args/TableMetadataArgs"
-import { TreeMetadataArgs } from "../metadata-args/TreeMetadataArgs"
+import type { OrderByCondition } from "../find-options/OrderByCondition"
+import type { TableMetadataArgs } from "../metadata-args/TableMetadataArgs"
+import type { TreeMetadataArgs } from "../metadata-args/TreeMetadataArgs"
 import { OrmUtils } from "../util/OrmUtils"
-import { CheckMetadata } from "./CheckMetadata"
-import { ColumnMetadata } from "./ColumnMetadata"
-import { EmbeddedMetadata } from "./EmbeddedMetadata"
-import { EntityListenerMetadata } from "./EntityListenerMetadata"
-import { ExclusionMetadata } from "./ExclusionMetadata"
-import { ForeignKeyMetadata } from "./ForeignKeyMetadata"
-import { IndexMetadata } from "./IndexMetadata"
-import { RelationCountMetadata } from "./RelationCountMetadata"
-import { RelationIdMetadata } from "./RelationIdMetadata"
-import { RelationMetadata } from "./RelationMetadata"
-import { TableType } from "./types/TableTypes"
-import { TreeType } from "./types/TreeTypes"
-import { UniqueMetadata } from "./UniqueMetadata"
-import { ClosureTreeOptions } from "./types/ClosureTreeOptions"
+import type { CheckMetadata } from "./CheckMetadata"
+import type { ColumnMetadata } from "./ColumnMetadata"
+import type { EmbeddedMetadata } from "./EmbeddedMetadata"
+import type { EntityListenerMetadata } from "./EntityListenerMetadata"
+import type { ExclusionMetadata } from "./ExclusionMetadata"
+import type { ForeignKeyMetadata } from "./ForeignKeyMetadata"
+import type { IndexMetadata } from "./IndexMetadata"
+import type { RelationCountMetadata } from "./RelationCountMetadata"
+import type { RelationIdMetadata } from "./RelationIdMetadata"
+import type { RelationMetadata } from "./RelationMetadata"
+import type { TableType } from "./types/TableTypes"
+import type { TreeType } from "./types/TreeTypes"
+import type { UniqueMetadata } from "./UniqueMetadata"
+import type { ClosureTreeOptions } from "./types/ClosureTreeOptions"
 import { EntityPropertyNotFoundError } from "../error/EntityPropertyNotFoundError"
 import { ObjectUtils } from "../util/ObjectUtils"
 import { shorten } from "../util/StringUtils"
@@ -143,7 +143,7 @@ export class EntityMetadata {
     /**
      * Indicates if schema will be synchronized for this entity or not.
      */
-    synchronize: boolean = true
+    synchronize = true
 
     /**
      * Table's database engine type (like "InnoDB", "MyISAM", etc).
@@ -174,7 +174,7 @@ export class EntityMetadata {
     /**
      * Checks if there any non-nullable column exist in this entity.
      */
-    hasNonNullableRelations: boolean = false
+    hasNonNullableRelations = false
 
     /**
      * Indicates if this entity metadata of a junction table, or not.
@@ -182,13 +182,13 @@ export class EntityMetadata {
      *
      * Its also possible to understand if entity is junction via tableType.
      */
-    isJunction: boolean = false
+    isJunction = false
 
     /**
      * Indicates if the entity should be instantiated using the constructor
      * or via allocating a new object via `Object.create()`.
      */
-    isAlwaysUsingConstructor: boolean = true
+    isAlwaysUsingConstructor = true
 
     /**
      * Indicates if this entity is a tree, what type of tree it is.
@@ -204,17 +204,17 @@ export class EntityMetadata {
      * Checks if this table is a junction table of the closure table.
      * This type is for tables that contain junction metadata of the closure tables.
      */
-    isClosureJunction: boolean = false
+    isClosureJunction = false
 
     /**
      * Checks if entity's table has multiple primary columns.
      */
-    hasMultiplePrimaryKeys: boolean = false
+    hasMultiplePrimaryKeys = false
 
     /**
      * Indicates if this entity metadata has uuid generated columns.
      */
-    hasUUIDGeneratedColumns: boolean = false
+    hasUUIDGeneratedColumns = false
 
     /**
      * If this entity metadata is a child table of some table, it should have a discriminator value.
@@ -868,7 +868,7 @@ export class EntityMetadata {
     static createPropertyPath(
         metadata: EntityMetadata,
         entity: ObjectLiteral,
-        prefix: string = "",
+        prefix = "",
     ) {
         const paths: string[] = []
         Object.keys(entity).forEach((key) => {

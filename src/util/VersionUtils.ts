@@ -13,7 +13,7 @@ export class VersionUtils {
     }
 }
 
-function parseVersion(version: string = ""): Version {
+function parseVersion(version = ""): Version {
     const v: Version = [0, 0, 0]
 
     version.split(".").forEach((value, i) => (v[i] = parseInt(value, 10)))

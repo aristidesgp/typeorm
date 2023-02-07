@@ -1,5 +1,5 @@
-import { IndexMetadata } from "../../metadata/IndexMetadata"
-import { TableIndexOptions } from "../options/TableIndexOptions"
+import type { IndexMetadata } from "../../metadata/IndexMetadata"
+import type { TableIndexOptions } from "../options/TableIndexOptions"
 
 /**
  * Database's table index stored in this class.

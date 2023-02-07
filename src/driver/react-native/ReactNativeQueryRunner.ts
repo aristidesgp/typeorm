@@ -1,8 +1,8 @@
-import { ObjectLiteral } from "../../common/ObjectLiteral"
+import type { ObjectLiteral } from "../../common/ObjectLiteral"
 import { QueryRunnerAlreadyReleasedError } from "../../error/QueryRunnerAlreadyReleasedError"
 import { QueryFailedError } from "../../error/QueryFailedError"
 import { AbstractSqliteQueryRunner } from "../sqlite-abstract/AbstractSqliteQueryRunner"
-import { ReactNativeDriver } from "./ReactNativeDriver"
+import type { ReactNativeDriver } from "./ReactNativeDriver"
 import { Broadcaster } from "../../subscriber/Broadcaster"
 import { QueryResult } from "../../query-runner/QueryResult"
 
@@ -81,7 +81,7 @@ export class ReactNativeQueryRunner extends AbstractSqliteQueryRunner {
                     }
 
                     if (raw?.hasOwnProperty("rows")) {
-                        let records = []
+                        const records = []
                         for (let i = 0; i < raw.rows.length; i++) {
                             records.push(raw.rows.item(i))
                         }
@@ -123,7 +123,7 @@ export class ReactNativeQueryRunner extends AbstractSqliteQueryRunner {
      */
     protected parametrize(
         objectLiteral: ObjectLiteral,
-        startIndex: number = 0,
+        startIndex = 0,
     ): string[] {
         return Object.keys(objectLiteral).map((key, index) => `"${key}"` + "=?")
     }

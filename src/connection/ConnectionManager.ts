@@ -1,6 +1,6 @@
 import { DataSource } from "../data-source/DataSource"
 import { ConnectionNotFoundError } from "../error/ConnectionNotFoundError"
-import { DataSourceOptions } from "../data-source/DataSourceOptions"
+import type { DataSourceOptions } from "../data-source/DataSourceOptions"
 import { AlreadyHasActiveConnectionError } from "../error/AlreadyHasActiveConnectionError"
 
 /**
@@ -38,7 +38,7 @@ export class ConnectionManager {
      * If connection name is not given then it will get a default connection.
      * Throws error if connection with the given name was not found.
      */
-    get(name: string = "default"): DataSource {
+    get(name = "default"): DataSource {
         const connection = this.connectionMap.get(name)
         if (!connection) throw new ConnectionNotFoundError(name)
 

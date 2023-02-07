@@ -1,16 +1,16 @@
-import { ObjectLiteral } from "../../common/ObjectLiteral"
+import type { ObjectLiteral } from "../../common/ObjectLiteral"
 import { QueryRunnerAlreadyReleasedError } from "../../error/QueryRunnerAlreadyReleasedError"
 import { TransactionAlreadyStartedError } from "../../error/TransactionAlreadyStartedError"
 import { TransactionNotStartedError } from "../../error/TransactionNotStartedError"
-import { ColumnType } from "../types/ColumnTypes"
-import { ReadStream } from "../../platform/PlatformTools"
+import type { ColumnType } from "../types/ColumnTypes"
+import type { ReadStream } from "../../platform/PlatformTools"
 import { BaseQueryRunner } from "../../query-runner/BaseQueryRunner"
-import { QueryRunner } from "../../query-runner/QueryRunner"
-import { TableIndexOptions } from "../../schema-builder/options/TableIndexOptions"
+import type { QueryRunner } from "../../query-runner/QueryRunner"
+import type { TableIndexOptions } from "../../schema-builder/options/TableIndexOptions"
 import { Table } from "../../schema-builder/table/Table"
 import { TableCheck } from "../../schema-builder/table/TableCheck"
 import { TableColumn } from "../../schema-builder/table/TableColumn"
-import { TableExclusion } from "../../schema-builder/table/TableExclusion"
+import type { TableExclusion } from "../../schema-builder/table/TableExclusion"
 import { TableForeignKey } from "../../schema-builder/table/TableForeignKey"
 import { TableIndex } from "../../schema-builder/table/TableIndex"
 import { TableUnique } from "../../schema-builder/table/TableUnique"
@@ -18,9 +18,9 @@ import { View } from "../../schema-builder/view/View"
 import { Broadcaster } from "../../subscriber/Broadcaster"
 import { OrmUtils } from "../../util/OrmUtils"
 import { Query } from "../Query"
-import { IsolationLevel } from "../types/IsolationLevel"
-import { SapDriver } from "./SapDriver"
-import { ReplicationMode } from "../types/ReplicationMode"
+import type { IsolationLevel } from "../types/IsolationLevel"
+import type { SapDriver } from "./SapDriver"
+import type { ReplicationMode } from "../types/ReplicationMode"
 import { QueryFailedError, TypeORMError } from "../../error"
 import { QueryResult } from "../../query-runner/QueryResult"
 import { QueryLock } from "../../query-runner/QueryLock"
@@ -463,9 +463,9 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
      */
     async createTable(
         table: Table,
-        ifNotExist: boolean = false,
-        createForeignKeys: boolean = true,
-        createIndices: boolean = true,
+        ifNotExist = false,
+        createForeignKeys = true,
+        createIndices = true,
     ): Promise<void> {
         if (ifNotExist) {
             const isTableExist = await this.hasTable(table)
@@ -507,8 +507,8 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
     async dropTable(
         tableOrName: Table | string,
         ifExist?: boolean,
-        dropForeignKeys: boolean = true,
-        dropIndices: boolean = true,
+        dropForeignKeys = true,
+        dropIndices = true,
     ): Promise<void> {
         if (ifExist) {
             const isTableExist = await this.hasTable(tableOrName)
@@ -551,7 +551,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
      */
     async createView(
         view: View,
-        syncWithMetadata: boolean = false,
+        syncWithMetadata = false,
     ): Promise<void> {
         const upQueries: Query[] = []
         const downQueries: Query[] = []
@@ -3135,7 +3135,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
         table: Table,
         indexOrName: TableIndex | string,
     ): Query {
-        let indexName = InstanceChecker.isTableIndex(indexOrName)
+        const indexName = InstanceChecker.isTableIndex(indexOrName)
             ? indexOrName.name
             : indexOrName
         const parsedTableName = this.driver.parseTableName(table)

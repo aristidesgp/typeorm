@@ -1,4 +1,4 @@
-import { TableColumnOptions } from "../options/TableColumnOptions"
+import type { TableColumnOptions } from "../options/TableColumnOptions"
 
 /**
  * Table's columns in the database represented in this class.
@@ -33,12 +33,12 @@ export class TableColumn {
     /**
      * Indicates if column is NULL, or is NOT NULL in the database.
      */
-    isNullable: boolean = false
+    isNullable = false
 
     /**
      * Indicates if column is auto-generated sequence.
      */
-    isGenerated: boolean = false
+    isGenerated = false
 
     /**
      * Specifies generation strategy if this column will use auto increment.
@@ -49,17 +49,17 @@ export class TableColumn {
     /**
      * Indicates if column is a primary key.
      */
-    isPrimary: boolean = false
+    isPrimary = false
 
     /**
      * Indicates if column has unique value.
      */
-    isUnique: boolean = false
+    isUnique = false
 
     /**
      * Indicates if column stores array.
      */
-    isArray: boolean = false
+    isArray = false
 
     /**
      * Column's comment.
@@ -70,7 +70,7 @@ export class TableColumn {
      * Column type's length. Used only on some column types.
      * For example type = "string" and length = "100" means that ORM will create a column with type varchar(100).
      */
-    length: string = ""
+    length = ""
 
     /**
      * Column type's display width. Used only on some column types in MySQL.
@@ -104,12 +104,12 @@ export class TableColumn {
      * Puts ZEROFILL attribute on to numeric column. Works only for MySQL.
      * If you specify ZEROFILL for a numeric column, MySQL automatically adds the UNSIGNED attribute to the column
      */
-    zerofill: boolean = false
+    zerofill = false
 
     /**
      * Puts UNSIGNED attribute on to numeric column. Works only for MySQL.
      */
-    unsigned: boolean = false
+    unsigned = false
 
     /**
      * Array of possible enumerated values.

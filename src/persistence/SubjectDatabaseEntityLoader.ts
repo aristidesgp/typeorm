@@ -1,8 +1,8 @@
-import { Subject } from "./Subject"
-import { ObjectLiteral } from "../common/ObjectLiteral"
-import { QueryRunner } from "../query-runner/QueryRunner"
-import { FindManyOptions } from "../find-options/FindManyOptions"
-import { MongoRepository } from "../repository/MongoRepository"
+import type { Subject } from "./Subject"
+import type { ObjectLiteral } from "../common/ObjectLiteral"
+import type { QueryRunner } from "../query-runner/QueryRunner"
+import type { FindManyOptions } from "../find-options/FindManyOptions"
+import type { MongoRepository } from "../repository/MongoRepository"
 
 /**
  * Loads database entities for all operate subjects which do not have database entity set.
@@ -141,7 +141,7 @@ export class SubjectDatabaseEntityLoader {
                 })
 
                 // this way we tell what subjects we tried to load database entities of
-                for (let subject of allSubjects) {
+                for (const subject of allSubjects) {
                     subject.databaseEntityLoaded = true
                 }
             },
