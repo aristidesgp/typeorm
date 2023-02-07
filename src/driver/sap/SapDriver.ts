@@ -5,10 +5,9 @@ import type {
     ObjectLiteral,
     Table,
     TableColumn,
-    TableForeignKey} from "../..";
-import {
-    TypeORMError,
+    TableForeignKey,
 } from "../.."
+import { TypeORMError } from "../.."
 import { DriverPackageNotInstalledError } from "../../error/DriverPackageNotInstalledError"
 import type { ColumnMetadata } from "../../metadata/ColumnMetadata"
 import { PlatformTools } from "../../platform/PlatformTools"

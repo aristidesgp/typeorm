@@ -2,7 +2,7 @@ import * as path from "path"
 import * as fs from "fs"
 import dotenv from "dotenv"
 import chalk from "chalk"
-import type { Theme } from "cli-highlight";
+import type { Theme } from "cli-highlight"
 import { highlight } from "cli-highlight"
 
 export { ReadStream } from "fs"

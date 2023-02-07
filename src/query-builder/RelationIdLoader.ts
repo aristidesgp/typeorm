@@ -175,7 +175,7 @@ export class RelationIdLoader {
                     })
                     if (relatedEntityMatched) {
                         if (isMany) {
-                            (group.related as E2[]).push(relatedEntity)
+                            ;(group.related as E2[]).push(relatedEntity)
                         } else {
                             group.related = relatedEntity
                         }

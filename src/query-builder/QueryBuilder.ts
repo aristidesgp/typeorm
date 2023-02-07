@@ -963,7 +963,7 @@ export abstract class QueryBuilder<Entity extends ObjectLiteral> {
     protected getReturningColumns(): ColumnMetadata[] {
         const columns: ColumnMetadata[] = []
         if (Array.isArray(this.expressionMap.returning)) {
-            (this.expressionMap.returning as string[]).forEach(
+            ;(this.expressionMap.returning as string[]).forEach(
                 (columnName) => {
                     if (this.expressionMap.mainAlias!.hasMetadata) {
                         columns.push(

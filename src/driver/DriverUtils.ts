@@ -275,7 +275,7 @@ export class DriverUtils {
         if (replicaSet) {
             hostReplicaSet = hostAndPort
         } else {
-            [host, port] = hostAndPort.split(":")
+            ;[host, port] = hostAndPort.split(":")
         }
 
         const connectionUrl: any = {

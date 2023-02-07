@@ -387,7 +387,7 @@ export class RelationIdLoader {
 
                     const results = await qb.getRawMany()
                     results.forEach((result) => {
-                        [...joinColumns, ...inverseJoinColumns].forEach(
+                        ;[...joinColumns, ...inverseJoinColumns].forEach(
                             (column) => {
                                 result[column.databaseName] =
                                     this.connection.driver.prepareHydratedValue(

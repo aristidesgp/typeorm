@@ -701,10 +701,7 @@ export class CockroachQueryRunner
     /**
      * Creates a new view.
      */
-    async createView(
-        view: View,
-        syncWithMetadata = false,
-    ): Promise<void> {
+    async createView(view: View, syncWithMetadata = false): Promise<void> {
         const upQueries: Query[] = []
         const downQueries: Query[] = []
         upQueries.push(this.createViewSql(view))

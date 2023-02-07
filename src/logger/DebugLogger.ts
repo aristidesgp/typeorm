@@ -1,5 +1,5 @@
 import { AbstractLogger } from "./AbstractLogger"
-import type { Debugger } from "debug";
+import type { Debugger } from "debug"
 import { debug } from "debug"
 import type { LogLevel, LogMessage, LogMessageType } from "./Logger"
 import type { QueryRunner } from "../query-runner/QueryRunner"
